@@ -1,0 +1,6 @@
+export { ModelLoader } from './ModelLoader'
+export { DoctorModel } from './DoctorModel'
+export { StethoscopeModel } from './StethoscopeModel'
+export { SyringeModel } from './SyringeModel'
+export { PillBottleModel } from './PillBottleModel'
+export { DashboardModel } from './DashboardModel'
