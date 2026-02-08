@@ -11,5 +11,21 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
+          ui: ['framer-motion', 'lucide-react']
+        }
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ['three', '@react-three/fiber', '@react-three/drei', 'framer-motion']
   }
 })
