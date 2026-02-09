@@ -110,6 +110,23 @@ const ChatModal = ({ onClose }) => {
     a.click()
   }
   
+  // Quick symptom options
+  const quickSymptoms = [
+    { label: 'Fever', icon: '🌡️', query: 'I have fever' },
+    { label: 'Cough', icon: '🫁', query: 'I have cough' },
+    { label: 'Cold', icon: '🤧', query: 'I have cold symptoms' },
+    { label: 'Headache', icon: '🤕', query: 'I have headache' },
+    { label: 'Stomach Pain', icon: '🤰', query: 'I have stomach pain' },
+    { label: 'Body Pain', icon: '💪', query: 'I have body aches and pain' },
+    { label: 'Fatigue', icon: '😴', query: 'I feel tired and fatigued' },
+  ]
+  
+  const handleQuickSymptom = (query) => {
+    setInput(query)
+    // Focus the textarea
+    document.querySelector('.input-field')?.focus()
+  }
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -209,6 +226,32 @@ const ChatModal = ({ onClose }) => {
         
         {/* Input */}
         <div className="p-4 border-t border-white/10">
+          {/* Quick symptom options */}
+          {!messages.length || messages.length <= 1 ? (
+            <div className="mb-3">
+              <p className="text-xs text-gray-400 mb-2">Quick select:</p>
+              <div className="flex flex-wrap gap-2">
+                {quickSymptoms.map((symptom) => (
+                  <motion.button
+                    key={symptom.label}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleQuickSymptom(symptom.query)}
+                    disabled={isTyping}
+                    className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                  >
+                    <span>{symptom.icon}</span>
+                    <span>{symptom.label}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="mb-3">
+              <p className="text-xs text-gray-500 mb-2">Or describe your symptoms:</p>
+            </div>
+          )}
+          
           <div className="flex items-center gap-2">
             <textarea
               value={input}
