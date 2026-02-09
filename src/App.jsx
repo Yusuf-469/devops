@@ -394,16 +394,16 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
       </group>
       
       {/* Hover Label - Appears above model */}
-      <Html position={[0, positionY + 2, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
+      <Html position={[0, positionY + 1.5, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : -10 }}
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : -15 }}
           transition={{ duration: 0.15 }}
-          className="bg-black/80 text-white px-4 py-2 rounded-lg text-lg font-semibold whitespace-nowrap"
+          className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-xl text-xl font-bold whitespace-nowrap shadow-[0_0_30px_rgba(220,38,38,0.8)]"
           style={{ 
-            textShadow: '0 0 10px rgba(168,85,247,0.8)',
-            border: '1px solid rgba(168,85,247,0.5)',
-            background: 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(88,28,135,0.8) 100%)'
+            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+            border: '2px solid rgba(255,255,255,0.3)',
+            boxShadow: '0 0 25px rgba(220,38,38,0.6)'
           }}
         >
           {label}
