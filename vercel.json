@@ -1,14 +1,9 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": "node_modules/.bin/vite build || npx vite build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "devCommand": "npx vite",
-  "github": {
-    "enabled": true,
-    "autoAlias": true
-  },
   "headers": [
     {
       "source": "/assets/(.*)",
