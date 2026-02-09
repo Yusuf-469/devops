@@ -3,7 +3,7 @@ import { Phone, HelpCircle, Heart, Stethoscope, Syringe, Pill, LayoutDashboard, 
 
 const Sidebar = ({ activeSection, onNavigate }) => {
   const tools = [
-    { id: 'doctor', icon: Stethoscope, label: 'Dr. AI', section: 1, color: '#00ffff' },
+    { id: 'doctor', icon: User, label: 'Dr. AI', section: 1, color: '#00ffff' },
     { id: 'analyzer', icon: Stethoscope, label: 'Analyzer', section: 2, color: '#ef4444' },
     { id: 'tracker', icon: Syringe, label: 'Tracker', section: 3, color: '#22c55e' },
     { id: 'medication', icon: Pill, label: 'Medications', section: 4, color: '#f97316' },
@@ -11,9 +11,12 @@ const Sidebar = ({ activeSection, onNavigate }) => {
   ]
   
   const scrollToSection = (index) => {
+    // index 0 = landing page, index 1-5 = scroll sections
     const sections = document.querySelectorAll('.scroll-section')
-    if (sections[index]) {
-      sections[index].scrollIntoView({ behavior: 'smooth' })
+    // Landing page is at DOM index 0, tools start at DOM index 1
+    const targetIndex = index === 0 ? 0 : index
+    if (sections[targetIndex]) {
+      sections[targetIndex].scrollIntoView({ behavior: 'smooth' })
     }
     if (onNavigate) onNavigate(index)
   }

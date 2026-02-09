@@ -362,20 +362,37 @@ const BackgroundScene = () => {
   )
 }
 
-// Model wrapper with continuous rotation
-const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, positionY = 0, autoRotate = false, label = '' }) => {
+// Model wrapper with futuristic assemble/disintegrate animation
+const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, positionY = 0, autoRotate = false, label = '', isVisible = false }) => {
   const [hovered, setHovered] = useState(false)
   const groupRef = useRef()
+  const [hasConstructed, setHasConstructed] = useState(false)
+  
+  useEffect(() => {
+    if (isVisible) {
+      setHasConstructed(true)
+    } else {
+      setHasConstructed(false)
+    }
+  }, [isVisible])
   
   useFrame((state) => {
     if (groupRef.current) {
-      // Very gentle continuous rotation
+      // Target scale based on visibility
+      const targetScale = hasConstructed ? scale : 0
+      const currentScale = groupRef.current.scale.x
+      
+      // Smooth scale interpolation
+      const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.08)
+      groupRef.current.scale.setScalar(newScale)
+      
+      // Continuous rotation (always gentle)
       if (autoRotate) {
         groupRef.current.rotation.y += 0.001
       }
       
       // Subtle floating animation
-      groupRef.current.position.y = positionY + Math.sin(state.clock.elapsedTime * 0.5 + index) * 0.05
+      groupRef.current.position.y = positionY + Math.sin(state.clock.elapsedTime * 0.5 + index) * 0.03
     }
   })
   
@@ -383,7 +400,7 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
     <>
       <group
         ref={groupRef}
-        scale={scale}
+        scale={0}
         rotation={[0, rotationY, 0]}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
@@ -418,8 +435,8 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
   )
 }
 
-// Section Canvas - Models with continuous rotation
-const SectionCanvas = ({ model, onClick, index, rotationY = 0, modelScale = 1, positionY = 0, autoRotate = false, label = '' }) => {
+// Section Canvas - Models with futuristic assemble/disintegrate animations
+const SectionCanvas = ({ model, onClick, index, rotationY = 0, modelScale = 1, positionY = 0, autoRotate = false, label = '', isVisible = false }) => {
   return (
     <div className="w-full h-screen relative flex items-center justify-center">
       <Canvas
@@ -444,6 +461,7 @@ const SectionCanvas = ({ model, onClick, index, rotationY = 0, modelScale = 1, p
             positionY={positionY}
             autoRotate={autoRotate}
             label={label}
+            isVisible={isVisible}
           />
         </Suspense>
       </Canvas>
@@ -651,9 +669,10 @@ const Sidebar3D = ({ activeSection, onNavigate }) => {
   const icons = [
     { index: 0, icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', color: '#00ffff', label: 'Landing' },
     { index: 1, icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', color: '#ef4444', label: 'Dr. AI' },
-    { index: 2, icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: '#22c55e', label: 'Analyzer' },
+    { index: 2, icon: 'M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z', color: '#22c55e', label: 'Analyzer' },
     { index: 3, icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: '#f97316', label: 'Tracker' },
-    { index: 4, icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: '#a855f7', label: 'Medications' }
+    { index: 4, icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: '#a855f7', label: 'Medications' },
+    { index: 5, icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', color: '#f59e0b', label: 'Dashboard' }
   ]
   
   return (
@@ -772,7 +791,7 @@ const Sidebar3D = ({ activeSection, onNavigate }) => {
   )
 }
 
-// Scroll Section - Full viewport
+// Scroll Section - Medical-themed animations per section
 const ScrollSection = ({ index, model, onClick, rotationY = 0, modelScale = 1, positionY = 0, autoRotate = false, label = '' }) => {
   const sectionRef = useRef(null)
   const [isVisible, setIsVisible] = useState(false)
@@ -782,7 +801,7 @@ const ScrollSection = ({ index, model, onClick, rotationY = 0, modelScale = 1, p
       ([entry]) => {
         setIsVisible(entry.isIntersecting)
       },
-      { threshold: 0.5 }
+      { threshold: 0.4, rootMargin: '-20% 0px -20% 0px' }
     )
     
     if (sectionRef.current) {
@@ -792,12 +811,190 @@ const ScrollSection = ({ index, model, onClick, rotationY = 0, modelScale = 1, p
     return () => observer.disconnect()
   }, [])
   
+  // Medical animation effects based on section
+  const renderMedicalEffect = () => {
+    switch(label) {
+      case 'Dr. AI':
+        // Brain neural network effect
+        return (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ 
+              opacity: isVisible ? 0.4 : 0,
+              scale: isVisible ? 1 : 0
+            }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="absolute inset-0 pointer-events-none"
+            style={{ 
+              background: `radial-gradient(circle at 50% 50%, transparent 30%, rgba(139, 92, 246, 0.2) 70%)`,
+              animation: isVisible ? 'brainPulse 2s ease-in-out infinite' : 'none'
+            }}
+          />
+        )
+      case 'Analyzer':
+        // ECG/Pulse line animation
+        return (
+          <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%' }}>
+            <motion.path
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ 
+                pathLength: isVisible ? 1 : 0,
+                opacity: isVisible ? 0.8 : 0
+              }}
+              transition={{ duration: 1.5, ease: 'easeInOut' }}
+              d="M0,150 Q100,150 150,100 T300,150 T450,50 T600,150 T800,150"
+              fill="none"
+              stroke="url(#pulseGradient)"
+              strokeWidth="3"
+              style={{ filter: 'drop-shadow(0 0 10px #22d3ee)' }}
+            />
+            <defs>
+              <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#22d3ee" />
+                <stop offset="50%" stopColor="#ef4444" />
+                <stop offset="100%" stopColor="#22d3ee" />
+              </linearGradient>
+            </defs>
+          </svg>
+        )
+      case 'Tracker':
+        // Medical cross + injection particles
+        return (
+          <>
+            {/* Rotating medical crosses */}
+            {[...Array(4)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, rotate: 0 }}
+                animate={{ 
+                  opacity: isVisible ? 0.3 : 0,
+                  rotate: isVisible ? 360 : 0
+                }}
+                transition={{ 
+                  duration: 8, 
+                  repeat: Infinity, 
+                  ease: 'linear',
+                  delay: i * 0.2
+                }}
+                className="absolute pointer-events-none"
+                style={{ 
+                  left: `${20 + i * 20}%`,
+                  top: `${20 + (i % 2) * 40}%`,
+                  width: '30px',
+                  height: '30px',
+                  background: 'linear-gradient(90deg, #ef4444 48%, transparent 48%, transparent 52%, #ef4444 52%)',
+                  borderRadius: '4px'
+                }}
+              />
+            ))}
+            {/* Rising particles */}
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={`particle-${i}`}
+                initial={{ opacity: 0, y: '100%' }}
+                animate={{ 
+                  opacity: isVisible ? 0.6 : 0,
+                  y: isVisible ? '0%' : '100%'
+                }}
+                transition={{ 
+                  duration: 2 + Math.random(), 
+                  repeat: Infinity, 
+                  delay: i * 0.2,
+                  ease: 'easeOut'
+                }}
+                className="absolute pointer-events-none w-2 h-2 rounded-full bg-green-400"
+                style={{ 
+                  left: `${10 + Math.random() * 80}%`,
+                  filter: 'drop-shadow(0 0 6px #4ade80)'
+                }}
+              />
+            ))}
+          </>
+        )
+      case 'Medications':
+        // Floating pills/capsules
+        return (
+          <>
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: '100%', rotate: 0 }}
+                animate={{ 
+                  opacity: isVisible ? 0.5 : 0,
+                  y: isVisible ? `${20 + Math.random() * 30}%` : '100%',
+                  rotate: isVisible ? 360 : 0
+                }}
+                transition={{ 
+                  duration: 4 + Math.random() * 2, 
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                  ease: 'linear'
+                }}
+                className="absolute pointer-events-none"
+                style={{ 
+                  left: `${15 + i * 12}%`,
+                  width: i % 2 === 0 ? '16px' : '8px',
+                  height: '24px',
+                  borderRadius: i % 2 === 0 ? '8px' : '4px',
+                  background: i % 3 === 0 
+                    ? 'linear-gradient(180deg, #f97316 50%, transparent 50%)' 
+                    : i % 3 === 1
+                    ? 'linear-gradient(180deg, #22c55e 50%, transparent 50%)'
+                    : 'linear-gradient(180deg, #3b82f6 50%, transparent 50%)',
+                  filter: 'drop-shadow(0 0 8px currentColor)'
+                }}
+              />
+            ))}
+          </>
+        )
+      case 'Dashboard':
+        // Health chart bars
+        return (
+          <div className="absolute inset-0 pointer-events-none flex items-end justify-center gap-4 pb-20">
+            {[40, 70, 55, 90, 75, 85, 65].map((height, i) => (
+              <motion.div
+                key={i}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ 
+                  height: isVisible ? height : 0,
+                  opacity: isVisible ? (height > 80 ? 0.9 : height > 60 ? 0.7 : 0.5) : 0
+                }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: 0.5 + i * 0.1,
+                  ease: 'easeOut'
+                }}
+                className="w-8 rounded-t-lg"
+                style={{ 
+                  background: height > 80 
+                    ? 'linear-gradient(180deg, #22d3ee, #3b82f6)' 
+                    : height > 60
+                    ? 'linear-gradient(180deg, #22c55e, #84cc16)'
+                    : 'linear-gradient(180deg, #f97316, #eab308)',
+                  filter: 'drop-shadow(0 0 10px currentColor)'
+                }}
+              />
+            ))}
+          </div>
+        )
+      default:
+        return null
+    }
+  }
+  
   return (
-    <section
+    <motion.section
       ref={sectionRef}
-      className={`w-full h-screen relative ${isVisible ? 'opacity-100' : 'opacity-40'}`}
-      style={{ transition: 'opacity 0.8s ease' }}
+      initial={{ opacity: 0 }}
+      animate={{ 
+        opacity: isVisible ? 1 : 0.3
+      }}
+      transition={{ duration: 0.6 }}
+      className="w-full h-screen relative overflow-hidden"
     >
+      {/* Medical-themed background effect */}
+      {renderMedicalEffect()}
+      
       <SectionCanvas 
         model={model} 
         onClick={onClick} 
@@ -807,8 +1004,17 @@ const ScrollSection = ({ index, model, onClick, rotationY = 0, modelScale = 1, p
         positionY={positionY}
         autoRotate={autoRotate}
         label={label}
+        isVisible={isVisible}
       />
-    </section>
+      
+      {/* Add CSS animation for brain pulse */}
+      <style>{`
+        @keyframes brainPulse {
+          0%, 100% { transform: scale(1); opacity: 0.4; }
+          50% { transform: scale(1.05); opacity: 0.6; }
+        }
+      `}</style>
+    </motion.section>
   )
 }
 
@@ -846,8 +1052,8 @@ function App() {
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     } else {
       const sections = document.querySelectorAll('.scroll-section')
-      if (sections[index - 1]) {
-        sections[index - 1].scrollIntoView({ behavior: 'smooth' })
+      if (sections[index]) {
+        sections[index].scrollIntoView({ behavior: 'smooth' })
       }
     }
   }, [])
@@ -855,8 +1061,8 @@ function App() {
   // Scroll down to first tool section
   const scrollDown = () => {
     const scrollSections = document.querySelectorAll('.scroll-section')
-    if (scrollSections.length > 0) {
-      scrollSections[0].scrollIntoView({ behavior: 'smooth' })
+    if (scrollSections.length > 1) {
+      scrollSections[1].scrollIntoView({ behavior: 'smooth' })
       setActiveSection(1)
     }
   }
