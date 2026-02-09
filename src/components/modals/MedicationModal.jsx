@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Plus, Bell, Clock, AlertTriangle, Check, Search, Camera, Pill } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
 import { checkDrugInteractions } from '../../services/deepseek.js'
+import { checkDrugInteractions as fallbackCheckInteractions } from '../../services/fallbackAI.js'
 
 const MedicationModal = ({ onClose }) => {
   const { addNotification, user } = useAppStore()
@@ -64,18 +65,43 @@ const MedicationModal = ({ onClose }) => {
     
     try {
       const currentMeds = medications.map(m => m.name)
-      const result = await checkDrugInteractions(currentMeds, newMedName, (content) => {
-        setInteractionResult(prev => ({ ...prev, streaming: content }))
-      })
       
-      if (result.success) {
-        setInteractionResult({ content: result.content, checked: true })
+      // Try DeepSeek first, fallback to local
+      const result = await checkDrugInteractions(currentMeds, newMedName)
+      
+      if (result.success && !result.isFallback) {
+        setInteractionResult({ 
+          content: result.content, 
+          checked: true,
+          isFallback: false
+        })
+      } else {
+        throw new Error('Fallback needed')
       }
     } catch (error) {
-      setInteractionResult({ 
-        content: 'Unable to check interactions. Please consult your pharmacist.',
-        error: true 
-      })
+      // Use fallback AI
+      const currentMeds = medications.map(m => m.name)
+      const fallbackResult = await fallbackCheckInteractions(currentMeds, newMedName)
+      
+      if (fallbackResult.interactions.length > 0 || fallbackResult.hasCritical) {
+        const content = `DRUG INTERACTION CHECK (Offline Mode)\n=====================================\n\nMedication: ${newMedName}\n\nInteractions Found: ${fallbackResult.interactions.length}\n\n${fallbackResult.interactions.map(i => 
+  `⚠️ ${i.severity.toUpperCase()} INTERACTION\n  ${i.drug} + ${i.with}\n  ${i.message}\n`
+).join('\n')}\n\n${fallbackResult.hasCritical ? '🚨 CRITICAL INTERACTION DETECTED\nPlease consult your doctor before taking this medication.' : 'No critical interactions found.'}\n\n⚠️ Disclaimer: This is automated checking. Always consult your pharmacist or doctor.`
+        
+        setInteractionResult({
+          content,
+          checked: true,
+          isFallback: true,
+          hasCritical: fallbackResult.hasCritical
+        })
+      } else {
+        setInteractionResult({
+          content: `✅ No known interactions found between your current medications and ${newMedName}.\n\n⚠️ Disclaimer: This is automated checking. Always consult your pharmacist or doctor before starting new medications.`,
+          checked: true,
+          isFallback: true,
+          hasCritical: false
+        })
+      }
     } finally {
       setIsChecking(false)
     }

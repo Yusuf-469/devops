@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, FileText, Loader, AlertCircle } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { analyzeSymptoms, getChatResponse } from '../../services/deepseek.js'
+import { analyzeSymptoms as deepseekAnalyze } from '../../services/deepseek.js'
+import { analyzeSymptoms as fallbackAnalyze, quickSymptomCheck } from '../../services/fallbackAI.js'
 
 const ChatModal = ({ onClose }) => {
   const { conversationHistory, addMessage, addNotification, checkEmergency, setEmergencyDetected } = useAppStore()
@@ -57,8 +58,32 @@ const ChatModal = ({ onClose }) => {
     setIsTyping(true)
     setStreamingContent('')
     
+    // Try DeepSeek first, fallback to local AI
     try {
-      const response = await analyzeSymptoms(
+      const response = await deepseekAnalyze(
+        input.trim(),
+        conversationHistory,
+        (content) => {
+          setStreamingContent(content)
+        }
+      )
+      
+      if (response.success && !response.fallback) {
+        const aiMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: response.content,
+          timestamp: Date.now()
+        }
+        setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
+        addMessage(aiMessage)
+        addNotification({ type: 'info', message: 'Diagnosis complete' })
+      } else {
+        throw new Error('Fallback to local AI')
+      }
+    } catch (error) {
+      // Use fallback AI
+      const response = await fallbackAnalyze(
         input.trim(),
         conversationHistory,
         (content) => {
@@ -71,22 +96,13 @@ const ChatModal = ({ onClose }) => {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content: response.content,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          isFallback: true
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'info', message: 'Diagnosis complete' })
-      } else {
-        throw new Error('API Error')
+        addNotification({ type: 'info', message: 'Offline diagnosis complete' })
       }
-    } catch (error) {
-      const errorMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "I apologize, I'm experiencing technical difficulties. Please try again or call +91 7903810922 for immediate assistance. For emergencies, please call 102 (Ambulance).",
-        timestamp: Date.now()
-      }
-      setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsTyping(false)
       setStreamingContent('')
@@ -150,7 +166,12 @@ const ChatModal = ({ onClose }) => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Dr. AI Consultation</h2>
-              <p className="text-sm text-gray-400">AI-Powered Symptom Analysis</p>
+              <p className="text-sm text-gray-400 flex items-center gap-2">
+                AI-Powered Symptom Analysis
+                <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                  Offline Mode
+                </span>
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -248,7 +269,12 @@ const ChatModal = ({ onClose }) => {
             </div>
           ) : (
             <div className="mb-3">
-              <p className="text-xs text-gray-500 mb-2">Or describe your symptoms:</p>
+              <p className="text-xs text-gray-500 mb-2 flex items-center gap-2">
+                Or describe your symptoms:
+                <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">
+                  AI Active
+                </span>
+              </p>
             </div>
           )}
           

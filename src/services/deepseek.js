@@ -58,18 +58,19 @@ export const chatWithAI = async (messages, systemPrompt, onStream) => {
           }
         }
       }
-      return { success: true, content: result }
+      return { success: true, content: result, isFallback: false }
     }
 
     // Non-streaming fallback
     const data = await response.json()
     return {
       success: true,
-      content: data.choices?.[0]?.message?.content || ''
+      content: data.choices?.[0]?.message?.content || '',
+      isFallback: false
     }
   } catch (error) {
     console.error('AI API Error:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: error.message, isFallback: true }
   }
 }
 
