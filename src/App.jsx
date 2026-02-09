@@ -393,20 +393,24 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
         <Model />
       </group>
       
-      {/* Hover Label - Appears above model */}
-      <Html position={[0, positionY + 1.5, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
+      {/* Hover Label - Comic chat bubble */}
+      <Html position={[0, positionY + 1.2, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
         <motion.div
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : -15 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.8 }}
           transition={{ duration: 0.15 }}
-          className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-xl text-xl font-bold whitespace-nowrap shadow-[0_0_30px_rgba(220,38,38,0.8)]"
+          className="bg-white text-gray-900 px-5 py-3 rounded-2xl rounded-bl-none shadow-[0_0_20px_rgba(220,38,38,0.4)]"
           style={{ 
-            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-            border: '2px solid rgba(255,255,255,0.3)',
-            boxShadow: '0 0 25px rgba(220,38,38,0.6)'
+            border: '2px solid rgba(220,38,38,0.3)',
           }}
         >
-          {label}
+          <p className="text-lg font-bold whitespace-nowrap">
+            {label === 'Dr. AI' && '👋 Hi! I\'m Dr. AI'}
+            {label === 'Analyzer' && '📊 Your Report Analyzer'}
+            {label === 'Tracker' && '💉 Treatment Tracker'}
+            {label === 'Medications' && '💊 Medication Manager'}
+            {label === 'Dashboard' && '📈 Your Health Dashboard'}
+          </p>
         </motion.div>
       </Html>
     </>
