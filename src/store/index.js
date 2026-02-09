@@ -14,26 +14,23 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// DeepSeek API Configuration - Uses environment variables with fallback
-export const DEEPSEEK_CONFIG = {
+// Primary AI Configuration (OpenRouter - GPT-OSS)
+export const PRIMARY_AI_CONFIG = {
+  baseUrl: import.meta.env.VITE_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1',
+  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
+  model: 'openai/gpt-oss-120b:free'
+}
+
+// Fallback AI Configuration (DeepSeek)
+export const FALLBACK_AI_CONFIG = {
   baseUrl: import.meta.env.VITE_DEEPSEEK_API_URL || 'https://api.deepseek.com/v1',
   apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || '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',
-  model: import.meta.env.VITE_DEEPSEEK_MODEL || 'deepseek-r1t2-chimera:free'
+  model: 'tngtech/deepseek-r1t2-chimera:free'
 }
 
-// Alternative AI Model Configuration (OpenRouter)
-export const ALT_AI_CONFIG = {
-  baseUrl: import.meta.env.VITE_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1',
-  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
-  model: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free'
-}
-
-// Active AI provider (can switch between 'deepseek' or 'alt')
-export const ACTIVE_AI = 'alt'
-
-// Get current AI config
-export const getActiveAIConfig = () => {
-  return ACTIVE_AI === 'alt' ? ALT_AI_CONFIG : DEEPSEEK_CONFIG
+// Get current AI config (primary or fallback)
+export const getActiveAIConfig = (isPrimaryFailed = false) => {
+  return isPrimaryFailed ? FALLBACK_AI_CONFIG : PRIMARY_AI_CONFIG
 }
 
 // Emergency numbers from env or defaults

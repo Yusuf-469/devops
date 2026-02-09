@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, FileText, Loader, AlertCircle } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { analyzeSymptoms as deepseekAnalyze } from '../../services/deepseek.js'
+import { analyzeSymptoms as primaryAnalyze } from '../../services/deepseek.js'
 import { analyzeSymptoms as fallbackAnalyze, quickSymptomCheck } from '../../services/fallbackAI.js'
 
 const ChatModal = ({ onClose }) => {
@@ -18,7 +18,7 @@ const ChatModal = ({ onClose }) => {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
-  const [aiMode, setAiMode] = useState('checking') // 'checking', 'online', 'offline'
+  const [aiOnline, setAiOnline] = useState(true) // true = online, false = offline
   const messagesEndRef = useRef(null)
   
   const scrollToBottom = () => {
@@ -58,11 +58,10 @@ const ChatModal = ({ onClose }) => {
     setInput('')
     setIsTyping(true)
     setStreamingContent('')
-    setAiMode('checking')
     
-    // Try DeepSeek first, fallback to local AI
+    // Try Primary AI first (GPT-OSS), fallback to DeepSeek
     try {
-      const response = await deepseekAnalyze(
+      const response = await primaryAnalyze(
         input.trim(),
         conversationHistory,
         (content) => {
@@ -71,7 +70,7 @@ const ChatModal = ({ onClose }) => {
       )
       
       if (response.success && !response.fallback) {
-        setAiMode('online')
+        setAiOnline(true)
         const aiMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
@@ -82,11 +81,11 @@ const ChatModal = ({ onClose }) => {
         addMessage(aiMessage)
         addNotification({ type: 'info', message: 'Diagnosis complete' })
       } else {
-        throw new Error('Fallback to local AI')
+        throw new Error('Primary AI failed')
       }
     } catch (error) {
-      setAiMode('offline')
-      // Use fallback AI
+      // Try Fallback AI (DeepSeek)
+      setAiOnline(false)
       const response = await fallbackAnalyze(
         input.trim(),
         conversationHistory,
@@ -105,7 +104,7 @@ const ChatModal = ({ onClose }) => {
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'info', message: 'Offline diagnosis complete' })
+        addNotification({ type: 'info', message: 'Fallback AI diagnosis complete' })
       }
     } finally {
       setIsTyping(false)
@@ -172,20 +171,14 @@ const ChatModal = ({ onClose }) => {
               <h2 className="text-xl font-bold text-white">Dr. AI Consultation</h2>
               <p className="text-sm text-gray-400 flex items-center gap-2">
                 AI-Powered Symptom Analysis
-                {aiMode === 'online' && (
+                {aiOnline ? (
                   <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                    Dolphin-Mistral Online
+                    Online Mode
                   </span>
-                )}
-                {aiMode === 'offline' && (
-                  <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                ) : (
+                  <span className="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded-full">
                     Offline Mode
-                  </span>
-                )}
-                {aiMode === 'checking' && (
-                  <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">
-                    Checking...
                   </span>
                 )}
               </p>
