@@ -1,43 +1,50 @@
-import { PRIMARY_AI_CONFIG, FALLBACK_AI_CONFIG, getActiveAIConfig } from '../store/index.js'
+/**
+ * HEALIX DeepSeek AI Service
+ * Direct HTTP integration with OpenRouter API
+ * Primary: DeepSeek (tngtech/deepseek-r1t2-chimera:free)
+ * Fallback: Hardcoded responses
+ */
+
+// API Configuration
+const OPENROUTER_API_KEY = "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"
+const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
+// Models - DeepSeek is primary (working), GPT-OSS has privacy policy issues
+const PRIMARY_MODEL = 'tngtech/deepseek-r1t2-chimera:free'
+const FALLBACK_MODEL = 'openai/gpt-oss-120b:free'
 
 // Generic AI Chat completion with streaming support
-export const chatWithAI = async (messages, systemPrompt, onStream, isFallback = false) => {
-  const config = getActiveAIConfig(isFallback)
-  
+export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
   try {
-    const isOpenRouter = config.baseUrl.includes('openrouter')
-    
-    const response = await fetch(`${config.baseUrl}/chat/completions`, {
+    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        ...(isOpenRouter && {
-          'HTTP-Referer': 'http://localhost:3000',
-          'X-Title': 'HEALIX Medical Dashboard'
-        })
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'HEALIX Medical Dashboard'
       },
       body: JSON.stringify({
-        model: config.model,
+        model: model,
         messages: [
-          { role: 'system', content: systemPrompt },
+          { role: "system", content: systemPrompt },
           ...messages
         ],
         stream: true,
-        temperature: 0.7,
-        max_tokens: 2000
+        temperature: 0.7
       })
     })
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`)
+      const error = await response.text()
+      throw new Error(`API Error: ${response.status} - ${error}`)
     }
 
     // Handle streaming response
     if (onStream && response.body) {
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
-      let result = ''
+      let result = ""
 
       while (true) {
         const { done, value } = await reader.read()
@@ -64,7 +71,7 @@ export const chatWithAI = async (messages, systemPrompt, onStream, isFallback = 
           }
         }
       }
-      return { success: true, content: result, isFallback: false }
+      return { success: true, content: result, isFallback: false, model: model }
     }
 
     // Non-streaming fallback
@@ -72,76 +79,73 @@ export const chatWithAI = async (messages, systemPrompt, onStream, isFallback = 
     return {
       success: true,
       content: data.choices?.[0]?.message?.content || '',
-      isFallback: false
+      isFallback: false,
+      model: model
     }
   } catch (error) {
-    console.error('AI API Error:', error)
+    console.error('OpenRouter API Error:', error.message)
     return { success: false, error: error.message, isFallback: true }
   }
 }
 
-// Dr. AI Chat function - Enhanced medical assistant
-const CHAT_SYSTEM_PROMPT = `You are Dr. AI, a highly trained medical assistant with comprehensive healthcare knowledge.
+// Dr. AI Chat function - Professional medical assistant
+const CHAT_SYSTEM_PROMPT = `You are Dr. AI, a board-certified physician with 15+ years of clinical experience. 
 
-Your characteristics:
-- Communicate in a professional yet empathetic manner, like a caring physician
-- Use clinical terminology while explaining in accessible language
-- Always prioritize patient safety and well-being
-- Ask relevant follow-up questions to understand symptoms better
-- Provide differential diagnoses with probability assessments
-- Suggest appropriate next steps (self-care, GP visit, specialist, or emergency)
-- Include relevant health education when appropriate
-- Never dismiss patient concerns or make definitive diagnoses
+RESPONSE STYLE:
+- Keep responses concise and actionable (under 150 words)
+- Use professional medical terminology while remaining accessible
+- Be direct and confident in your assessments
 
-Response Format:
-1. **Initial Assessment**: Acknowledge symptoms with empathy
-2. **Possible Causes**: List 2-4 potential conditions (with confidence levels: High/Medium/Low)
-3. **Red Flags**: Alert if symptoms suggest emergency conditions
-4. **Recommended Actions**: Clear next steps
-5. **Self-Care Tips**: Practical advice if appropriate
+STRUCTURE:
+1. Brief acknowledgment
+2. Likely diagnosis with confidence level
+3. Key red flags to watch for
+4. Clear next steps (1-3 items max)
 
-IMPORTANT: Always include this disclaimer at the end:
-⚠️ "This is not a medical diagnosis. Please consult a qualified healthcare professional for proper evaluation and treatment."`
+Always include the disclaimer at the end: "This is not a medical diagnosis. Please consult a qualified healthcare professional."`
 
 export const getChatResponse = async (userMessage, conversationHistory = [], onStream) => {
-  const messages = [
-    ...conversationHistory,
-    { role: 'user', content: userMessage }
-  ]
+  const messages = conversationHistory.map(msg => ({
+    role: msg.role,
+    content: msg.content
+  }))
 
-  return chatWithAI(messages, CHAT_SYSTEM_PROMPT, onStream)
+  return chatWithAI(
+    messages,
+    CHAT_SYSTEM_PROMPT,
+    onStream,
+    PRIMARY_MODEL
+  )
 }
 
-// DeepSeek-specific symptom analysis - Enhanced medical AI
-const MEDICAL_SYSTEM_PROMPT = `You are Dr. AI, a highly trained medical assistant with comprehensive healthcare knowledge.
+// DeepSeek-specific symptom analysis - Professional medical AI
+const MEDICAL_SYSTEM_PROMPT = `You are Dr. AI, a board-certified physician with 15+ years of clinical experience.
 
-Your characteristics:
-- Communicate in a professional yet empathetic manner, like a caring physician
-- Use clinical terminology while explaining in accessible language
-- Always prioritize patient safety and well-being
-- Ask relevant follow-up questions to understand symptoms better
-- Provide differential diagnoses with probability assessments
-- Suggest appropriate next steps (self-care, GP visit, specialist, or emergency)
-- Include relevant health education when appropriate
-- Never dismiss patient concerns or make definitive diagnoses
+RESPONSE STYLE:
+- Keep responses concise and actionable (under 150 words)
+- Use professional medical terminology while remaining accessible
+- Be direct and confident in your assessments
 
-Response Format:
-1. **Initial Assessment**: Acknowledge symptoms with empathy
-2. **Possible Causes**: List 2-4 potential conditions (with confidence levels: High/Medium/Low)
-3. **Red Flags**: Alert if symptoms suggest emergency conditions
-4. **Recommended Actions**: Clear next steps
-5. **Self-Care Tips**: Practical advice if appropriate
+STRUCTURE:
+1. Brief acknowledgment
+2. Likely diagnosis with confidence level
+3. Key red flags to watch for
+4. Clear next steps (1-3 items max)
 
-IMPORTANT: Always include this disclaimer at the end:
-⚠️ "This is not a medical diagnosis. Please consult a qualified healthcare professional for proper evaluation and treatment."`
+Always include the disclaimer at the end: "This is not a medical diagnosis. Please consult a qualified healthcare professional."`
 
 export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStream) => {
-  const messages = [
-    ...conversationHistory,
-    { role: 'user', content: `I'm experiencing the following symptoms: ${symptoms}. Can you please help me understand what might be causing this and what I should do?` }
-  ]
+  const messages = conversationHistory.map(msg => ({
+    role: msg.role,
+    content: msg.content
+  }))
 
-  return chatWithAI(messages, MEDICAL_SYSTEM_PROMPT, onStream)
+  return chatWithAI(
+    messages,
+    MEDICAL_SYSTEM_PROMPT,
+    onStream,
+    PRIMARY_MODEL
+  )
 }
 
 // Report analysis
@@ -154,11 +158,12 @@ export const analyzeReport = async (reportText, onStream) => {
     3) Recommendations
     Be clear and easy to understand for a non-medical person.`
 
-  const messages = [
-    { role: 'user', content: `Analyze this medical report: ${reportText}` }
-  ]
-
-  return chatWithAI(messages, systemPrompt, onStream)
+  return chatWithAI(
+    [{ role: "user", content: `Analyze this medical report: ${reportText}` }],
+    systemPrompt,
+    onStream,
+    PRIMARY_MODEL
+  )
 }
 
 // Drug interaction check
@@ -167,11 +172,12 @@ export const checkDrugInteractions = async (currentMeds, newMed, onStream) => {
     Check for drug interactions. List: severity (critical/moderate/minor), mechanism, recommendation.
     Be thorough and cautious - when in doubt, warn about potential interactions.`
 
-  const messages = [
-    { role: 'user', content: `Check interactions between: ${currentMeds.join(', ')} and new medication: ${newMed}` }
-  ]
-
-  return chatWithAI(messages, systemPrompt, onStream)
+  return chatWithAI(
+    [{ role: "user", content: `Check interactions between: ${currentMeds.join(', ')} and new medication: ${newMed}` }],
+    systemPrompt,
+    onStream,
+    PRIMARY_MODEL
+  )
 }
 
 // Health insights
@@ -180,11 +186,12 @@ export const getHealthInsights = async (userData, onStream) => {
     Based on user health data, predict potential risks and suggest preventive measures. 
     Be encouraging, not alarmist. Focus on actionable advice.`
 
-  const messages = [
-    { role: 'user', content: `Based on: Age: ${userData.age}, History: ${userData.conditions}, Recent: ${userData.recentReports}, Medications: ${userData.medications}` }
-  ]
-
-  return chatWithAI(messages, systemPrompt, onStream)
+  return chatWithAI(
+    [{ role: "user", content: `Based on: Age: ${userData.age}, History: ${userData.conditions}, Recent: ${userData.recentReports}, Medications: ${userData.medications}` }],
+    systemPrompt,
+    onStream,
+    PRIMARY_MODEL
+  )
 }
 
 // Emergency detection
