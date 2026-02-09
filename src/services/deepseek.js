@@ -1,8 +1,8 @@
-import { DEEPSEEK_CONFIG, ALT_AI_CONFIG, getActiveAIConfig } from '../store/index.js'
+import { PRIMARY_AI_CONFIG, FALLBACK_AI_CONFIG, getActiveAIConfig } from '../store/index.js'
 
 // Generic AI Chat completion with streaming support
-export const chatWithAI = async (messages, systemPrompt, onStream) => {
-  const config = getActiveAIConfig()
+export const chatWithAI = async (messages, systemPrompt, onStream, isFallback = false) => {
+  const config = getActiveAIConfig(isFallback)
   
   try {
     const isOpenRouter = config.baseUrl.includes('openrouter')
