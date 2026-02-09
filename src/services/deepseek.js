@@ -5,8 +5,8 @@
  * Fallback: Hardcoded responses (only if AI fails)
  */
 
-// API Configuration
-const OPENROUTER_API_KEY = "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"
+// API Configuration - Use environment variable or fallback to placeholder
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || ""
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 // Primary Model: Upstage Solar Pro
@@ -14,6 +14,12 @@ const PRIMARY_MODEL = 'upstage/solar-pro-3:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
+  // Check if API key is configured
+  if (!OPENROUTER_API_KEY) {
+    console.warn('OpenRouter API key not configured. Using fallback responses.')
+    return { success: false, error: 'API key not configured', isFallback: true }
+  }
+
   try {
     const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
       method: 'POST',

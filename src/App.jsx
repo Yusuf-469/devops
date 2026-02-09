@@ -1322,7 +1322,7 @@ function App() {
       
       {/* Footer */}
       <footer className="fixed bottom-0 left-20 right-0 p-4 text-center text-gray-500 text-sm glass-morphism-dark border-t border-white/5 z-40 pointer-events-auto">
-        <p>© 2026 HEALIX AI-Driven Healthcare Platform • Emergency: Call 108</p>
+        <p>© 2026 HEALIX Healthcare Platform • Emergency: Call 108</p>
       </footer>
     </div>
   )
