@@ -14,17 +14,17 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// DeepSeek API Configuration
+// DeepSeek API Configuration - Uses environment variables with fallback
 export const DEEPSEEK_CONFIG = {
-  baseUrl: 'https://api.deepseek.com/v1',
-  apiKey: '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',
-  model: 'deepseek-r1t2-chimera:free'
+  baseUrl: import.meta.env.VITE_DEEPSEEK_API_URL || 'https://api.deepseek.com/v1',
+  apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || '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',
+  model: import.meta.env.VITE_DEEPSEEK_MODEL || 'deepseek-r1t2-chimera:free'
 }
 
-// Alternative AI Model Configuration (Venice/Mistral)
+// Alternative AI Model Configuration (OpenRouter)
 export const ALT_AI_CONFIG = {
-  baseUrl: 'https://openrouter.ai/api/v1',
-  apiKey: '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',
+  baseUrl: import.meta.env.VITE_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1',
+  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
   model: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free'
 }
 
@@ -35,6 +35,10 @@ export const ACTIVE_AI = 'deepseek'
 export const getActiveAIConfig = () => {
   return ACTIVE_AI === 'alt' ? ALT_AI_CONFIG : DEEPSEEK_CONFIG
 }
+
+// Emergency numbers from env or defaults
+export const EMERGENCY_NUMBER = import.meta.env.VITE_EMERGENCY_NUMBER || '102'
+export const HELP_NUMBER = import.meta.env.VITE_HELP_NUMBER || '7903810922'
 
 // Emergency keywords for detection
 export const EMERGENCY_KEYWORDS = [

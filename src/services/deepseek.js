@@ -1,7 +1,7 @@
 import { DEEPSEEK_CONFIG, ALT_AI_CONFIG, getActiveAIConfig } from '../store/index.js'
 
-// Generic AI Chat completion (works with both DeepSeek and alternative)
-export const chatWithAI = async (messages, systemPrompt) => {
+// Generic AI Chat completion with streaming support
+export const chatWithAI = async (messages, systemPrompt, onStream) => {
   const config = getActiveAIConfig()
   
   try {
@@ -27,49 +27,54 @@ export const chatWithAI = async (messages, systemPrompt) => {
       throw new Error(`API Error: ${response.status}`)
     }
 
-    return response
-  } catch (error) {
-    console.error('AI API Error:', error)
-    throw error
-  }
-}
+    // Handle streaming response
+    if (onStream && response.body) {
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let result = ''
 
-// Parse streaming response
-export const parseStreamedResponse = async (response) => {
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let result = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
 
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
 
-    const chunk = decoder.decode(value)
-    const lines = chunk.split('\n')
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6)
+            if (data === '[DONE]') continue
 
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const data = line.slice(6)
-        if (data === '[DONE]') continue
-
-        try {
-          const parsed = JSON.parse(data)
-          const content = parsed.choices?.[0]?.delta?.content
-          if (content) {
-            result += content
+            try {
+              const parsed = JSON.parse(data)
+              const content = parsed.choices?.[0]?.delta?.content || parsed.choices?.[0]?.message?.content
+              if (content) {
+                result += content
+                onStream(result)
+              }
+            } catch (e) {
+              // Ignore parse errors for incomplete chunks
+            }
           }
-        } catch (e) {
-          // Ignore parse errors for incomplete chunks
         }
       }
+      return { success: true, content: result }
     }
-  }
 
-  return result
+    // Non-streaming fallback
+    const data = await response.json()
+    return {
+      success: true,
+      content: data.choices?.[0]?.message?.content || ''
+    }
+  } catch (error) {
+    console.error('AI API Error:', error)
+    return { success: false, error: error.message }
+  }
 }
 
-// Main chat function for Dr. AI
-export const getChatResponse = async (userMessage, conversationHistory = []) => {
+// Dr. AI Chat function
+export const getChatResponse = async (userMessage, conversationHistory = [], onStream) => {
   const systemPrompt = `You are Dr. AI, a helpful medical assistant. 
     Provide symptom analysis, ask clarifying questions, suggest possible conditions with confidence levels, 
     and recommend when to see a human doctor. 
@@ -81,11 +86,11 @@ export const getChatResponse = async (userMessage, conversationHistory = []) => 
     { role: 'user', content: userMessage }
   ]
 
-  return chatWithAI(messages, systemPrompt)
+  return chatWithAI(messages, systemPrompt, onStream)
 }
 
 // DeepSeek-specific symptom analysis
-export const analyzeSymptoms = async (symptoms, conversationHistory = []) => {
+export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStream) => {
   const systemPrompt = `You are Dr. AI, a helpful medical assistant. 
     Provide symptom analysis, ask clarifying questions, suggest possible conditions with confidence levels, 
     and recommend when to see a human doctor. 
@@ -96,11 +101,11 @@ export const analyzeSymptoms = async (symptoms, conversationHistory = []) => {
     { role: 'user', content: `I'm experiencing: ${symptoms}. Can you help me understand what this might be?` }
   ]
 
-  return chatWithAI(messages, systemPrompt)
+  return chatWithAI(messages, systemPrompt, onStream)
 }
 
 // Report analysis
-export const analyzeReport = async (reportText) => {
+export const analyzeReport = async (reportText, onStream) => {
   const systemPrompt = `You are a medical report analyzer. 
     Extract key values, identify abnormalities, compare to normal ranges, and explain in plain language.
     Format your response as:
@@ -113,11 +118,11 @@ export const analyzeReport = async (reportText) => {
     { role: 'user', content: `Analyze this medical report: ${reportText}` }
   ]
 
-  return chatWithAI(messages, systemPrompt)
+  return chatWithAI(messages, systemPrompt, onStream)
 }
 
 // Drug interaction check
-export const checkDrugInteractions = async (currentMeds, newMed) => {
+export const checkDrugInteractions = async (currentMeds, newMed, onStream) => {
   const systemPrompt = `You are a medication safety expert. 
     Check for drug interactions. List: severity (critical/moderate/minor), mechanism, recommendation.
     Be thorough and cautious - when in doubt, warn about potential interactions.`
@@ -126,11 +131,11 @@ export const checkDrugInteractions = async (currentMeds, newMed) => {
     { role: 'user', content: `Check interactions between: ${currentMeds.join(', ')} and new medication: ${newMed}` }
   ]
 
-  return chatWithAI(messages, systemPrompt)
+  return chatWithAI(messages, systemPrompt, onStream)
 }
 
 // Health insights
-export const getHealthInsights = async (userData) => {
+export const getHealthInsights = async (userData, onStream) => {
   const systemPrompt = `You are a health predictor AI. 
     Based on user health data, predict potential risks and suggest preventive measures. 
     Be encouraging, not alarmist. Focus on actionable advice.`
@@ -139,7 +144,7 @@ export const getHealthInsights = async (userData) => {
     { role: 'user', content: `Based on: Age: ${userData.age}, History: ${userData.conditions}, Recent: ${userData.recentReports}, Medications: ${userData.medications}` }
   ]
 
-  return chatWithAI(messages, systemPrompt)
+  return chatWithAI(messages, systemPrompt, onStream)
 }
 
 // Emergency detection
@@ -182,7 +187,6 @@ export const analyzeResponseTone = (response) => {
 
 export default {
   chatWithAI,
-  parseStreamedResponse,
   getChatResponse,
   analyzeSymptoms,
   analyzeReport,
