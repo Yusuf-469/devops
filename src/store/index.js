@@ -29,7 +29,7 @@ export const ALT_AI_CONFIG = {
 }
 
 // Active AI provider (can switch between 'deepseek' or 'alt')
-export const ACTIVE_AI = 'deepseek'
+export const ACTIVE_AI = 'alt'
 
 // Get current AI config
 export const getActiveAIConfig = () => {
