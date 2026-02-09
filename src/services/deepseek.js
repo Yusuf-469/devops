@@ -1,17 +1,16 @@
 /**
- * HEALIX DeepSeek AI Service
+ * HEALIX Upstage Solar Pro AI Service
  * Direct HTTP integration with OpenRouter API
- * Primary: DeepSeek (tngtech/deepseek-r1t2-chimera:free)
- * Fallback: Hardcoded responses
+ * Primary: Upstage Solar Pro (upstage/solar-pro-3:free)
+ * Fallback: Hardcoded responses (only if AI fails)
  */
 
 // API Configuration
-const OPENROUTER_API_KEY = "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"
+const OPENROUTER_API_KEY = "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"
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
-// Models - DeepSeek is primary (working), GPT-OSS has privacy policy issues
-const PRIMARY_MODEL = 'tngtech/deepseek-r1t2-chimera:free'
-const FALLBACK_MODEL = 'openai/gpt-oss-120b:free'
+// Primary Model: Upstage Solar Pro
+const PRIMARY_MODEL = 'upstage/solar-pro-3:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
@@ -118,7 +117,7 @@ export const getChatResponse = async (userMessage, conversationHistory = [], onS
   )
 }
 
-// DeepSeek-specific symptom analysis - Professional medical AI
+// Symptom analysis - Professional medical AI
 const MEDICAL_SYSTEM_PROMPT = `You are Dr. AI, a board-certified physician with 15+ years of clinical experience.
 
 RESPONSE STYLE:

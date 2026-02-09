@@ -1,10 +1,9 @@
 /**
  * AI Model Test Script
- * Run this to test your OpenRouter AI integration
- * Usage: node src/test-ai.js
+ * Test Upstage Solar Pro with new API key
  */
 
-const OPENROUTER_API_KEY = "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"
+const OPENROUTER_API_KEY = "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"
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 const MEDICAL_SYSTEM_PROMPT = `You are Dr. AI, a board-certified physician with 15+ years of clinical experience. 
@@ -22,7 +21,7 @@ STRUCTURE:
 
 Always include the disclaimer at the end: "This is not a medical diagnosis."`
 
-async function chatWithAI(messages, model = 'openai/gpt-oss-120b:free') {
+async function chatWithAI(messages, model = 'upstage/solar-pro-3:free') {
   const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -78,50 +77,20 @@ async function chatWithAI(messages, model = 'openai/gpt-oss-120b:free') {
 }
 
 async function testAI() {
-  console.log("🧪 Testing HEALIX AI Model...\n")
+  console.log("🧪 Testing Upstage Solar Pro AI...\n")
   
-  // Test 1: GPT-OSS Model
-  console.log("📡 Testing: openai/gpt-oss-120b:free")
-  console.log("─".repeat(50))
-  
-  try {
-    console.log("\nResponse (GPT-OSS):\n")
-    await chatWithAI([
-      { role: "system", content: MEDICAL_SYSTEM_PROMPT },
-      { role: "user", content: "I have a headache and fever since yesterday. What could this be?" }
-    ], 'openai/gpt-oss-120b:free')
-    console.log("\n\n✅ GPT-OSS Model: SUCCESS\n\n")
-  } catch (error) {
-    console.error("❌ GPT-OSS Model: FAILED", error.message, "\n\n")
-  }
-
-  // Test 2: DeepSeek Model
-  console.log("📡 Testing: tngtech/deepseek-r1t2-chimera:free")
-  console.log("─".repeat(50))
-  
-  try {
-    console.log("\nResponse (DeepSeek):\n")
-    await chatWithAI([
-      { role: "system", content: MEDICAL_SYSTEM_PROMPT },
-      { role: "user", content: "I have been coughing for 3 days with chest congestion. What should I do?" }
-    ], 'tngtech/deepseek-r1t2-chimera:free')
-    console.log("\n\n✅ DeepSeek Model: SUCCESS\n\n")
-  } catch (error) {
-    console.error("❌ DeepSeek Model: FAILED", error.message, "\n\n")
-  }
-
-  // Test 3: Simple question
-  console.log("📡 Testing: Quick response test")
+  console.log("📡 Testing: upstage/solar-pro-3:free")
   console.log("─".repeat(50))
   
   try {
     console.log("\nResponse:\n")
     await chatWithAI([
-      { role: "user", content: "How many r's are in the word 'strawberry'?" }
-    ], 'openai/gpt-oss-120b:free')
-    console.log("\n\n✅ Quick Test: SUCCESS\n")
+      { role: "system", content: MEDICAL_SYSTEM_PROMPT },
+      { role: "user", content: "I have a headache and fever since yesterday. What could this be?" }
+    ], 'upstage/solar-pro-3:free')
+    console.log("\n\n✅ Upstage Solar Pro: SUCCESS\n")
   } catch (error) {
-    console.error("❌ Quick Test: FAILED", error.message, "\n")
+    console.error("❌ Upstage Solar Pro: FAILED", error.message, "\n")
   }
 }
 
