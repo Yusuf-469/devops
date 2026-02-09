@@ -109,36 +109,36 @@ const BigDNAHelix = () => {
   
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.elapsedTime * 0.15
+      groupRef.current.rotation.y = state.clock.elapsedTime * 0.1
     }
   })
   
   const strands = []
-  const numPairs = 80
+  const numPairs = 40
   
   for (let i = 0; i < numPairs; i++) {
-    const y = (i - numPairs / 2) * 0.8
+    const y = (i - numPairs / 2) * 1.0
     const angle = i * 0.35
     
-    const x1 = Math.cos(angle) * 1.5
-    const z1 = Math.sin(angle) * 1.5
-    const x2 = -Math.cos(angle) * 1.5
-    const z2 = -Math.sin(angle) * 1.5
+    const x1 = Math.cos(angle) * 1.2
+    const z1 = Math.sin(angle) * 1.2
+    const x2 = -Math.cos(angle) * 1.2
+    const z2 = -Math.sin(angle) * 1.2
     
     strands.push(
       <group key={i}>
         <mesh position={[x1, y, z1]}>
-          <sphereGeometry args={[0.18, 16, 16]} />
-          <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={0.8} />
+          <sphereGeometry args={[0.12, 12, 12]} />
+          <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={0.5} />
         </mesh>
         <mesh position={[x2, y, z2]}>
-          <sphereGeometry args={[0.18, 16, 16]} />
-          <meshStandardMaterial color="#a855f7" emissive="#a855f7" emissiveIntensity={0.8} />
+          <sphereGeometry args={[0.12, 12, 12]} />
+          <meshStandardMaterial color="#a855f7" emissive="#a855f7" emissiveIntensity={0.5} />
         </mesh>
         {i < numPairs - 1 && (
-          <mesh position={[0, y + 0.4, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.04, 0.04, 3, 8]} />
-            <meshStandardMaterial color="#00ffff" transparent opacity={0.25} />
+          <mesh position={[0, y + 0.5, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.03, 0.03, 2.4, 6]} />
+            <meshStandardMaterial color="#00ffff" transparent opacity={0.2} />
           </mesh>
         )}
       </group>
@@ -146,7 +146,7 @@ const BigDNAHelix = () => {
   }
   
   return (
-    <Float speed={0.3} rotationIntensity={0} floatIntensity={0.2}>
+    <Float speed={0.2} rotationIntensity={0} floatIntensity={0.1}>
       <group ref={groupRef} position={[-25, 0, -20]}>
         {strands}
       </group>
@@ -157,25 +157,23 @@ const BigDNAHelix = () => {
 // Big Floating Pills
 const BigFloatingPills = () => {
   const pills = [
-    { position: [-8, 15, -15], color: '#ef4444', scale: 2.5, rotation: [0.5, 0.3, 0] },
-    { position: [8, 8, -12], color: '#22c55e', scale: 2, rotation: [0.2, 0.5, 0.3] },
-    { position: [-6, -5, -18], color: '#f97316', scale: 2.2, rotation: [0.4, 0.2, 0.5] },
-    { position: [7, -12, -15], color: '#06b6d4', scale: 1.8, rotation: [0.3, 0.4, 0.2] },
-    { position: [-9, -20, -10], color: '#8b5cf6', scale: 2.8, rotation: [0.1, 0.3, 0.4] },
-    { position: [6, -28, -18], color: '#ec4899', scale: 2.2, rotation: [0.5, 0.1, 0.3] },
+    { position: [-8, 15, -15], color: '#ef4444', scale: 1.5, rotation: [0.5, 0.3, 0] },
+    { position: [8, 8, -12], color: '#22c55e', scale: 1.2, rotation: [0.2, 0.5, 0.3] },
+    { position: [-6, -5, -18], color: '#f97316', scale: 1.3, rotation: [0.4, 0.2, 0.5] },
+    { position: [7, -12, -15], color: '#06b6d4', scale: 1.0, rotation: [0.3, 0.4, 0.2] },
   ]
   
   return (
     <>
       {pills.map((pill, index) => (
-        <Float key={index} speed={0.8 + index * 0.15} rotationIntensity={0.4} floatIntensity={0.8}>
+        <Float key={index} speed={0.5 + index * 0.1} rotationIntensity={0.3} floatIntensity={0.5}>
           <mesh 
             position={pill.position} 
             scale={pill.scale}
             rotation={pill.rotation}
           >
-            <capsuleGeometry args={[0.25, 1, 4, 16]} />
-            <meshStandardMaterial color={pill.color} emissive={pill.color} emissiveIntensity={0.5} />
+            <capsuleGeometry args={[0.2, 0.8, 4, 12]} />
+            <meshStandardMaterial color={pill.color} emissive={pill.color} emissiveIntensity={0.4} />
           </mesh>
         </Float>
       ))}
@@ -190,48 +188,44 @@ const PulseSignals = () => {
   useFrame((state) => {
     if (groupRef.current) {
       // Continuous pulse animation
-      const pulse = Math.sin(state.clock.elapsedTime * 2) * 0.1 + 1
+      const pulse = Math.sin(state.clock.elapsedTime * 1.5) * 0.05 + 1
       groupRef.current.scale.set(pulse, pulse, pulse)
     }
   })
   
   const pulses = [
-    { position: [12, 5, -15], color: '#ef4444', size: 0.15 },
-    { position: [12, -8, -12], color: '#22c55e', size: 0.12 },
-    { position: [12, -22, -18], color: '#f97316', size: 0.18 },
-    { position: [12, -35, -14], color: '#06b6d4', size: 0.14 },
+    { position: [12, 5, -15], color: '#ef4444', size: 0.12 },
+    { position: [12, -15, -12], color: '#22c55e', size: 0.1 },
+    { position: [12, -30, -15], color: '#f97316', size: 0.14 },
   ]
   
   return (
     <>
       {pulses.map((pulse, index) => (
-        <Float key={index} speed={0.5} rotationIntensity={0.2} floatIntensity={0.5}>
+        <Float key={index} speed={0.4} rotationIntensity={0.1} floatIntensity={0.3}>
           <group ref={groupRef} position={pulse.position}>
             {/* Center glowing sphere */}
             <mesh>
-              <sphereGeometry args={[pulse.size * 3, 16, 16]} />
+              <sphereGeometry args={[pulse.size * 2, 12, 12]} />
               <meshStandardMaterial 
                 color={pulse.color} 
                 emissive={pulse.color} 
-                emissiveIntensity={1.5}
+                emissiveIntensity={1}
                 transparent
-                opacity={0.9}
+                opacity={0.8}
               />
             </mesh>
             {/* Outer glow ring */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[pulse.size * 5, pulse.size * 0.5, 8, 32]} />
+              <torusGeometry args={[pulse.size * 3, pulse.size * 0.3, 8, 24]} />
               <meshStandardMaterial 
                 color={pulse.color} 
                 emissive={pulse.color} 
-                emissiveIntensity={0.8}
+                emissiveIntensity={0.5}
                 transparent
-                opacity={0.4}
+                opacity={0.3}
               />
             </mesh>
-            {/* Expanding rings */}
-            <AnimatedRing color={pulse.color} delay={index * 0.3} />
-            <AnimatedRing color={pulse.color} delay={index * 0.3 + 0.5} scale={1.5} />
           </group>
         </Float>
       ))}
@@ -355,11 +349,10 @@ const BiologicalHeart = () => {
 const BackgroundScene = () => {
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[20, 30, 10]} intensity={1} />
-      <directionalLight position={[-20, -30, -10]} intensity={0.4} color="#8b5cf6" />
-      <pointLight position={[0, 0, 5]} intensity={0.6} color="#00ffff" />
-      <Stars radius={400} depth={200} count={5000} factor={4} saturation={0} fade speed={0.2} />
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[20, 30, 10]} intensity={0.8} />
+      <directionalLight position={[-20, -30, -10]} intensity={0.3} color="#8b5cf6" />
+      <Stars radius={200} depth={100} count={2000} factor={4} saturation={0} fade speed={0.15} />
       
       <BigDNAHelix />
       <BigFloatingPills />
@@ -390,11 +383,12 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
     <>
       <group
         ref={groupRef}
-        scale={hovered ? scale * 1.08 : scale}
+        scale={hovered ? scale * 1.03 : scale}
         rotation={[0, rotationY, 0]}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
         onClick={onClick}
+        style={{ transition: 'scale 0.2s ease-out' }}
       >
         <Model />
       </group>
@@ -404,7 +398,7 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : -10 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15 }}
           className="bg-black/80 text-white px-4 py-2 rounded-lg text-lg font-semibold whitespace-nowrap"
           style={{ 
             textShadow: '0 0 10px rgba(168,85,247,0.8)',
@@ -647,54 +641,91 @@ const LandingPage = ({ onScrollDown }) => {
 
 // Sidebar with 3D Canvas for Ambulance
 const Sidebar3D = ({ activeSection, onNavigate }) => {
+  const [hoveredIcon, setHoveredIcon] = useState(null)
+  
   const icons = [
-    { index: 0, icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', color: '#00ffff' },
-    { index: 1, icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: '#ef4444' },
-    { index: 2, icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: '#22c55e' },
-    { index: 3, icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: '#f97316' },
-    { index: 4, icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z', color: '#a855f7' }
+    { index: 0, icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', color: '#00ffff', label: 'Landing' },
+    { index: 1, icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', color: '#ef4444', label: 'Dr. AI' },
+    { index: 2, icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: '#22c55e', label: 'Analyzer' },
+    { index: 3, icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: '#f97316', label: 'Tracker' },
+    { index: 4, icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: '#a855f7', label: 'Medications' }
   ]
   
   return (
     <div className="fixed left-0 top-0 bottom-0 w-20 z-50 flex flex-col items-center py-6 glass-morphism-dark border-r border-white/10">
+      {/* HEALIX Logo at top */}
+      <div className="mb-6 flex flex-col items-center">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg shadow-red-500/30">
+          <span className="text-white font-bold text-xl">H</span>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-2 text-xs font-semibold text-red-400 tracking-wider"
+        >
+          HEALIX
+        </motion.div>
+      </div>
+      
       {/* Navigation Icons */}
       <div className="flex-1 flex flex-col gap-3">
         {icons.map((item) => (
-          <motion.button
-            key={item.index}
-            onClick={() => onNavigate(item.index)}
-            className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
-              activeSection === item.index 
-                ? 'bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-400/50' 
-                : 'hover:bg-white/5'
-            }`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {activeSection === item.index && (
-              <motion.div
-                layoutId="activeGlow"
-                className="absolute inset-0 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)]"
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            )}
-            <svg 
-              className={`w-6 h-6 ${activeSection === item.index ? 'text-cyan-400' : 'text-gray-400'}`}
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-              strokeWidth={1.5}
+          <div key={item.index} className="relative">
+            <motion.button
+              onClick={() => onNavigate(item.index)}
+              onMouseEnter={() => setHoveredIcon(item.index)}
+              onMouseLeave={() => setHoveredIcon(null)}
+              className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                activeSection === item.index 
+                  ? 'bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-400/50' 
+                  : 'hover:bg-white/5'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-            </svg>
-          </motion.button>
+              {activeSection === item.index && (
+                <motion.div
+                  layoutId="activeGlow"
+                  className="absolute inset-0 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)]"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
+              <svg 
+                className={`w-6 h-6 ${activeSection === item.index ? 'text-cyan-400' : 'text-gray-400'}`}
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+              </svg>
+            </motion.button>
+            
+            {/* Tooltip */}
+            <AnimatePresence>
+              {hoveredIcon === item.index && (
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-14 top-1/2 -translate-y-1/2 bg-black/90 text-white px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap border border-white/10"
+                >
+                  {item.label}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         ))}
       </div>
       
       {/* Emergency Button */}
       <motion.button
+        onMouseEnter={() => setHoveredIcon('emergency')}
+        onMouseLeave={() => setHoveredIcon(null)}
         className="mt-auto w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/30"
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         animate={{ 
           boxShadow: ['0_0_10px_rgba(239,68,68,0.5)', '0_0_20px_rgba(239,68,68,0.8)', '0_0_10px_rgba(239,68,68,0.5)']
@@ -706,11 +737,26 @@ const Sidebar3D = ({ activeSection, onNavigate }) => {
         </svg>
       </motion.button>
       
+      {/* Emergency Tooltip */}
+      <AnimatePresence>
+        {hoveredIcon === 'emergency' && (
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-14 top-auto bottom-20 bg-black/90 text-white px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap border border-white/10"
+          >
+            Emergency: 108
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Contact Email */}
       <motion.a
         href={`mailto:${CONTACT_EMAIL}`}
         className="mt-3 w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.05 }}
         title={CONTACT_EMAIL}
       >
         <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -828,14 +874,14 @@ function App() {
     setEmergencyDetected(null)
   }, [setEmergencyDetected])
   
-  // Section configs - Landing Page + pills and dashboard smaller
+  // Section configs - Landing Page + smaller models for performance
   const sections = [
     { type: 'landing' },
-    { model: DoctorModel, onClick: openChat, rotationY: -Math.PI / 2, modelScale: 0.7, positionY: 0.3, autoRotate: false, label: 'Dr. AI' },
-    { model: StethoscopeModel, onClick: openAnalyzer, rotationY: 0, modelScale: 0.75, positionY: 0.3, autoRotate: true, label: 'Analyzer' },
-    { model: SyringeModel, onClick: openTracker, rotationY: Math.PI / 6, modelScale: 0.7, positionY: 0.3, autoRotate: true, label: 'Tracker' },
-    { model: PillBottleModel, onClick: openMedication, rotationY: 0, modelScale: 0.6, positionY: 0.3, autoRotate: true, label: 'Medications' },
-    { model: DashboardModel, onClick: () => setShowDashboard(true), rotationY: 0, modelScale: 0.6, positionY: 0.3, autoRotate: true, label: 'Dashboard' }
+    { model: DoctorModel, onClick: openChat, rotationY: -Math.PI / 2, modelScale: 0.5, positionY: 0.2, autoRotate: false, label: 'Dr. AI' },
+    { model: StethoscopeModel, onClick: openAnalyzer, rotationY: 0, modelScale: 0.55, positionY: 0.2, autoRotate: true, label: 'Analyzer' },
+    { model: SyringeModel, onClick: openTracker, rotationY: Math.PI / 6, modelScale: 0.5, positionY: 0.2, autoRotate: true, label: 'Tracker' },
+    { model: PillBottleModel, onClick: openMedication, rotationY: 0, modelScale: 0.45, positionY: 0.2, autoRotate: true, label: 'Medications' },
+    { model: DashboardModel, onClick: () => setShowDashboard(true), rotationY: 0, modelScale: 0.45, positionY: 0.2, autoRotate: true, label: 'Dashboard' }
   ]
   
   // Scroll observer
