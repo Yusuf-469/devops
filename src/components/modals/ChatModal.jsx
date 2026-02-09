@@ -18,6 +18,7 @@ const ChatModal = ({ onClose }) => {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
+  const [aiMode, setAiMode] = useState('checking') // 'checking', 'online', 'offline'
   const messagesEndRef = useRef(null)
   
   const scrollToBottom = () => {
@@ -57,6 +58,7 @@ const ChatModal = ({ onClose }) => {
     setInput('')
     setIsTyping(true)
     setStreamingContent('')
+    setAiMode('checking')
     
     // Try DeepSeek first, fallback to local AI
     try {
@@ -69,6 +71,7 @@ const ChatModal = ({ onClose }) => {
       )
       
       if (response.success && !response.fallback) {
+        setAiMode('online')
         const aiMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
@@ -82,6 +85,7 @@ const ChatModal = ({ onClose }) => {
         throw new Error('Fallback to local AI')
       }
     } catch (error) {
+      setAiMode('offline')
       // Use fallback AI
       const response = await fallbackAnalyze(
         input.trim(),
@@ -168,9 +172,22 @@ const ChatModal = ({ onClose }) => {
               <h2 className="text-xl font-bold text-white">Dr. AI Consultation</h2>
               <p className="text-sm text-gray-400 flex items-center gap-2">
                 AI-Powered Symptom Analysis
-                <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
-                  Offline Mode
-                </span>
+                {aiMode === 'online' && (
+                  <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                    Dolphin-Mistral Online
+                  </span>
+                )}
+                {aiMode === 'offline' && (
+                  <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                    Offline Mode
+                  </span>
+                )}
+                {aiMode === 'checking' && (
+                  <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full">
+                    Checking...
+                  </span>
+                )}
               </p>
             </div>
           </div>

@@ -5,11 +5,17 @@ export const chatWithAI = async (messages, systemPrompt, onStream) => {
   const config = getActiveAIConfig()
   
   try {
+    const isOpenRouter = config.baseUrl.includes('openrouter')
+    
     const response = await fetch(`${config.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...(isOpenRouter && {
+          'HTTP-Referer': 'http://localhost:3000',
+          'X-Title': 'HEALIX Medical Dashboard'
+        })
       },
       body: JSON.stringify({
         model: config.model,
