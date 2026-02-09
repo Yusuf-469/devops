@@ -383,18 +383,18 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
     <>
       <group
         ref={groupRef}
-        scale={hovered ? scale * 1.03 : scale}
+        scale={scale}
         rotation={[0, rotationY, 0]}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
         onClick={onClick}
-        style={{ transition: 'scale 0.2s ease-out' }}
+        style={{ transition: 'none' }}
       >
         <Model />
       </group>
       
       {/* Hover Label - Comic chat bubble */}
-      <Html position={[0, positionY + 1.2, 0]} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
+      <Html position={[0, positionY + 1.2, 0]} center distanceFactor={10}>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.8 }}
@@ -402,6 +402,7 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
           className="bg-white text-gray-900 px-5 py-3 rounded-2xl rounded-bl-none shadow-[0_0_20px_rgba(220,38,38,0.4)]"
           style={{ 
             border: '2px solid rgba(220,38,38,0.3)',
+            pointerEvents: 'none'
           }}
         >
           <p className="text-lg font-bold whitespace-nowrap">
@@ -840,9 +841,14 @@ function App() {
   
   const navigateToSection = useCallback((index) => {
     setActiveSection(index)
-    const sections = document.querySelectorAll('.scroll-section')
-    if (sections[index]) {
-      sections[index].scrollIntoView({ behavior: 'smooth' })
+    if (index === 0) {
+      // Scroll to top (landing page)
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+    } else {
+      const sections = document.querySelectorAll('.scroll-section')
+      if (sections[index - 1]) {
+        sections[index - 1].scrollIntoView({ behavior: 'smooth' })
+      }
     }
   }, [])
   
@@ -851,6 +857,7 @@ function App() {
     const scrollSections = document.querySelectorAll('.scroll-section')
     if (scrollSections.length > 0) {
       scrollSections[0].scrollIntoView({ behavior: 'smooth' })
+      setActiveSection(1)
     }
   }
   
@@ -961,7 +968,9 @@ function App() {
       {/* Main Content */}
       <main className="relative ml-20">
         {/* Landing Page */}
-        <LandingPage onScrollDown={scrollDown} />
+        <div id="landing" className="scroll-section" data-index={0}>
+          <LandingPage onScrollDown={scrollDown} />
+        </div>
         
         {sections.map((section, index) => (
           index === 0 ? null : (
