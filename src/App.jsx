@@ -396,6 +396,50 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
     }
   })
   
+  // Futuristic text styles per label
+  const getTextStyle = () => {
+    switch(label) {
+      case 'Dr. AI':
+        return { 
+          gradient: 'from-cyan-400 via-blue-500 to-purple-600',
+          icon: '🧠',
+          text: 'Dr. AI'
+        }
+      case 'Analyzer':
+        return { 
+          gradient: 'from-green-400 via-emerald-500 to-teal-600',
+          icon: '📊',
+          text: 'Report Analyzer'
+        }
+      case 'Tracker':
+        return { 
+          gradient: 'from-orange-400 via-red-500 to-pink-600',
+          icon: '💉',
+          text: 'Treatment Tracker'
+        }
+      case 'Medications':
+        return { 
+          gradient: 'from-purple-400 via-violet-500 to-indigo-600',
+          icon: '💊',
+          text: 'Medication Manager'
+        }
+      case 'Dashboard':
+        return { 
+          gradient: 'from-amber-400 via-yellow-500 to-orange-600',
+          icon: '📈',
+          text: 'Health Overview'
+        }
+      default:
+        return { 
+          gradient: 'from-cyan-400 to-purple-600',
+          icon: '⚡',
+          text: label
+        }
+    }
+  }
+  
+  const textStyle = getTextStyle()
+  
   return (
     <>
       <group
@@ -410,27 +454,93 @@ const ModelWrapper = ({ model: Model, onClick, index, rotationY = 0, scale = 1, 
         <Model />
       </group>
       
-      {/* Hover Label - Comic chat bubble */}
-      <Html position={[0, positionY + 1.2, 0]} center distanceFactor={10}>
+      {/* Futuristic Hover Label - Glowing holographic bubble */}
+      <Html position={[0, positionY + 0.5, 0]} center distanceFactor={10}>
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.8 }}
-          transition={{ duration: 0.15 }}
-          className="bg-white text-gray-900 px-5 py-3 rounded-2xl rounded-bl-none shadow-[0_0_20px_rgba(220,38,38,0.4)]"
-          style={{ 
-            border: '2px solid rgba(220,38,38,0.3)',
-            pointerEvents: 'none'
+          initial={{ opacity: 0, scale: 0.5, y: 20 }}
+          animate={{ 
+            opacity: hovered ? 1 : 0, 
+            scale: hovered ? 1 : 0.5,
+            y: hovered ? 0 : 20
           }}
+          transition={{ 
+            duration: 0.4,
+            scale: { type: 'spring', stiffness: 300, damping: 20 },
+            opacity: { duration: 0.2 }
+          }}
+          className="relative"
         >
-          <p className="text-lg font-bold whitespace-nowrap">
-            {label === 'Dr. AI' && '👋 Hi! I\'m Dr. AI'}
-            {label === 'Analyzer' && '📊 Your Report Analyzer'}
-            {label === 'Tracker' && '💉 Treatment Tracker'}
-            {label === 'Medications' && '💊 Medication Manager'}
-            {label === 'Dashboard' && '📈 Your Health Dashboard'}
-          </p>
+          {/* Glow effect */}
+          <div 
+            className={`absolute -inset-2 bg-gradient-to-r ${textStyle.gradient} rounded-xl blur-lg opacity-60`}
+            style={{ animation: 'pulseGlow 2s ease-in-out infinite' }}
+          />
+          
+          {/* Main bubble */}
+          <div 
+            className="relative bg-gray-900/90 backdrop-blur-md border border-white/20 rounded-xl px-5 py-3 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+            style={{ 
+              boxShadow: '0 0 20px rgba(34, 211, 238, 0.3), inset 0 0 20px rgba(0,0,0,0.3)'
+            }}
+          >
+            {/* Animated line at top */}
+            <div className="absolute top-0 left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60" />
+            
+            <div className="flex items-center gap-3">
+              {/* Icon with glow */}
+              <motion.span 
+                className="text-xl"
+                animate={{ 
+                  scale: hovered ? [1, 1.2, 1] : 1,
+                  rotate: hovered ? [0, 10, -10, 0] : 0
+                }}
+                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 1 }}
+              >
+                {textStyle.icon}
+              </motion.span>
+              
+              {/* Text with gradient */}
+              <p className="text-sm font-bold whitespace-nowrap bg-gradient-to-r bg-clip-text text-transparent"
+                 style={{ 
+                   backgroundImage: `linear-gradient(to right, ${textStyle.gradient.replace('from-', '').replace(' via-', ',').replace(' to-', ',')})`
+                 }}
+              >
+                {textStyle.text}
+              </p>
+              
+              {/* Animated dots */}
+              <motion.div 
+                className="flex gap-1 ml-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: hovered ? 1 : 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <motion.div 
+                  className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+                  animate={{ scale: [1, 1.5, 1] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                />
+                <motion.div 
+                  className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+                  animate={{ scale: [1, 1.5, 1] }}
+                  transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
+                />
+                <motion.div 
+                  className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+                  animate={{ scale: [1, 1.5, 1] }}
+                  transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
+                />
+              </motion.div>
+            </div>
+          </div>
+          
+          {/* Decorative corner accents */}
+          <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-400 rounded-tl-sm" />
+          <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-cyan-400 rounded-tr-sm" />
+          <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-cyan-400 rounded-bl-sm" />
+          <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-400 rounded-br-sm" />
         </motion.div>
-      </Html>
+        </Html>
     </>
   )
 }
