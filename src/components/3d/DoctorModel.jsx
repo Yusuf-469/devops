@@ -1,24 +1,19 @@
 import React, { useRef, useState } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import { Float, useGLTF } from '@react-three/drei'
 import { MODEL_PATHS } from '../../store/index.js'
 
-// Doctor 3D Model - Clickable only, no text
+// Doctor 3D Model - Clickable only, no cursor tracking
 export const DoctorModel = ({ onClick }) => {
   const groupRef = useRef()
   const [hovered, setHovered] = useState(false)
-  const { mouse } = useThree()
   
   const gltf = useGLTF(MODEL_PATHS.doctor)
   
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (groupRef.current) {
-      // Gentle floating
+      // Gentle floating only, no cursor tracking
       groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.15
-      
-      // Subtle cursor follow
-      groupRef.current.rotation.y = mouse.x * 0.15
-      groupRef.current.rotation.x = mouse.y * 0.08
     }
   })
   
@@ -30,7 +25,7 @@ export const DoctorModel = ({ onClick }) => {
     <Float speed={2} rotationIntensity={0.1} floatIntensity={0.3} floatingRange={[-0.2, 0.2]}>
       <group 
         ref={groupRef}
-        scale={hovered ? 1.1 : 1}
+        scale={hovered ? 1.03 : 1}
         position={[0, 0, 0]}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
