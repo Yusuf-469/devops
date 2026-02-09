@@ -10,7 +10,7 @@ const ChatModal = ({ onClose }) => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hello! I'm Dr. AI, your medical assistant. How are you feeling today? Please describe your symptoms, and I'll help you understand what might be causing them. Remember, I'm not a substitute for professional medical advice.",
+      content: "Hello! I'm Dr. AI, your medical assistant. I'm here to help you understand your symptoms and guide you toward appropriate care.\n\nPlease describe what symptoms you're experiencing, including:\n• When they started\n• Severity (mild/moderate/severe)\n• Any factors that worsen or improve them\n\nI'll provide an assessment with possible causes and recommended next steps.\n\n⚠️ Remember: This is not a substitute for professional medical advice.",
       timestamp: Date.now()
     }
   ])
