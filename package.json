@@ -10,6 +10,7 @@
     "vercel-build": "npm run build"
   },
   "dependencies": {
+    "@openrouter/sdk": "^0.8.0",
     "@react-three/drei": "^9.88.0",
     "@react-three/fiber": "^8.15.0",
     "framer-motion": "^10.16.0",

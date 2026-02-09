@@ -336,40 +336,34 @@ const formatResponse = (detectedSymptoms, userMessage) => {
 const generateSymptomResponse = (symptomData, userMessage) => {
   let response = ''
   
-  // Opening acknowledgment
-  const greeting = GENERAL_RESPONSES.encouraging[Math.floor(Math.random() * GENERAL_RESPONSES.encouraging.length)]
-  response += `${greeting}\n\n`
+  // Professional acknowledgment
+  response += `**Clinical Assessment**\n\n`
   
-  // Analysis of symptoms
-  response += `**Assessment based on your symptoms:**\n\n`
-  
-  symptomData.forEach((data, index) => {
-    response += `${index + 1}. **Possible Conditions:**\n`
-    data.conditions.forEach(condition => {
-      response += `   • ${condition.name} (${condition.confidence} confidence: ~${condition.probability}%)\n`
+  // Top conditions
+  const topConditions = symptomData[0]?.conditions.slice(0, 3) || []
+  if (topConditions.length > 0) {
+    response += `**Likely Diagnosis:**\n`
+    topConditions.forEach(condition => {
+      response += `• ${condition.name} (${condition.confidence})\n`
     })
     response += `\n`
-  })
+  }
   
-  // Self-care advice
-  response += `**Self-Care Recommendations:**\n`
-  const allAdvice = [...new Set(symptomData.map(d => d.advice))]
-  allAdvice.forEach(advice => {
-    response += `• ${advice}\n`
+  // Red flags
+  response += `**Red Flags - Seek Immediate Care If:**\n`
+  const redFlags = symptomData[0]?.emergency || []
+  redFlags.slice(0, 3).forEach(flag => {
+    response += `• ${flag}\n`
   })
   response += `\n`
   
-  // Follow-up questions
-  response += `**To help me provide better guidance, please answer:**\n`
-  const allQuestions = [...new Set(symptomData.flatMap(d => FOLLOW_UP_QUESTIONS[d.keywords[0]] || []))]
-  allQuestions.slice(0, 3).forEach((q, i) => {
-    response += `${i + 1}. ${q}\n`
-  })
+  // Recommendations
+  response += `**Recommendations:**\n`
+  const advice = symptomData[0]?.advice || 'Monitor symptoms and rest'
+  response += `${advice}\n\n`
   
-  // Closing
-  response += `\n---\n`
-  response += `⚠️ **Disclaimer:** This is not a medical diagnosis. I'm an AI assistant providing general information. Please consult a qualified healthcare professional for proper evaluation and treatment.\n\n`
-  response += `For immediate emergencies, call 102 (Ambulance).`
+  // Disclaimer
+  response += `---\n⚠️ **Disclaimer:** This is not a medical diagnosis. Please consult a qualified healthcare professional.`
   
   return response
 }
@@ -379,21 +373,21 @@ const generateGeneralResponse = (userMessage) => {
   
   // Check for medication questions
   if (lowerText.includes('medicine') || lowerText.includes('medication') || lowerText.includes('drug')) {
-    return `I'm not able to prescribe or recommend specific medications. However, I can provide general information about common medications.\n\nPlease consult your doctor or pharmacist for medication-related questions, as they can consider your complete medical history and current medications.\n\n⚠️ **Important:** Never take medication without consulting a healthcare professional.\n\nFor immediate emergencies, call 102 (Ambulance).`
+    return `I'm unable to prescribe specific medications. Please consult your physician or pharmacist for medication advice based on your complete medical history.\n\n⚠️ **Important:** Never take medication without professional medical guidance.\n\nFor emergencies, call 102.`
   }
   
   // Check for general health questions
   if (lowerText.includes('healthy') || lowerText.includes('diet') || lowerText.includes('exercise')) {
-    return `Great question about maintaining your health!\n\n**General Health Tips:**\n• Eat a balanced diet with fruits, vegetables, and whole grains\n• Exercise regularly (at least 150 minutes per week)\n• Get adequate sleep (7-9 hours for adults)\n• Stay hydrated (8 glasses of water daily)\n• Manage stress through relaxation techniques\n• Avoid smoking and limit alcohol\n• Regular health check-ups\n\nWould you like more specific information about any of these areas?\n\n⚠️ **Disclaimer:** This is general health information, not personalized medical advice.`
+    return `**General Health Recommendations:**\n• Balanced diet with fruits, vegetables, whole grains\n• Regular exercise (150+ minutes/week)\n• Adequate sleep (7-9 hours)\n• Stay hydrated\n• Stress management\n• Avoid smoking, limit alcohol\n\n⚠️ This is general information, not personalized advice.`
   }
   
-  // Check for appointment/scheduling questions
+  // Check for appointment questions
   if (lowerText.includes('appointment') || lowerText.includes('doctor') || lowerText.includes('see a doctor')) {
-    return `I can help you understand when to see a doctor, but I cannot schedule appointments.\n\n**When to See a Doctor:**\n• Symptoms persisting more than a week\n• Worsening symptoms despite home care\n• High fever (above 103°F/39.4°C)\n• Severe pain\n• Difficulty breathing\n• Unusual symptoms\n\n**To schedule an appointment:**\n• Contact your primary care physician\n• Use online booking if available\n• Visit a walk-in clinic for urgent issues\n\n**For emergencies, call 102 immediately.**`
+    return `**When to See a Doctor:**\n• Symptoms persist > 1 week\n• Worsening despite home care\n• High fever (>103°F)\n• Severe pain or difficulty breathing\n\n**To schedule:** Contact your PCP or visit a walk-in clinic.\n\n**Emergencies: Call 102 immediately.**`
   }
   
-  // Default response
-  return `I understand you're seeking health information. To provide the most helpful response, could you describe your symptoms in more detail?\n\n**Helpful information includes:**\n• When your symptoms started\n• Severity (mild, moderate, severe)\n• Location of any pain\n• Any factors that worsen or improve symptoms\n• Any other associated symptoms\n\nThe more details you share, the better I can assist you.\n\n⚠️ **Disclaimer:** This is not a substitute for professional medical advice.`
+  // Default - ask for more details
+  return `To provide accurate guidance, please describe:\n• When symptoms started\n• Severity (mild/moderate/severe)\n• Location of any pain\n• Any triggering factors\n\n⚠️ **Disclaimer:** Not a substitute for professional medical advice.`
 }
 
 // ============================================
