@@ -14,11 +14,11 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// Primary AI Configuration (DeepSeek - tngtech/deepseek-r1t2-chimera:free)
+// Primary AI Configuration (OpenRouter - deepseek/deepseek-r1-0528:free)
 export const PRIMARY_AI_CONFIG = {
-  baseUrl: import.meta.env.VITE_DEEPSEEK_API_URL || 'https://api.deepseek.com/v1',
-  apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || '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',
-  model: 'tngtech/deepseek-r1t2-chimera:free'
+  baseUrl: import.meta.env.VITE_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1',
+  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
+  model: 'deepseek/deepseek-r1-0528:free'
 }
 
 // Fallback AI Configuration (Offline rule-based system)

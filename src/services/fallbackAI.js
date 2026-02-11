@@ -19,7 +19,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Viral Infection', confidence: 'Medium', probability: 25, severity: 'mild' },
       { name: 'Bacterial Infection', confidence: 'Low', probability: 10, severity: 'moderate' }
     ],
-    advice: 'Monitor your temperature. Stay hydrated. Take paracetamol if needed. Rest well.',
+    advice: 'Monitor temperature. Stay hydrated. Take paracetamol. Rest.',
     emergency: ['chest pain', 'difficulty breathing', 'confusion', 'rash']
   },
   cough: {
@@ -30,7 +30,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Allergies', confidence: 'Medium', probability: 20, severity: 'mild' },
       { name: 'GERD/Acid Reflux', confidence: 'Low', probability: 15, severity: 'mild' }
     ],
-    advice: 'Stay hydrated. Honey can help soothe cough. Avoid irritants like smoke.',
+    advice: 'Stay hydrated. Honey helps. Avoid smoke.',
     emergency: ['coughing up blood', 'shortness of breath', 'chest pain']
   },
   cold: {
@@ -40,7 +40,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Allergic Rhinitis', confidence: 'Medium', probability: 25, severity: 'mild' },
       { name: 'Sinusitis', confidence: 'Low', probability: 15, severity: 'moderate' }
     ],
-    advice: 'Rest and stay hydrated. Use saline nasal drops. Warm liquids can help soothe.',
+    advice: 'Rest. Stay hydrated. Use saline drops.',
     emergency: ['high fever', 'severe headache', 'stiff neck']
   },
   headache: {
@@ -51,7 +51,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Migraine', confidence: 'Medium', probability: 20, severity: 'moderate' },
       { name: 'Sinus Headache', confidence: 'Low', probability: 15, severity: 'mild' }
     ],
-    advice: 'Rest in a quiet, dark room. Stay hydrated. Over-the-counter pain relievers may help.',
+    advice: 'Rest in dark room. Stay hydrated. Take pain relievers.',
     emergency: ['sudden severe headache', 'weakness on one side', 'vision changes', 'confusion']
   },
   'stomach pain': {
@@ -60,10 +60,10 @@ const SYMPTOM_PATTERNS = {
       { name: 'Indigestion', confidence: 'Medium', probability: 30, severity: 'mild' },
       { name: 'Gastritis', confidence: 'Medium', probability: 25, severity: 'mild' },
       { name: 'Food Poisoning', confidence: 'Medium', probability: 20, severity: 'moderate' },
-      { name: 'IBS (Irritable Bowel Syndrome)', confidence: 'Low', probability: 15, severity: 'mild' },
+      { name: 'IBS', confidence: 'Low', probability: 15, severity: 'mild' },
       { name: 'Appendicitis', confidence: 'Low', probability: 10, severity: 'severe' }
     ],
-    advice: 'Eat bland foods. Stay hydrated. Avoid fatty or spicy foods. Rest.',
+    advice: 'Eat bland foods. Stay hydrated. Avoid spicy foods.',
     emergency: ['severe pain', 'vomiting blood', 'blood in stool', 'high fever']
   },
   'body pain': {
@@ -74,7 +74,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Fibromyalgia', confidence: 'Low', probability: 15, severity: 'moderate' },
       { name: 'Arthritis', confidence: 'Low', probability: 20, severity: 'mild' }
     ],
-    advice: 'Rest. Gentle stretching. Over-the-counter pain relievers. Warm compress.',
+    advice: 'Rest. Gentle stretching. Pain relievers. Warm compress.',
     emergency: ['chest pain', 'difficulty breathing', 'unable to move']
   },
   fatigue: {
@@ -86,7 +86,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Anemia', confidence: 'Low', probability: 10, severity: 'moderate' },
       { name: 'Hypothyroidism', confidence: 'Low', probability: 10, severity: 'moderate' }
     ],
-    advice: 'Ensure adequate sleep (7-9 hours). Exercise regularly. Maintain a balanced diet.',
+    advice: 'Sleep 7-9 hours. Exercise. Eat balanced diet.',
     emergency: ['sudden weakness', 'shortness of breath', 'chest pain']
   },
   nausea: {
@@ -94,11 +94,11 @@ const SYMPTOM_PATTERNS = {
     conditions: [
       { name: 'Indigestion', confidence: 'Medium', probability: 30, severity: 'mild' },
       { name: 'Food Poisoning', confidence: 'Medium', probability: 25, severity: 'moderate' },
-      { name: 'Pregnancy (Morning Sickness)', confidence: 'Medium', probability: 15, severity: 'mild' },
+      { name: 'Pregnancy', confidence: 'Medium', probability: 15, severity: 'mild' },
       { name: 'Migraine', confidence: 'Low', probability: 15, severity: 'mild' },
       { name: 'Gastroenteritis', confidence: 'Medium', probability: 15, severity: 'moderate' }
     ],
-    advice: 'Sip small amounts of clear fluids. Eat bland foods like crackers. Rest.',
+    advice: 'Sip clear fluids. Eat bland foods. Rest.',
     emergency: ['vomiting blood', 'severe abdominal pain', 'confusion']
   },
   diarrhea: {
@@ -109,7 +109,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Bacterial Infection', confidence: 'Medium', probability: 15, severity: 'moderate' },
       { name: 'IBS Flare-up', confidence: 'Low', probability: 15, severity: 'mild' }
     ],
-    advice: 'Stay hydrated with electrolyte solutions. Eat bland foods. Avoid dairy and fatty foods.',
+    advice: 'Stay hydrated with electrolytes. Eat bland foods.',
     emergency: ['blood in stool', 'severe dehydration', 'high fever', 'lasts more than 3 days']
   },
   dizziness: {
@@ -121,7 +121,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Low Blood Pressure', confidence: 'Low', probability: 15, severity: 'mild' },
       { name: 'Anemia', confidence: 'Low', probability: 5, severity: 'moderate' }
     ],
-    advice: 'Sit or lie down slowly. Stay hydrated. Eat regular meals. Avoid sudden movements.',
+    advice: 'Sit or lie down slowly. Stay hydrated. Eat regular meals.',
     emergency: ['chest pain', 'shortness of breath', 'slurred speech', 'fainting']
   },
   chest_pain: {
@@ -133,8 +133,8 @@ const SYMPTOM_PATTERNS = {
       { name: 'Heart Attack', confidence: 'Low', probability: 15, severity: 'critical' },
       { name: 'Angina', confidence: 'Low', probability: 10, severity: 'severe' }
     ],
-    advice: 'Seek immediate medical attention for chest pain. Call emergency services.',
-    emergency: ['chest pain', 'radiating to arm', 'shortness of breath', 'sweating', 'nausea']
+    advice: 'Seek immediate medical attention.',
+    emergency: ['radiating to arm', 'shortness of breath', 'sweating', 'nausea']
   },
   shortness_of_breath: {
     keywords: ['shortness of breath', 'breathless', 'cant breathe', 'difficulty breathing', 'wheezing'],
@@ -146,7 +146,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Pulmonary Embolism', confidence: 'Low', probability: 10, severity: 'critical' },
       { name: 'Allergic Reaction', confidence: 'Low', probability: 10, severity: 'severe' }
     ],
-    advice: 'Seek immediate medical attention for breathing difficulties.',
+    advice: 'Seek immediate medical attention.',
     emergency: ['cant breathe', 'blue lips', 'chest pain', 'confusion']
   },
   sore_throat: {
@@ -157,7 +157,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Tonsillitis', confidence: 'Medium', probability: 15, severity: 'moderate' },
       { name: 'Allergies', confidence: 'Low', probability: 10, severity: 'mild' }
     ],
-    advice: 'Gargle with warm salt water. Stay hydrated. Use throat lozenges.',
+    advice: 'Gargle salt water. Stay hydrated. Use lozenges.',
     emergency: ['difficulty breathing', 'difficulty swallowing', 'high fever']
   },
   rash: {
@@ -168,7 +168,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Contact Dermatitis', confidence: 'Medium', probability: 20, severity: 'mild' },
       { name: 'Viral Infection', confidence: 'Low', probability: 15, severity: 'mild' }
     ],
-    advice: 'Avoid scratching. Apply moisturizer. Use antihistamines for itching.',
+    advice: 'Avoid scratching. Apply moisturizer. Antihistamines help.',
     emergency: ['difficulty breathing', 'swelling of face', 'rash spreads rapidly']
   },
   back_pain: {
@@ -180,7 +180,7 @@ const SYMPTOM_PATTERNS = {
       { name: 'Kidney Stone', confidence: 'Low', probability: 10, severity: 'severe' },
       { name: 'Arthritis', confidence: 'Low', probability: 5, severity: 'moderate' }
     ],
-    advice: 'Rest but stay mobile. Apply ice/heat. Gentle stretching. Over-the-counter pain relievers.',
+    advice: 'Rest but stay mobile. Apply ice/heat. Gentle stretching.',
     emergency: ['numbness in legs', 'loss of bladder control', 'fever']
   }
 }
@@ -191,88 +191,88 @@ const SYMPTOM_PATTERNS = {
 
 const FOLLOW_UP_QUESTIONS = {
   fever: [
-    'How long have you had this fever?',
-    'What is your approximate temperature?',
-    'Are you experiencing any chills or sweating?',
-    'Do you have any other symptoms like cough, headache, or body aches?'
+    'How long have you had fever?',
+    'What is your temperature?',
+    'Any chills or sweating?',
+    'Other symptoms like cough, headache?'
   ],
   cough: [
-    'Is your cough dry or productive (bringing up phlegm)?',
-    'How long have you been coughing?',
-    'Are you coughing up any blood or colored mucus?',
-    'Do you have any shortness of breath or chest pain?'
+    'Dry or wet cough?',
+    'How long coughing?',
+    'Coughing up blood/mucus?',
+    'Shortness of breath?'
   ],
   cold: [
-    'How long have you had these symptoms?',
-    'Is your nasal discharge clear or colored?',
-    'Do you have a fever?',
-    'Any facial pressure or headache?'
+    'How long symptoms?',
+    'Clear or colored discharge?',
+    'Any fever?',
+    'Facial pressure?'
   ],
   headache: [
-    'Where is the pain located (front, back, one side)?',
-    'How would you describe the pain (throbbing, constant, stabbing)?',
-    'How long does the headache last?',
-    'Any associated symptoms like nausea, vision changes, or sensitivity to light?'
+    'Where is pain (front/back/side)?',
+    'Throbbing or constant?',
+    'How long lasts?',
+    'Nausea, vision changes, light sensitivity?'
   ],
   'stomach pain': [
-    'Where exactly is the pain located (upper, lower, right, left)?',
-    'How would you describe the pain (sharp, dull, cramping)?',
-    'When did the pain start?',
-    'Any associated symptoms like nausea, vomiting, or changes in bowel movements?'
+    'Where pain (upper/lower/right/left)?',
+    'Sharp, dull, or cramping?',
+    'When did it start?',
+    'Nausea, vomiting, bowel changes?'
   ],
   'body pain': [
-    'Which areas of your body are affected?',
-    'How long have you had these pains?',
-    'Do you have a fever or other symptoms?',
-    'Did you engage in any strenuous activity recently?'
+    'Which areas affected?',
+    'How long?',
+    'Fever or other symptoms?',
+    'Recent strenuous activity?'
   ],
   fatigue: [
-    'How long have you been feeling this fatigued?',
-    'How many hours of sleep do you get on average?',
-    'Any difficulty falling or staying asleep?',
-    'Any changes in appetite or mood?'
+    'How long feeling tired?',
+    'Hours of sleep daily?',
+    'Sleep difficulty?',
+    'Appetite or mood changes?'
   ],
   nausea: [
-    'Are you experiencing any vomiting?',
-    'What triggers or worsens the nausea?',
-    'Any diarrhea or abdominal pain?',
-    'Could you be pregnant (if applicable)?'
+    'Vomiting?',
+    'What triggers it?',
+    'Diarrhea or abdominal pain?',
+    'Could you be pregnant?'
   ],
   dizziness: [
-    'Does the room spin (vertigo) or do you feel lightheaded?',
-    'When did this start?',
-    'Any associated hearing loss or ringing in ears?',
-    'Do you have any heart conditions or take medications?'
+    'Room spinning or lightheaded?',
+    'When started?',
+    'Hearing loss or ringing?',
+    'Heart conditions or medications?'
   ],
   chest_pain: [
-    'Can you describe the nature of the pain (sharp, dull, pressure)?',
-    'Does the pain radiate to your arm, jaw, or back?',
-    'Any associated shortness of breath or sweating?',
-    'Do you have a history of heart problems?'
+    'Sharp, dull, or pressure?',
+    'Radiates to arm/jaw/back?',
+    'Shortness of breath or sweating?',
+    'Heart problem history?'
   ],
   shortness_of_breath: [
-    'When did the breathing difficulty start?',
-    'Is it constant or does it come and go?',
-    'Any wheezing or chest tightness?',
-    'Do you have asthma or other respiratory conditions?'
+    'When started?',
+    'Constant or comes/goes?',
+    'Wheezing or chest tightness?',
+    'Asthma or respiratory conditions?'
   ],
   sore_throat: [
-    'How severe is the pain (mild, moderate, severe)?',
-    'Do you have white patches on your throat or tonsils?',
-    'Any difficulty swallowing?',
-    'Any fever or swollen lymph nodes?'
+    'Severity (mild/moderate/severe)?',
+    'White patches on throat?',
+    'Difficulty swallowing?',
+    'Fever or swollen lymph nodes?'
   ],
   rash: [
-    'Where did the rash start and has it spread?',
-    'Is the rash itchy, painful, or neither?',
-    'Any associated symptoms like fever or swelling?',
-    'Have you been exposed to new soaps, foods, or plants?'
+    'Where started and spread?',
+    'Itchy, painful, or neither?',
+    'Fever or swelling?',
+    'New soaps, foods, or plants?'
   ],
   back_pain: [
-    'Where is the pain located (upper, middle, lower back)?',
-    'Did the pain start suddenly or gradually?',
-    'Any pain radiating down your legs?',
-    'Any numbness, tingling, or weakness in your legs?'
+    'Where (upper/middle/lower)?',
+    'Sudden or gradual?',
+    'Pain down legs?',
+    'Numbness, tingling, weakness?'
   ]
 }
 
@@ -282,19 +282,19 @@ const FOLLOW_UP_QUESTIONS = {
 
 const GENERAL_RESPONSES = {
   greeting: [
-    "Hello! I'm Dr. AI, your medical assistant. I'm here to help you understand your symptoms and guide you toward appropriate care.",
-    "Hi there! Describe your symptoms, and I'll provide an assessment to help you decide on next steps.",
-    "Welcome! I'm here to help with your health concerns. Please tell me about your symptoms."
+    "Hello! I'm Dr. AI. Describe your symptoms for assessment.",
+    "Hi! Tell me about your symptoms for guidance.",
+    "Welcome! What symptoms are you experiencing?"
   ],
   closing: [
-    "I hope this information helps. Remember to consult a healthcare professional for proper diagnosis and treatment.",
-    "Take care of yourself! Don't hesitate to seek medical attention if symptoms worsen.",
-    "Your health is important. Please follow up with a doctor for personalized care."
+    "Hope this helps. Consult a doctor for proper care.",
+    "Take care! Seek medical attention if worse.",
+    "Your health matters. Follow up with a doctor."
   ],
   encouraging: [
-    "Thank you for sharing. Let me analyze your symptoms...",
-    "I understand how you're feeling. Let me provide some guidance...",
-    "That's helpful information. Let me help you understand what might be causing this..."
+    "Thank you. Let me analyze...",
+    "I understand. Let me help...",
+    "That's useful. Let me guide you..."
   ]
 }
 
@@ -323,10 +323,8 @@ const formatResponse = (detectedSymptoms, userMessage) => {
   const symptomData = detectedSymptoms.map(s => SYMPTOM_PATTERNS[s]).filter(Boolean)
   
   if (symptomData.length === 0) {
-    // General health question
     response = generateGeneralResponse(userMessage)
   } else {
-    // Symptom-specific response
     response = generateSymptomResponse(symptomData, userMessage)
   }
   
@@ -336,34 +334,40 @@ const formatResponse = (detectedSymptoms, userMessage) => {
 const generateSymptomResponse = (symptomData, userMessage) => {
   let response = ''
   
-  // Professional acknowledgment
-  response += `**Clinical Assessment**\n\n`
-  
   // Top conditions
-  const topConditions = symptomData[0]?.conditions.slice(0, 3) || []
+  const topConditions = symptomData[0]?.conditions.slice(0, 2) || []
   if (topConditions.length > 0) {
-    response += `**Likely Diagnosis:**\n`
+    response += `LIKELY:\n`
     topConditions.forEach(condition => {
-      response += `• ${condition.name} (${condition.confidence})\n`
+      response += `- ${condition.name}\n`
     })
     response += `\n`
   }
   
-  // Red flags
-  response += `**Red Flags - Seek Immediate Care If:**\n`
-  const redFlags = symptomData[0]?.emergency || []
-  redFlags.slice(0, 3).forEach(flag => {
-    response += `• ${flag}\n`
-  })
-  response += `\n`
-  
   // Recommendations
-  response += `**Recommendations:**\n`
-  const advice = symptomData[0]?.advice || 'Monitor symptoms and rest'
-  response += `${advice}\n\n`
+  response += `DO:\n`
+  const advice = symptomData[0]?.advice || 'Monitor symptoms'
+  response += `- ${advice}\n`
+  
+  // Red flags
+  const redFlags = symptomData[0]?.emergency || []
+  if (redFlags.length > 0) {
+    response += `\nWARN: ${redFlags[0]}\n`
+  }
+  
+  // Follow-up questions in numbered list
+  const symptomKey = Object.keys(SYMPTOM_PATTERNS).find(key => 
+    symptomData[0]?.conditions.some(c => SYMPTOM_PATTERNS[key]?.conditions.includes(c))
+  )
+  const questions = FOLLOW_UP_QUESTIONS[symptomKey] || FOLLOW_UP_QUESTIONS.fever
+  
+  response += `\nANSWER:\n`
+  questions.slice(0, 3).forEach((q, i) => {
+    response += `${i + 1}. ${q}\n`
+  })
   
   // Disclaimer
-  response += `---\n⚠️ **Disclaimer:** This is not a medical diagnosis. Please consult a qualified healthcare professional.`
+  response += `\n_Disclaimer: Consult a doctor._`
   
   return response
 }
@@ -373,21 +377,21 @@ const generateGeneralResponse = (userMessage) => {
   
   // Check for medication questions
   if (lowerText.includes('medicine') || lowerText.includes('medication') || lowerText.includes('drug')) {
-    return `I'm unable to prescribe specific medications. Please consult your physician or pharmacist for medication advice based on your complete medical history.\n\n⚠️ **Important:** Never take medication without professional medical guidance.\n\nFor emergencies, call 102.`
+    return `CANNOT PRESCRIBE\n\n- Ask doctor/pharmacist\n- Never take meds without advice\n\nEmergencies: Call 102\n\n_Disclaimer: Consult a doctor._`
   }
   
   // Check for general health questions
   if (lowerText.includes('healthy') || lowerText.includes('diet') || lowerText.includes('exercise')) {
-    return `**General Health Recommendations:**\n• Balanced diet with fruits, vegetables, whole grains\n• Regular exercise (150+ minutes/week)\n• Adequate sleep (7-9 hours)\n• Stay hydrated\n• Stress management\n• Avoid smoking, limit alcohol\n\n⚠️ This is general information, not personalized advice.`
+    return `STAY HEALTHY:\n- Balanced meals\n- Exercise regularly\n- Sleep 7-9 hours\n- Stay hydrated\n\n_Disclaimer: Consult a doctor._`
   }
   
   // Check for appointment questions
   if (lowerText.includes('appointment') || lowerText.includes('doctor') || lowerText.includes('see a doctor')) {
-    return `**When to See a Doctor:**\n• Symptoms persist > 1 week\n• Worsening despite home care\n• High fever (>103°F)\n• Severe pain or difficulty breathing\n\n**To schedule:** Contact your PCP or visit a walk-in clinic.\n\n**Emergencies: Call 102 immediately.**`
+    return `SEE DOCTOR IF:\n1. Symptoms last > 1 week\n2. Getting worse\n3. High fever or severe pain\n\nEmergencies: Call 102\n\n_Disclaimer: Consult a doctor._`
   }
   
   // Default - ask for more details
-  return `To provide accurate guidance, please describe:\n• When symptoms started\n• Severity (mild/moderate/severe)\n• Location of any pain\n• Any triggering factors\n\n⚠️ **Disclaimer:** Not a substitute for professional medical advice.`
+  return `ANSWER:\n1. When symptoms started?\n2. Severity (mild/moderate/severe)?\n3. Location of any pain?\n4. Any triggering factors?\n\n_Disclaimer: Consult a doctor._`
 }
 
 // ============================================
@@ -454,7 +458,7 @@ export const quickSymptomCheck = (symptom) => {
   if (!symptomData) {
     return {
       conditions: [],
-      advice: 'Please describe your symptoms in more detail.',
+      advice: 'Describe symptoms for assessment.',
       isFallback: true
     }
   }
@@ -501,9 +505,28 @@ export const checkDrugInteractions = async (currentMeds, newMed) => {
     }
   }
   
+  // Build response
+  let response = ''
+  if (interactions.length > 0) {
+    response += `STATUS: Caution\n\nDETAILS:\n`
+    interactions.forEach(i => {
+      response += `- ${i.message}\n`
+    })
+    response += `\nRECOMMENDATION: Consult pharmacist before combining.\n`
+  } else {
+    response += `STATUS: Safe\n\nDETAILS:\n`
+    response += `- No known interactions found\n\n`
+    response += `RECOMMENDATION: Always inform your doctor about all medications.\n`
+  }
+  
+  response += `\n_Disclaimer: Consult a doctor or pharmacist._`
+  
   return {
     interactions,
-    hasCritical: interactions.some(i => i.severity === 'critical'),
+    response,
+    hasCritical: false,
+    success: true,
+    content: response,
     isFallback: true
   }
 }

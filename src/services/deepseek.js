@@ -1,30 +1,31 @@
 /**
  * HEALIX DeepSeek AI Service
- * Direct HTTP integration with DeepSeek API
- * Model: tngtech/deepseek-r1t2-chimera:free
+ * OpenRouter API with deepseek/deepseek-r1-0528:free model
  */
 
 // API Configuration - Use environment variable or fallback to provided key
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || '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'
-const DEEPSEEK_BASE_URL = import.meta.env.VITE_DEEPSEEK_API_URL || 'https://api.deepseek.com/v1'
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+const OPENROUTER_BASE_URL = import.meta.env.VITE_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1'
 
-// Primary Model: DeepSeek R1T2 Chimera
-const PRIMARY_MODEL = 'tngtech/deepseek-r1t2-chimera:free'
+// Primary Model: DeepSeek R1 via OpenRouter
+const PRIMARY_MODEL = 'deepseek/deepseek-r1-0528:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
   // Check if API key is configured
-  if (!DEEPSEEK_API_KEY) {
-    console.warn('DeepSeek API key not configured. Using fallback responses.')
+  if (!OPENROUTER_API_KEY) {
+    console.warn('OpenRouter API key not configured. Using fallback responses.')
     return { success: false, error: 'API key not configured', isFallback: true }
   }
 
   try {
-    const response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
+    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'HEALIX Medical Dashboard'
       },
       body: JSON.stringify({
         model: model,
@@ -39,7 +40,7 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
 
     if (!response.ok) {
       const error = await response.text()
-      throw new Error(`DeepSeek API Error: ${response.status} - ${error}`)
+      throw new Error(`OpenRouter API Error: ${response.status} - ${error}`)
     }
 
     // Handle streaming response
@@ -85,26 +86,27 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       model: model
     }
   } catch (error) {
-    console.error('DeepSeek API Error:', error.message)
+    console.error('OpenRouter API Error:', error.message)
     return { success: false, error: error.message, isFallback: true }
   }
 }
 
 // Dr. AI Chat function - Professional medical assistant
-const CHAT_SYSTEM_PROMPT = `You are Dr. AI, a board-certified physician with 15+ years of clinical experience. 
+const CHAT_SYSTEM_PROMPT = `You are Dr. AI, a caring medical assistant. Be brief, precise, and use bullet points.
 
-RESPONSE STYLE:
-- Keep responses concise and actionable (under 150 words)
-- Use professional medical terminology while remaining accessible
-- Be direct and confident in your assessments
+RULES:
+• Keep responses under 60 words
+• Use bullet points for all info
+• Ask follow-up questions in numbered list
 
-STRUCTURE:
-1. Brief acknowledgment
-2. Likely diagnosis with confidence level
-3. Key red flags to watch for
-4. Clear next steps (1-3 items max)
+Format:
+• [Assessment/Answer in 1-2 lines]
 
-Always include the disclaimer at the end: "This is not a medical diagnosis. Please consult a qualified healthcare professional."`
+1. [Follow-up question 1]
+2. [Follow-up question 2]
+3. [Follow-up question 3]
+
+_Disclaimer: Consult a doctor._`
 
 export const getChatResponse = async (userMessage, conversationHistory = [], onStream) => {
   const messages = conversationHistory.map(msg => ({
@@ -121,20 +123,21 @@ export const getChatResponse = async (userMessage, conversationHistory = [], onS
 }
 
 // Symptom analysis - Professional medical AI
-const MEDICAL_SYSTEM_PROMPT = `You are Dr. AI, a board-certified physician with 15+ years of clinical experience.
+const MEDICAL_SYSTEM_PROMPT = `You are Dr. AI, a caring medical assistant. Be brief, precise, and use bullet points.
 
-RESPONSE STYLE:
-- Keep responses concise and actionable (under 150 words)
-- Use professional medical terminology while remaining accessible
-- Be direct and confident in your assessments
+RULES:
+• Keep responses under 60 words
+• Use bullet points for all info
+• Ask follow-up questions in numbered list
 
-STRUCTURE:
-1. Brief acknowledgment
-2. Likely diagnosis with confidence level
-3. Key red flags to watch for
-4. Clear next steps (1-3 items max)
+Format:
+• [Assessment/Answer in 1-2 lines]
 
-Always include the disclaimer at the end: "This is not a medical diagnosis. Please consult a qualified healthcare professional."`
+1. [Follow-up question 1]
+2. [Follow-up question 2]
+3. [Follow-up question 3]
+
+_Disclaimer: Consult a doctor._`
 
 export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStream) => {
   const messages = conversationHistory.map(msg => ({
@@ -152,16 +155,21 @@ export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStre
 
 // Report analysis
 export const analyzeReport = async (reportText, onStream) => {
-  const systemPrompt = `You are a medical report analyzer. 
-    Extract key values, identify abnormalities, compare to normal ranges, and explain in plain language.
-    Format your response as:
-    1) Summary
-    2) Key Findings (normal/abnormal)
-    3) Recommendations
-    Be clear and easy to understand for a non-medical person.`
+  const systemPrompt = `You are Dr. AI. Analyze medical reports briefly.
+
+Format:
+📋 SUMMARY: [1 line]
+
+🔍 FINDINGS:
+• [Finding 1]
+• [Finding 2]
+
+💡 RECOMMENDATION: [1 line]
+
+_Disclaimer: Consult a doctor._`
 
   return chatWithAI(
-    [{ role: "user", content: `Analyze this medical report: ${reportText}` }],
+    [{ role: "user", content: `Analyze this: ${reportText}` }],
     systemPrompt,
     onStream,
     PRIMARY_MODEL
@@ -170,12 +178,21 @@ export const analyzeReport = async (reportText, onStream) => {
 
 // Drug interaction check
 export const checkDrugInteractions = async (currentMeds, newMed, onStream) => {
-  const systemPrompt = `You are a medication safety expert. 
-    Check for drug interactions. List: severity (critical/moderate/minor), mechanism, recommendation.
-    Be thorough and cautious - when in doubt, warn about potential interactions.`
+  const systemPrompt = `You are Dr. AI. Check drug interactions briefly.
+
+Format:
+⚠️ STATUS: [Safe/Caution/Warning]
+
+🔍 DETAILS:
+• [Interaction detail 1]
+• [Interaction detail 2]
+
+✅ RECOMMENDATION: [1 line]
+
+_Disclaimer: Consult a doctor._`
 
   return chatWithAI(
-    [{ role: "user", content: `Check interactions between: ${currentMeds.join(', ')} and new medication: ${newMed}` }],
+    [{ role: "user", content: `Check: ${currentMeds.join(', ')} + ${newMed}` }],
     systemPrompt,
     onStream,
     PRIMARY_MODEL
@@ -184,12 +201,19 @@ export const checkDrugInteractions = async (currentMeds, newMed, onStream) => {
 
 // Health insights
 export const getHealthInsights = async (userData, onStream) => {
-  const systemPrompt = `You are a health predictor AI. 
-    Based on user health data, predict potential risks and suggest preventive measures. 
-    Be encouraging, not alarmist. Focus on actionable advice.`
+  const systemPrompt = `You are Dr. AI. Give health insights briefly.
+
+Format:
+💪 STRENGTH: [1 line]
+
+⚡ TIP: [1 line]
+
+🎯 FOCUS: [1 line]
+
+_Disclaimer: Consult a doctor._`
 
   return chatWithAI(
-    [{ role: "user", content: `Based on: Age: ${userData.age}, History: ${userData.conditions}, Recent: ${userData.recentReports}, Medications: ${userData.medications}` }],
+    [{ role: "user", content: `Data: Age ${userData.age}, History ${userData.conditions}, Recent ${userData.recentReports}` }],
     systemPrompt,
     onStream,
     PRIMARY_MODEL

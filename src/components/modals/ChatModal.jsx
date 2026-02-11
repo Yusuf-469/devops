@@ -78,7 +78,7 @@ const ChatModal = ({ onClose }) => {
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'info', message: 'DeepSeek diagnosis complete' })
+        addNotification({ type: 'info', message: 'Dr. AI diagnosis complete' })
       } else {
         throw new Error('Primary failed')
       }
