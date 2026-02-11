@@ -16,15 +16,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     minify: 'esbuild',
-    cssCodeSplit: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
-          ui: ['framer-motion', 'lucide-react']
-        }
-      }
-    }
+    cssCodeSplit: true
   },
   optimizeDeps: {
     include: ['three', '@react-three/fiber', '@react-three/drei', 'framer-motion']

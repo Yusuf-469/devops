@@ -1,13 +1,96 @@
-import React, { useEffect, useRef } from 'react';
+import React, { Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF, Environment, Float } from '@react-three/drei';
 import { motion } from 'framer-motion';
 
-// Static 3D preview icons for each model type
-const modelPreviews = {
-  doctor: { emoji: '👨‍⚕️', color: 'from-cyan-400 to-blue-500' },
-  stethoscope: { emoji: '🩺', color: 'from-green-400 to-teal-500' },
-  syringe: { emoji: '💉', color: 'from-orange-400 to-red-500' },
-  pills: { emoji: '💊', color: 'from-purple-400 to-indigo-500' },
-  dashboard: { emoji: '📊', color: 'from-amber-400 to-orange-500' }
+// Model path mapping
+const MODEL_PATHS = {
+  doctor: 'C:/Users/yusuf/Downloads/ai medical devops/medical doctor 3d model.glb',
+  stethoscope: 'C:/Users/yusuf/Downloads/ai medical devops/stethoscope 3d model.glb',
+  syringe: 'C:/Users/yusuf/Downloads/ai medical devops/cartoon syringe 3d model.glb',
+  pills: 'C:/Users/yusuf/Downloads/ai medical devops/pill bottle 3d model.glb',
+  dashboard: 'C:/Users/yusuf/Downloads/ai medical devops/dashboard.glb'
+};
+
+// Convert Windows path to file:// URL
+const pathToUrl = (windowsPath) => {
+  return windowsPath.replace(/\\/g, '/').replace('C:/', 'file:///');
+};
+
+// Static 3D model component (no animation)
+const StaticModel = ({ modelType }) => {
+  const path = MODEL_PATHS[modelType];
+  const url = path ? pathToUrl(path) : null;
+
+  // Fallback geometry if model fails to load
+  const FallbackGeometry = () => (
+    <mesh>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color="#20B2AA" />
+    </mesh>
+  );
+
+  if (!url) {
+    return <FallbackGeometry />;
+  }
+
+  try {
+    const { scene } = useGLTF(url);
+    return <primitive object={scene.clone()} scale={0.5} />;
+  } catch (error) {
+    console.error(`Failed to load model: ${modelType}`, error);
+    return <FallbackGeometry />;
+  }
+};
+
+// Error boundary for 3D models
+class ModelErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color="#20B2AA" />
+        </mesh>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// 3D Preview Canvas
+const ModelPreview = ({ modelType }) => {
+  return (
+    <div className="model-preview-container">
+      <Canvas
+        camera={{ position: [0, 0, 3], fov: 50 }}
+        className="model-canvas"
+        frameloop="always"
+      >
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[5, 5, 5]} intensity={1} />
+        <Environment preset="city" />
+        <Suspense fallback={null}>
+          <ModelErrorBoundary>
+            <Float speed={0} rotationIntensity={0.2} floatIntensity={0}>
+              <StaticModel modelType={modelType} />
+            </Float>
+          </ModelErrorBoundary>
+        </Suspense>
+        <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
+      </Canvas>
+      <div className="model-glow" />
+    </div>
+  );
 };
 
 const FeatureSection = ({ 
@@ -18,33 +101,10 @@ const FeatureSection = ({
   modelType, 
   reversed = false
 }) => {
-  const sectionRef = useRef(null);
-  const preview = modelPreviews[modelType] || modelPreviews.doctor;
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section 
-      ref={sectionRef}
       id={sectionId}
-      className={`section feature-section ${reversed ? 'flex-row-reverse' : ''} fade-in-section`}
+      className={`section feature-section ${reversed ? 'flex-row-reverse' : ''}`}
     >
       {/* Left Side - Content or Model */}
       <div className={`split ${reversed ? 'split-right' : 'split-left'}`}>
@@ -65,16 +125,12 @@ const FeatureSection = ({
           </div>
         ) : (
           <motion.div 
-            className="model-preview-container"
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className={`model-preview-gradient model-float-${modelType}`}>
-              <span className="model-emoji">{preview.emoji}</span>
-            </div>
-            <div className="model-glow" />
+            <ModelPreview modelType={modelType} />
           </motion.div>
         )}
       </div>
@@ -83,16 +139,12 @@ const FeatureSection = ({
       <div className={`split ${reversed ? 'split-left' : 'split-right'}`}>
         {reversed ? (
           <motion.div 
-            className="model-preview-container"
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className={`model-preview-gradient model-float-${modelType}`}>
-              <span className="model-emoji">{preview.emoji}</span>
-            </div>
-            <div className="model-glow" />
+            <ModelPreview modelType={modelType} />
           </motion.div>
         ) : (
           <div className="feature-content">
