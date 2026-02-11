@@ -1,33 +1,30 @@
 /**
- * HEALIX Upstage Solar Pro AI Service
- * Direct HTTP integration with OpenRouter API
- * Primary: Upstage Solar Pro (upstage/solar-pro-3:free)
- * Fallback: Hardcoded responses (only if AI fails)
+ * HEALIX DeepSeek AI Service
+ * Direct HTTP integration with DeepSeek API
+ * Model: tngtech/deepseek-r1t2-chimera:free
  */
 
-// API Configuration - Use environment variable or fallback to placeholder
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || ""
-const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+// API Configuration - Use environment variable or fallback to provided key
+const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || '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'
+const DEEPSEEK_BASE_URL = import.meta.env.VITE_DEEPSEEK_API_URL || 'https://api.deepseek.com/v1'
 
-// Primary Model: Upstage Solar Pro
-const PRIMARY_MODEL = 'upstage/solar-pro-3:free'
+// Primary Model: DeepSeek R1T2 Chimera
+const PRIMARY_MODEL = 'tngtech/deepseek-r1t2-chimera:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
   // Check if API key is configured
-  if (!OPENROUTER_API_KEY) {
-    console.warn('OpenRouter API key not configured. Using fallback responses.')
+  if (!DEEPSEEK_API_KEY) {
+    console.warn('DeepSeek API key not configured. Using fallback responses.')
     return { success: false, error: 'API key not configured', isFallback: true }
   }
 
   try {
-    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+    const response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:3000',
-        'X-Title': 'HEALIX Medical Dashboard'
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: model,
@@ -42,7 +39,7 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
 
     if (!response.ok) {
       const error = await response.text()
-      throw new Error(`API Error: ${response.status} - ${error}`)
+      throw new Error(`DeepSeek API Error: ${response.status} - ${error}`)
     }
 
     // Handle streaming response
@@ -88,7 +85,7 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       model: model
     }
   } catch (error) {
-    console.error('OpenRouter API Error:', error.message)
+    console.error('DeepSeek API Error:', error.message)
     return { success: false, error: error.message, isFallback: true }
   }
 }

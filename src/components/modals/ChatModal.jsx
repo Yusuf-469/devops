@@ -78,7 +78,7 @@ const ChatModal = ({ onClose }) => {
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'info', message: 'Diagnosis complete' })
+        addNotification({ type: 'info', message: 'DeepSeek diagnosis complete' })
       } else {
         throw new Error('Primary failed')
       }
@@ -204,11 +204,11 @@ const ChatModal = ({ onClose }) => {
                 {isOnline ? (
                   <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                    Online Mode
+                    Online
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded-full">
-                    Offline Mode
+                  <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                    Fallback
                   </span>
                 )}
               </p>
@@ -251,7 +251,7 @@ const ChatModal = ({ onClose }) => {
                     <span className="text-sm">👨‍⚕️</span>
                     <span className="text-xs font-semibold text-healix-cyan">Dr. AI</span>
                     {message.isOffline && (
-                      <span className="text-xs text-red-400">(Offline)</span>
+                      <span className="text-xs text-yellow-400">(Fallback)</span>
                     )}
                     {message.isFallback && (
                       <span className="text-xs text-yellow-400">(Fallback)</span>
