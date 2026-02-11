@@ -4,7 +4,7 @@
  */
 
 // API Configuration - Use environment variable or fallback to provided key
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
 // Primary Model: Arcee AI Trinity Mini via OpenRouter
