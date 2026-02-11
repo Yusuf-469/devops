@@ -14,11 +14,11 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// Primary AI Configuration (Direct DeepSeek API)
+// Primary AI Configuration (OpenRouter - deepseek/deepseek-r1-0528:free)
 export const PRIMARY_AI_CONFIG = {
-  baseUrl: 'https://api.deepseek.com/v1',
-  apiKey: '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',
-  model: 'deepseek-r1t2-chimera:free'
+  baseUrl: 'https://openrouter.ai/api/v1',
+  apiKey: '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',
+  model: 'deepseek/deepseek-r1-0528:free'
 }
 
 // Fallback AI Configuration (Offline rule-based system)
