@@ -1,14 +1,13 @@
-import React, { useRef, useEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { useSpring, animated } from '@react-spring/web';
+import React, { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
-// Reuse existing 3D components
-const modelMap = {
-  doctor: React.lazy(() => import('../3d/DoctorModel.jsx')),
-  stethoscope: React.lazy(() => import('../3d/StethoscopeModel.jsx')),
-  syringe: React.lazy(() => import('../3d/SyringeModel.jsx')),
-  pills: React.lazy(() => import('../3d/PillBottleModel.jsx')),
-  dashboard: React.lazy(() => import('../3d/DashboardModel.jsx')),
+// Static 3D preview icons for each model type
+const modelPreviews = {
+  doctor: { emoji: '👨‍⚕️', color: 'from-cyan-400 to-blue-500' },
+  stethoscope: { emoji: '🩺', color: 'from-green-400 to-teal-500' },
+  syringe: { emoji: '💉', color: 'from-orange-400 to-red-500' },
+  pills: { emoji: '💊', color: 'from-purple-400 to-indigo-500' },
+  dashboard: { emoji: '📊', color: 'from-amber-400 to-orange-500' }
 };
 
 const FeatureSection = ({ 
@@ -17,33 +16,11 @@ const FeatureSection = ({
   description, 
   features, 
   modelType, 
-  modelPath,
-  reversed = false,
-  hoverEffect = 'scale'
+  reversed = false
 }) => {
   const sectionRef = useRef(null);
-  const modelRef = useRef(null);
-  const [spring, api] = useSpring(() => ({
-    scale: 1,
-    rotation: [0, 0, 0],
-    glow: 0,
-    config: { tension: 200, friction: 20 }
-  }));
+  const preview = modelPreviews[modelType] || modelPreviews.doctor;
 
-  // Floating animation for model
-  useFrame((state) => {
-    if (modelRef.current) {
-      const time = state.clock.getElapsedTime();
-      modelRef.current.position.y = Math.sin(time * 0.5) * 0.1;
-      
-      // Rotation for some models
-      if (modelType === 'dashboard') {
-        modelRef.current.rotation.y = time * 0.1;
-      }
-    }
-  });
-
-  // Intersection observer for scroll animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -62,24 +39,6 @@ const FeatureSection = ({
 
     return () => observer.disconnect();
   }, []);
-
-  const handleMouseEnter = () => {
-    api.start({
-      scale: hoverEffect === 'scale' ? 1.05 : 1,
-      glow: 1,
-      rotation: hoverEffect === 'vibrate' ? [0, 0, 0.05] : [0, 0, 0]
-    });
-  };
-
-  const handleMouseLeave = () => {
-    api.start({
-      scale: 1,
-      glow: 0,
-      rotation: [0, 0, 0]
-    });
-  };
-
-  const ModelComponent = modelMap[modelType];
 
   return (
     <section 
@@ -105,42 +64,36 @@ const FeatureSection = ({
             </ul>
           </div>
         ) : (
-          <div className="model-container" ref={modelRef}>
-            <React.Suspense fallback={<ModelLoadingFallback />}>
-              {ModelComponent && (
-                <animated.div style={{ transform: spring.scale.to(s => `scale(${s})`) }}>
-                  <ModelComponent 
-                    interactive={false} 
-                    autoRotate={modelType === 'dashboard'}
-                    scale={0.6}
-                  />
-                </animated.div>
-              )}
-            </React.Suspense>
-          </div>
+          <motion.div 
+            className="model-preview-container"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <div className={`model-preview-gradient model-float-${modelType}`}>
+              <span className="model-emoji">{preview.emoji}</span>
+            </div>
+            <div className="model-glow" />
+          </motion.div>
         )}
       </div>
 
       {/* Right Side - Model or Content */}
       <div className={`split ${reversed ? 'split-left' : 'split-right'}`}>
         {reversed ? (
-          <div 
-            className="model-container"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+          <motion.div 
+            className="model-preview-container"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
           >
-            <React.Suspense fallback={<ModelLoadingFallback />}>
-              {ModelComponent && (
-                <animated.div style={{ transform: spring.scale.to(s => `scale(${s})`) }}>
-                  <ModelComponent 
-                    interactive={false} 
-                    autoRotate={modelType === 'dashboard'}
-                    scale={0.6}
-                  />
-                </animated.div>
-              )}
-            </React.Suspense>
-          </div>
+            <div className={`model-preview-gradient model-float-${modelType}`}>
+              <span className="model-emoji">{preview.emoji}</span>
+            </div>
+            <div className="model-glow" />
+          </motion.div>
         ) : (
           <div className="feature-content">
             <h2 className="section-title">{title}</h2>
@@ -161,12 +114,5 @@ const FeatureSection = ({
     </section>
   );
 };
-
-// Loading fallback for 3D models
-const ModelLoadingFallback = () => (
-  <div className="w-full h-full flex items-center justify-center">
-    <div className="w-16 h-16 border-4 border-[#20B2AA] border-t-transparent rounded-full animate-spin" />
-  </div>
-);
 
 export default FeatureSection;

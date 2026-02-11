@@ -1,13 +1,9 @@
-import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-
-const DashboardModel = lazy(() => import('../3d/DashboardModel.jsx'));
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 const DashboardPreviewSection = () => {
   const sectionRef = useRef(null);
 
-  // Dashboard stats (simulated)
   const [healthScore] = useState(85);
   const [recentActions] = useState([
     { icon: '🩺', text: 'Symptom check completed', time: '2h ago' },
@@ -21,7 +17,6 @@ const DashboardPreviewSection = () => {
     { name: 'Meds', icon: '💊' },
   ]);
 
-  // Intersection observer for animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -41,24 +36,36 @@ const DashboardPreviewSection = () => {
     return () => observer.disconnect();
   }, []);
 
+  const dashboardStyle = {
+    position: 'relative',
+    width: '14rem',
+    height: '14rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '1.5rem',
+    background: 'linear-gradient(135deg, rgba(32, 178, 170, 0.3), rgba(32, 178, 170, 0.1))',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    boxShadow: '0 0 80px rgba(32, 178, 170, 0.3), inset 0 0 40px rgba(32, 178, 170, 0.1)',
+    animation: 'dashboard-preview-float 4s ease-in-out infinite',
+    fontSize: '5rem',
+  };
+
   return (
     <section ref={sectionRef} id="dashboard-preview" className="section dashboard-section fade-in-section">
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628] via-[#1a2a4a] to-[#0d1f3c]" />
 
-      {/* Center 3D Dashboard Model */}
-      <div className="center-model-container">
-        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <Suspense fallback={null}>
-            <DashboardModel interactive={false} autoRotate scale={0.7} />
-          </Suspense>
-          <OrbitControls enableZoom={false} enablePan={false} />
-        </Canvas>
-
-        {/* Holographic glow effect */}
-        <div className="holographic-glow" />
-      </div>
+      {/* Center Dashboard Preview */}
+      <motion.div
+        className="dashboard-icon-container"
+        initial={{ opacity: 0, scale: 0.8, rotateY: -15 }}
+        whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div style={dashboardStyle}>📊</div>
+      </motion.div>
 
       {/* Corner Features */}
       <div className="corner-features">
