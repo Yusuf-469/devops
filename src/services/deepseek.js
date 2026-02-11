@@ -63,15 +63,9 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
 
             try {
               const parsed = JSON.parse(data)
-              // Handle both regular content and reasoning content
+              // Only show final response content - filter out reasoning
               const content = parsed.choices?.[0]?.delta?.content || ''
-              const reasoning = parsed.choices?.[0]?.delta?.reasoning_content || ''
               
-              // Combine reasoning and content
-              if (reasoning) {
-                result += reasoning
-                onStream(result)
-              }
               if (content) {
                 result += content
                 onStream(result)
@@ -100,15 +94,17 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
 }
 
 // Dr. AI Chat function - Professional medical assistant
-const CHAT_SYSTEM_PROMPT = `You are Dr. AI, a caring medical assistant. Be brief, precise, and use bullet points.
+const CHAT_SYSTEM_PROMPT = `You are Dr. AI, a caring medical assistant. Be brief and precise.
+
+IMPORTANT: Never show your thinking process, reasoning, or internal analysis. Only output the final response directly.
 
 RULES:
 • Keep responses under 60 words
-• Use bullet points for all info
-• Ask follow-up questions in numbered list
+• Use bullet points (•) for assessment/info
+• Ask follow-up questions in numbered list (1., 2., 3.)
 
 Format:
-• [Assessment/Answer in 1-2 lines]
+• [Brief assessment in 1-2 lines]
 
 1. [Follow-up question 1]
 2. [Follow-up question 2]
