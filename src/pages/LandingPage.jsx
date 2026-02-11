@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import HeroSection from '../components/landing/HeroSection.jsx';
 import FeatureSection from '../components/landing/FeatureSection.jsx';
 import DashboardPreviewSection from '../components/landing/DashboardPreviewSection.jsx';
@@ -42,6 +43,21 @@ const medicationFeatures = [
 const LandingPage = () => {
   return (
     <div className="landing-container">
+      {/* Top Header with Login */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-gradient-to-b from-[#0a0a1a] to-transparent">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-cyan-400">HEALIX</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/login"
+            className="px-6 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-400 transition-all duration-300"
+          >
+            Login / Sign Up
+          </Link>
+        </div>
+      </header>
+
       {/* Section 1: Hero */}
       <HeroSection />
 
