@@ -6,8 +6,8 @@
 // API Configuration - Use environment variable or fallback to provided key
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
 
-// Primary Model: DeepSeek R1 via OpenRouter
-const PRIMARY_MODEL = 'deepseek/deepseek-r1-0528:free'
+// Primary Model: DeepSeek Chat via OpenRouter
+const PRIMARY_MODEL = 'deepseek/deepseek-chat:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
