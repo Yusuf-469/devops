@@ -7,8 +7,8 @@
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
-// Primary Model: DeepSeek Chat via OpenRouter
-const PRIMARY_MODEL = 'deepseek/deepseek-chat:free'
+// Primary Model: DeepSeek R1 via OpenRouter
+const PRIMARY_MODEL = 'deepseek/deepseek-r1-0528:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
@@ -63,7 +63,15 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
 
             try {
               const parsed = JSON.parse(data)
-              const content = parsed.choices?.[0]?.delta?.content || parsed.choices?.[0]?.message?.content
+              // Handle both regular content and reasoning content
+              const content = parsed.choices?.[0]?.delta?.content || ''
+              const reasoning = parsed.choices?.[0]?.delta?.reasoning_content || ''
+              
+              // Combine reasoning and content
+              if (reasoning) {
+                result += reasoning
+                onStream(result)
+              }
               if (content) {
                 result += content
                 onStream(result)
