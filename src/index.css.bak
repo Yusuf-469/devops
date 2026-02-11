@@ -698,7 +698,7 @@
 }
 
 .tech-shine {
-  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity duration-500;
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500;
   transform: translateX(-100%);
   animation: tech-shine 1.5s ease-in-out;
 }
@@ -716,11 +716,11 @@
   @apply absolute w-64 h-64 rounded-full blur-3xl opacity-20;
 }
 
-.tech-decoration.top-left {
+.top-left {
   @apply bg-cyan-500 -top-32 -left-32;
 }
 
-.tech-decoration.bottom-right {
+.bottom-right {
   @apply bg-teal-500 -bottom-32 -right-32;
 }
 
@@ -918,136 +918,3 @@
   @apply w-full h-full flex items-center justify-center;
 }
 
-/* ========================
-   MODEL PREVIEW STYLES
-   ======================== */
-
-.model-preview-container {
-  position: relative;
-  width: 16rem;
-  height: 16rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.model-preview-gradient {
-  position: relative;
-  width: 12rem;
-  height: 12rem;
-  border-radius: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(32, 178, 170, 0.3), rgba(32, 178, 170, 0.1));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 60px rgba(32, 178, 170, 0.2), inset 0 0 30px rgba(32, 178, 170, 0.1);
-}
-
-.model-emoji {
-  font-size: 4rem;
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
-}
-
-.model-glow {
-  position: absolute;
-  inset: 0;
-  border-radius: 1.5rem;
-  background: radial-gradient(circle at center, rgba(32, 178, 170, 0.4), transparent 70%);
-  animation: model-glow-pulse 3s ease-in-out infinite;
-}
-
-@keyframes model-glow-pulse {
-  0%, 100% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
-}
-
-@keyframes model-float-doctor {
-  0%, 100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-  50% {
-    transform: translateY(-15px) rotate(2deg);
-  }
-}
-
-@keyframes model-float-stethoscope {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes model-float-syringe {
-  0%, 100% {
-    transform: translateY(0) rotate(-5deg);
-  }
-  50% {
-    transform: translateY(-12px) rotate(5deg);
-  }
-}
-
-@keyframes model-float-pills {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-18px);
-  }
-}
-
-@keyframes model-float-dashboard {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.model-float-doctor {
-  animation: model-float-doctor 4s ease-in-out infinite;
-}
-
-.model-float-stethoscope {
-  animation: model-float-stethoscope 3.5s ease-in-out infinite;
-}
-
-.model-float-syringe {
-  animation: model-float-syringe 3s ease-in-out infinite;
-}
-
-.model-float-pills {
-  animation: model-float-pills 4s ease-in-out infinite;
-}
-
-.model-float-dashboard {
-  animation: model-float-dashboard 5s ease-in-out infinite;
-}
-
-.dashboard-icon-container {
-  position: relative;
-  z-index: 10;
-}
-
-.dashboard-preview-float {
-  animation: dashboard-preview-float 3s ease-in-out infinite;
-}
-
-@keyframes dashboard-preview-float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
