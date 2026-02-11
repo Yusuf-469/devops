@@ -324,7 +324,4 @@ const AuthSection = () => {
   );
 };
 
-// Import motion separately to avoid issues
-import { motion } from 'framer-motion';
-
 export default AuthSection;
