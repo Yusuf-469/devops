@@ -14,18 +14,18 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// Primary AI Configuration (OpenRouter - GPT-OSS)
+// Primary AI Configuration (DeepSeek - tngtech/deepseek-r1t2-chimera:free)
 export const PRIMARY_AI_CONFIG = {
-  baseUrl: import.meta.env.VITE_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1',
-  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
-  model: 'openai/gpt-oss-120b:free'
-}
-
-// Fallback AI Configuration (DeepSeek)
-export const FALLBACK_AI_CONFIG = {
   baseUrl: import.meta.env.VITE_DEEPSEEK_API_URL || 'https://api.deepseek.com/v1',
   apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || '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',
   model: 'tngtech/deepseek-r1t2-chimera:free'
+}
+
+// Fallback AI Configuration (Offline rule-based system)
+export const FALLBACK_AI_CONFIG = {
+  baseUrl: '',
+  apiKey: '',
+  model: 'offline-fallback'
 }
 
 // Get current AI config (primary or fallback)

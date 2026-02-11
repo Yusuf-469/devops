@@ -1,6 +1,6 @@
 /**
  * HEALIX AI Model Test Suite
- * Tests the dolphin-mistral-24b model and fallback scenarios
+ * Tests the DeepSeek tngtech/deepseek-r1t2-chimera:free model
  */
 
 import { getActiveAIConfig } from '../store/index.js'
@@ -10,7 +10,7 @@ import { analyzeSymptoms, quickSymptomCheck, checkDrugInteractions } from './fal
 // Test configuration
 const CONFIG = getActiveAIConfig()
 console.log('🔧 Current AI Configuration:')
-console.log(`   Provider: ${CONFIG.baseUrl.includes('openrouter') ? 'OpenRouter' : 'DeepSeek'}`)
+console.log(`   Provider: DeepSeek`)
 console.log(`   Model: ${CONFIG.model}`)
 console.log('')
 
@@ -70,9 +70,9 @@ const TEST_SCENARIOS = [
     }
   },
   {
-    name: 'API Connection Test (Dolphin-Mistral)',
+    name: 'DeepSeek API Connection Test',
     test: async () => {
-      console.log('🧪 Testing: API Connection - Dolphin-Mistral-24B')
+      console.log('🧪 Testing: DeepSeek API Connection - tngtech/deepseek-r1t2-chimera:free')
       try {
         const result = await chatWithAI(
           [{ role: 'user', content: 'Hello' }],
@@ -94,7 +94,7 @@ const TEST_SCENARIOS = [
   {
     name: 'Medical System Prompt Test',
     test: async () => {
-      console.log('🧪 Testing: Medical System Prompt')
+      console.log('🧪 Testing: DeepSeek Medical System Prompt')
       const medicalPrompt = `You are Dr. AI, a highly trained medical assistant.
 Reply with:
 1. Assessment
