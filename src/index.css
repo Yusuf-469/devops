@@ -978,6 +978,16 @@
   animation: none;
 }
 
+/* Login Page Canvas */
+.login-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
 .dashboard-preview-float {
   animation: dashboard-preview-float 3s ease-in-out infinite;
 }
