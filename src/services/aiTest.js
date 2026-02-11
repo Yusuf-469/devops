@@ -1,6 +1,6 @@
 /**
  * HEALIX AI Model Test Suite
- * Tests the DeepSeek tngtech/deepseek-r1t2-chimera:free model
+ * Tests the deepseek/deepseek-r1-0528:free model via OpenRouter
  */
 
 import { getActiveAIConfig } from '../store/index.js'
@@ -10,7 +10,7 @@ import { analyzeSymptoms, quickSymptomCheck, checkDrugInteractions } from './fal
 // Test configuration
 const CONFIG = getActiveAIConfig()
 console.log('🔧 Current AI Configuration:')
-console.log(`   Provider: DeepSeek`)
+console.log(`   Provider: OpenRouter`)
 console.log(`   Model: ${CONFIG.model}`)
 console.log('')
 
@@ -70,9 +70,9 @@ const TEST_SCENARIOS = [
     }
   },
   {
-    name: 'DeepSeek API Connection Test',
+    name: 'OpenRouter API Connection Test',
     test: async () => {
-      console.log('🧪 Testing: DeepSeek API Connection - tngtech/deepseek-r1t2-chimera:free')
+      console.log('🧪 Testing: OpenRouter API - deepseek/deepseek-r1-0528:free')
       try {
         const result = await chatWithAI(
           [{ role: 'user', content: 'Hello' }],
@@ -94,7 +94,7 @@ const TEST_SCENARIOS = [
   {
     name: 'Medical System Prompt Test',
     test: async () => {
-      console.log('🧪 Testing: DeepSeek Medical System Prompt')
+      console.log('🧪 Testing: OpenRouter Medical System Prompt')
       const medicalPrompt = `You are Dr. AI, a highly trained medical assistant.
 Reply with:
 1. Assessment
