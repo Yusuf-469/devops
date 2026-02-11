@@ -1,31 +1,29 @@
 /**
  * HEALIX DeepSeek AI Service
- * OpenRouter API with arcee-ai/trinity-mini:free model
+ * Direct DeepSeek API integration
  */
 
-// API Configuration - Use environment variable or fallback to provided key
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
-const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
+// Direct DeepSeek API Configuration
+const DEEPSEEK_API_KEY = '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'
+const DEEPSEEK_BASE_URL = 'https://api.deepseek.com/v1'
 
-// Primary Model: DeepSeek R1 via OpenRouter
-const PRIMARY_MODEL = 'deepseek/deepseek-r1-0528:free'
+// Primary Model: DeepSeek R1
+const PRIMARY_MODEL = 'deepseek-r1t2-chimera:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
   // Check if API key is configured
-  if (!OPENROUTER_API_KEY) {
-    console.warn('OpenRouter API key not configured. Using fallback responses.')
+  if (!DEEPSEEK_API_KEY) {
+    console.warn('DeepSeek API key not configured. Using fallback responses.')
     return { success: false, error: 'API key not configured', isFallback: true }
   }
 
   try {
-    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+    const response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:3000',
-        'X-Title': 'HEALIX Medical Dashboard'
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: model,
