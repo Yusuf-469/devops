@@ -14,11 +14,11 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// Primary AI Configuration (OpenRouter - arcee-ai/trinity-mini:free)
+// Primary AI Configuration (OpenRouter - deepseek/deepseek-chat:free)
 export const PRIMARY_AI_CONFIG = {
   baseUrl: 'https://openrouter.ai/api/v1',
   apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
-  model: 'arcee-ai/trinity-mini:free'
+  model: 'deepseek/deepseek-chat:free'
 }
 
 // Fallback AI Configuration (Offline rule-based system)
