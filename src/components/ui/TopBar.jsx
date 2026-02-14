@@ -15,20 +15,24 @@ export const TopBar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-      className="fixed top-0 left-20 right-0 h-16 glass-morphism-dark border-b border-white/5 z-50 flex items-center justify-between px-4 md:px-8"
+      className="fixed top-0 left-0 right-0 h-16 glass-morphism-dark border-b border-white/5 z-40 flex items-center justify-between px-4 md:px-8 pl-24"
     >
-      {/* Logo Section */}
+      {/* Logo Section - H with Medical Theme */}
       <motion.div 
         className="flex items-center gap-3"
         whileHover={{ scale: 1.02 }}
       >
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-400/30">
-          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 via-red-600 to-red-700 flex items-center justify-center shadow-lg shadow-red-500/30 relative">
+          <span className="text-2xl font-black text-white">H</span>
+          {/* Medical cross overlay */}
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
+            <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+          </div>
         </div>
         <div>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
             HEALIX
           </h1>
           <p className="text-[10px] text-gray-400 uppercase tracking-widest">AI Healthcare</p>

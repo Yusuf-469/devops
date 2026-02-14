@@ -46,7 +46,30 @@ export const EMERGENCY_KEYWORDS = [
 
 // Main application store
 export const useAppStore = create((set, get) => ({
-  // Modal states
+  // Individual Modal states - CRITICAL FOR INTERACTIVITY
+  isChatOpen: false,
+  setIsChatOpen: (open) => set({ isChatOpen: open }),
+  
+  isAnalyzerOpen: false,
+  setIsAnalyzerOpen: (open) => set({ isAnalyzerOpen: open }),
+  
+  isTrackerOpen: false,
+  setIsTrackerOpen: (open) => set({ isTrackerOpen: open }),
+  
+  isMedicationOpen: false,
+  setIsMedicationOpen: (open) => set({ isMedicationOpen: open }),
+  
+  isDashboardOpen: false,
+  setIsDashboardOpen: (open) => set({ isDashboardOpen: open }),
+  
+  isEmergencyOpen: false,
+  setIsEmergencyOpen: (open) => set({ isEmergencyOpen: open }),
+  
+  // Current section for scroll
+  currentSection: 0,
+  setCurrentSection: (section) => set({ currentSection: section }),
+  
+  // Legacy modal state
   activeModal: null,
   setActiveModal: (modal) => set({ activeModal: modal }),
   
@@ -72,6 +95,7 @@ export const useAppStore = create((set, get) => ({
     medications: [],
     healthScore: 75
   },
+  setUser: (user) => set({ user: { ...get().user, ...user } }),
   
   // Notifications
   notifications: [],
@@ -92,6 +116,17 @@ export const useAppStore = create((set, get) => ({
   // Actions
   clearActiveModal: () => set({ activeModal: null }),
   
+  // Close all modals
+  closeAllModals: () => set({
+    isChatOpen: false,
+    isAnalyzerOpen: false,
+    isTrackerOpen: false,
+    isMedicationOpen: false,
+    isDashboardOpen: false,
+    isEmergencyOpen: false,
+    activeModal: null
+  }),
+  
   // Check for emergency in text
   checkEmergency: (text) => {
     const lower = text.toLowerCase()
@@ -104,7 +139,7 @@ export const useAppStore = create((set, get) => ({
         message: 'Emergency detected. Please seek immediate care.',
         countdown: 10
       }
-      set({ emergencyDetected: emergency })
+      set({ emergencyDetected: emergency, isEmergencyOpen: true })
       return emergency
     }
     return null
