@@ -22,18 +22,14 @@ const Sidebar = ({ activeSection, onNavigate }) => {
   }
   
   return (
-    <aside className="fixed left-0 top-16 bottom-0 w-20 z-30 glass-morphism-dark border-r border-white/5 flex flex-col">
-      {/* HEALIX Logo with Medical Theme */}
+    <aside className="fixed left-0 top-0 bottom-0 w-20 z-30 glass-morphism-dark border-r border-white/5 flex flex-col">
+      {/* HEALIX Logo with Medical Theme - At Top */}
       <div className="p-4 border-b border-white/5 group relative cursor-pointer" onClick={() => scrollToSection(0)}>
-        <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-red-500 via-red-600 to-red-700 flex items-center justify-center mb-2 hover:scale-110 transition-transform shadow-lg shadow-red-500/30">
-          <div className="relative">
-            <span className="text-2xl font-bold text-white">H</span>
-            {/* Medical cross overlay */}
-            <Cross 
-              size={12} 
-              className="absolute -top-1 -right-1 text-white fill-current" 
-              style={{ opacity: 0.9 }}
-            />
+        <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-red-500 via-red-600 to-red-700 flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-red-500/30 relative">
+          <span className="text-2xl font-black text-white">H</span>
+          {/* Medical cross overlay */}
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
+            <Cross size={8} className="text-red-500" />
           </div>
         </div>
         {/* HEALIX Tooltip */}

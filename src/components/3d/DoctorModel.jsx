@@ -1,13 +1,14 @@
 import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Float, useGLTF } from '@react-three/drei'
+import { Float, Html, useGLTF } from '@react-three/drei'
 import { MODEL_PATHS } from '../../store/index.js'
 
-// Doctor 3D Model - Clickable only, no cursor tracking
+// Doctor 3D Model - Clickable with full GLB loading
 export const DoctorModel = ({ onClick }) => {
   const groupRef = useRef()
   const [hovered, setHovered] = useState(false)
   
+  // Load GLB model
   const gltf = useGLTF(MODEL_PATHS.doctor)
   
   useFrame((state) => {

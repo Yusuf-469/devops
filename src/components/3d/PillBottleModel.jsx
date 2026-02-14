@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { Float, useGLTF } from '@react-three/drei'
 import { MODEL_PATHS } from '../../store/index.js'
 
-// Pill Bottle 3D Model - Clickable only, no text
+// Pill Bottle 3D Model - Clickable with full GLB loading
 export const PillBottleModel = ({ onClick }) => {
   const groupRef = useRef()
   const [hovered, setHovered] = useState(false)
