@@ -552,7 +552,8 @@
 }
 
 .center-model-container {
-  @apply relative w-full h-1/2 flex items-center justify-center;
+  @apply relative w-full flex items-center justify-center;
+  min-height: 400px;
 }
 
 .holographic-glow {
