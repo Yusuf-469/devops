@@ -92,7 +92,7 @@ const DashboardPreviewSection = () => {
   ]);
 
   return (
-    <section className="section dashboard-section fade-in-section">
+    <section className="section dashboard-section">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
