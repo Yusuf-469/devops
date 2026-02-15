@@ -92,7 +92,7 @@ const AuthSection = () => {
           >
             {activeTab === 'login' ? 'Welcome Back' : (
               <span className="flex items-center justify-center gap-2">
-                Join <img src="/healix-logo.png" alt="HEALIX" className="h-8 w-auto inline-block" />
+                Join <img src="/logo.png" alt="Healix" className="h-10 w-auto inline-block" /> <span className="text-white font-bold">Healix</span>
               </span>
             )}
           </motion.h1>
