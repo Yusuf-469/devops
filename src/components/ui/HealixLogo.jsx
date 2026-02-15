@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { FuturisticHealixText } from './FuturisticHealixText';
 
 const HealixLogo = ({ size = 'default', showText = true, className = '' }) => {
   const sizes = {
@@ -30,11 +31,7 @@ const HealixLogo = ({ size = 'default', showText = true, className = '' }) => {
       {/* Text below logo for larger sizes */}
       {showText && size === 'hero' && (
         <div className="mt-4 text-center">
-          <h1 className={`${currentSize.text} font-bold tracking-wider`}>
-            <span className="bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">
-              Healix
-            </span>
-          </h1>
+          <FuturisticHealixText size="hero" />
         </div>
       )}
     </motion.div>
@@ -52,14 +49,8 @@ export const HealixLogoCompact = ({ className = '' }) => {
         className="w-10 h-10 object-contain drop-shadow-md"
       />
       
-      {/* Text */}
-      <div className="flex flex-col">
-        <h1 className="text-xl font-bold tracking-wider">
-          <span className="bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">
-            Healix
-          </span>
-        </h1>
-      </div>
+      {/* Futuristic Text */}
+      <FuturisticHealixText size="small" />
     </div>
   );
 };

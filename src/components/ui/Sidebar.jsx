@@ -1,5 +1,6 @@
 import React from 'react'
 import { Phone, HelpCircle, Heart, Stethoscope, Syringe, Pill, LayoutDashboard, User, Cross } from 'lucide-react'
+import { FuturisticHealixScanline } from './FuturisticHealixText'
 
 const Sidebar = ({ activeSection, onNavigate }) => {
   const tools = [
@@ -30,7 +31,7 @@ const Sidebar = ({ activeSection, onNavigate }) => {
         </div>
         {/* HEALIX Tooltip */}
         <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 px-3 py-1 bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-sm font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
-          Healix
+          <FuturisticHealixScanline />
         </div>
       </div>
       
