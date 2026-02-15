@@ -1,23 +1,20 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF } from '@react-three/drei';
 import { motion } from 'framer-motion';
 
-// Dashboard model path
-const DASHBOARD_PATH = 'C:/Users/yusuf/Downloads/ai medical devops/dashboard.glb';
+// Dashboard model path - using public folder
+const DASHBOARD_PATH = '/models/dashboard.glb';
 
-// Convert Windows path to file:// URL
-const pathToUrl = (windowsPath) => {
-  return windowsPath.replace(/\\/g, '/').replace('C:/', 'file:///');
-};
+// Scale for dashboard model
+const DASHBOARD_SCALE = 5.5;
 
 // Static Dashboard 3D model
 const Dashboard3DModel = () => {
-  const url = pathToUrl(DASHBOARD_PATH);
-  
   try {
-    const { scene } = useGLTF(url);
-    return <primitive object={scene.clone()} scale={0.3} />;
+    const { scene } = useGLTF(DASHBOARD_PATH);
+    const clonedScene = useMemo(() => scene.clone(true), [scene]);
+    return <primitive object={clonedScene} scale={DASHBOARD_SCALE} />;
   } catch (error) {
     console.error('Failed to load dashboard model', error);
     // Fallback geometry

@@ -1,26 +1,30 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, Float } from '@react-three/drei';
 import { motion } from 'framer-motion';
 
-// Model path mapping
+// Model path mapping - using public folder paths
 const MODEL_PATHS = {
-  doctor: 'C:/Users/yusuf/Downloads/ai medical devops/medical doctor 3d model.glb',
-  stethoscope: 'C:/Users/yusuf/Downloads/ai medical devops/stethoscope 3d model.glb',
-  syringe: 'C:/Users/yusuf/Downloads/ai medical devops/cartoon syringe 3d model.glb',
-  pills: 'C:/Users/yusuf/Downloads/ai medical devops/pill bottle 3d model.glb',
-  dashboard: 'C:/Users/yusuf/Downloads/ai medical devops/dashboard.glb'
+  doctor: '/models/medical doctor 3d model.glb',
+  stethoscope: '/models/stethoscope 3d model.glb',
+  syringe: '/models/cartoon syringe 3d model.glb',
+  pills: '/models/pill bottle 3d model.glb',
+  dashboard: '/models/dashboard.glb'
 };
 
-// Convert Windows path to file:// URL
-const pathToUrl = (windowsPath) => {
-  return windowsPath.replace(/\\/g, '/').replace('C:/', 'file:///');
+// Scale mapping for each model type
+const MODEL_SCALES = {
+  doctor: 5.5,
+  stethoscope: 6.5,
+  syringe: 6,
+  pills: 5,
+  dashboard: 5.5
 };
 
 // Static 3D model component (no animation)
 const StaticModel = ({ modelType }) => {
   const path = MODEL_PATHS[modelType];
-  const url = path ? pathToUrl(path) : null;
+  const scale = MODEL_SCALES[modelType] || 1;
 
   // Fallback geometry if model fails to load
   const FallbackGeometry = () => (
@@ -30,13 +34,14 @@ const StaticModel = ({ modelType }) => {
     </mesh>
   );
 
-  if (!url) {
+  if (!path) {
     return <FallbackGeometry />;
   }
 
   try {
-    const { scene } = useGLTF(url);
-    return <primitive object={scene.clone()} scale={0.5} />;
+    const { scene } = useGLTF(path);
+    const clonedScene = useMemo(() => scene.clone(true), [scene]);
+    return <primitive object={clonedScene} scale={scale} />;
   } catch (error) {
     console.error(`Failed to load model: ${modelType}`, error);
     return <FallbackGeometry />;
