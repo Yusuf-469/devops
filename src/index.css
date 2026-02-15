@@ -48,6 +48,22 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
+  /* Fade in animation for landing page after intro */
+  .fade-in {
+    animation: fadeInContent 0.5s ease-out forwards;
+  }
+  
+  @keyframes fadeInContent {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
   .glass-morphism-dark {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(24px) saturate(180%);

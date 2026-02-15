@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import HeroSection from '../components/landing/HeroSection.jsx';
 import FeatureSection from '../components/landing/FeatureSection.jsx';
@@ -6,6 +6,7 @@ import DashboardPreviewSection from '../components/landing/DashboardPreviewSecti
 import TechStack from '../components/landing/TechStack.jsx';
 import AboutSection from '../components/landing/AboutSection.jsx';
 import AuthSection from '../components/landing/AuthSection.jsx';
+import AnimatedIntro from '../components/landing/AnimatedIntro.jsx';
 
 // Feature data
 const doctorFeatures = [
@@ -41,8 +42,33 @@ const medicationFeatures = [
 ];
 
 const LandingPage = () => {
+  const [showIntro, setShowIntro] = useState(true);
+  const [introComplete, setIntroComplete] = useState(false);
+
+  // Check if intro was already shown in this session
+  useEffect(() => {
+    const introShown = sessionStorage.getItem('healix_intro_shown');
+    if (introShown === 'true') {
+      setShowIntro(false);
+      setIntroComplete(true);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    sessionStorage.setItem('healix_intro_shown', 'true');
+    setShowIntro(false);
+    setTimeout(() => {
+      setIntroComplete(true);
+    }, 300);
+  };
+
+  // Show animated intro
+  if (showIntro && !introComplete) {
+    return <AnimatedIntro onComplete={handleIntroComplete} />;
+  }
+
   return (
-    <div className="landing-container">
+    <div className={`landing-container ${introComplete ? 'fade-in' : ''}`}>
       {/* Top Header with Login */}
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-gradient-to-b from-[#0a0a1a] to-transparent">
         <div className="flex items-center gap-2">
