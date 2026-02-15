@@ -1,4 +1,5 @@
 import React from 'react';
+import HealixLogo from '../ui/HealixLogo';
 
 const HeroSection = () => {
   const scrollToFeatures = () => {
@@ -11,7 +12,10 @@ const HeroSection = () => {
   return (
     <section className="section hero-section" id="hero">
       {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628] via-[#1a2a4a] to-[#20B2AA] animate-gradient" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0a1628] via-[#0f172a] to-[#0a1628]" />
+      
+      {/* Teal accent glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-3xl" />
       
       {/* Floating particles */}
       <div className="particles">
@@ -30,10 +34,10 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 text-center px-8 max-w-4xl mx-auto">
-        {/* Logo with gradient animation */}
-        <h1 className="logo-text mb-6">
-          <span className="gradient-text animate-gradient-text">HEALIX</span>
-        </h1>
+        {/* HEALIX Logo */}
+        <div className="mb-8">
+          <HealixLogo size="hero" />
+        </div>
 
         {/* Tagline */}
         <h2 className="text-3xl md:text-4xl font-light text-white mb-6">
@@ -42,7 +46,7 @@ const HeroSection = () => {
 
         {/* Description */}
         <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-          AI-powered diagnosis, instant report analysis, complete health management — 
+          AI-powered diagnosis, instant report analysis, complete health management -- 
           all in one intelligent platform.
         </p>
 
