@@ -476,13 +476,18 @@
 
 /* Landing container with scroll snap */
 .landing-container {
-  @apply h-screen w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth;
+  @apply w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth;
+  height: 100vh;
+  max-height: 100vh;
 }
 
 /* Base section styles */
 .section {
-  @apply h-screen w-full snap-start flex items-center justify-center relative overflow-hidden;
+  @apply w-full snap-start flex items-center justify-center relative overflow-hidden;
+  height: 100vh;
   min-height: 100vh;
+  max-height: 100vh;
+  scroll-snap-stop: always;
 }
 
 /* Split layouts */
