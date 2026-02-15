@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import HeroSection from '../components/landing/HeroSection.jsx';
 import FeatureSection from '../components/landing/FeatureSection.jsx';
 import DashboardPreviewSection from '../components/landing/DashboardPreviewSection.jsx';
 import TechStack from '../components/landing/TechStack.jsx';
@@ -42,33 +41,8 @@ const medicationFeatures = [
 ];
 
 const LandingPage = () => {
-  const [showIntro, setShowIntro] = useState(true);
-  const [introComplete, setIntroComplete] = useState(false);
-
-  // Check if intro was already shown in this session
-  useEffect(() => {
-    const introShown = sessionStorage.getItem('healix_intro_shown');
-    if (introShown === 'true') {
-      setShowIntro(false);
-      setIntroComplete(true);
-    }
-  }, []);
-
-  const handleIntroComplete = () => {
-    sessionStorage.setItem('healix_intro_shown', 'true');
-    setShowIntro(false);
-    setTimeout(() => {
-      setIntroComplete(true);
-    }, 300);
-  };
-
-  // Show animated intro
-  if (showIntro && !introComplete) {
-    return <AnimatedIntro onComplete={handleIntroComplete} />;
-  }
-
   return (
-    <div className={`landing-container ${introComplete ? 'fade-in' : ''}`}>
+    <div className="landing-container">
       {/* Top Header with Login */}
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-gradient-to-b from-[#0a0a1a] to-transparent">
         <div className="flex items-center gap-2">
@@ -84,8 +58,8 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Section 1: Hero */}
-      <HeroSection />
+      {/* Section 1: Hero - Animated Intro */}
+      <AnimatedIntro />
 
       {/* Section 2: Dr. AI - Left Model, Right Content */}
       <FeatureSection

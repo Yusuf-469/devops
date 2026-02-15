@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import './AnimatedIntro.css';
 
 const TOTAL_FRAMES = 240;
@@ -18,12 +19,12 @@ const preloadFrames = () => {
 
 const FRAME_PATHS = preloadFrames();
 
-const AnimatedIntro = ({ onComplete }) => {
+const AnimatedIntro = () => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [loadedFrames, setLoadedFrames] = useState(new Set());
   const [isFullyLoaded, setIsFullyLoaded] = useState(false);
-  const [showSkip, setShowSkip] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
   const animationRef = useRef(null);
   const lastTimeRef = useRef(0);
 
@@ -55,7 +56,6 @@ const AnimatedIntro = ({ onComplete }) => {
       await Promise.all(loadPromises);
       if (mounted) {
         setIsFullyLoaded(true);
-        setShowSkip(true);
       }
     };
 
@@ -82,10 +82,7 @@ const AnimatedIntro = ({ onComplete }) => {
         setCurrentFrame(prev => {
           if (prev >= TOTAL_FRAMES - 1) {
             setIsPlaying(false);
-            // Auto-complete after animation finishes
-            setTimeout(() => {
-              onComplete?.();
-            }, 500);
+            setAnimationComplete(true);
             return prev;
           }
           return prev + 1;
@@ -102,20 +99,13 @@ const AnimatedIntro = ({ onComplete }) => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, isFullyLoaded, onComplete]);
+  }, [isPlaying, isFullyLoaded]);
 
-  // Handle skip
-  const handleSkip = useCallback(() => {
-    setIsPlaying(false);
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-    }
-    onComplete?.();
-  }, [onComplete]);
-
-  // Handle pause/play
-  const handlePausePlay = useCallback(() => {
-    setIsPlaying(prev => !prev);
+  // Handle replay
+  const handleReplay = useCallback(() => {
+    setCurrentFrame(0);
+    setIsPlaying(true);
+    setAnimationComplete(false);
     lastTimeRef.current = 0;
   }, []);
 
@@ -129,7 +119,7 @@ const AnimatedIntro = ({ onComplete }) => {
   const loadingProgress = Math.round((loadedFrames.size / TOTAL_FRAMES) * 100);
 
   return (
-    <div className="animated-intro">
+    <section className="animated-intro-hero scroll-section" id="hero">
       {/* Loading overlay */}
       <AnimatePresence>
         {!isFullyLoaded && (
@@ -175,63 +165,133 @@ const AnimatedIntro = ({ onComplete }) => {
         </AnimatePresence>
       </div>
 
-      {/* Controls overlay */}
-      {isFullyLoaded && showSkip && (
-        <motion.div
-          className="controls-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {/* Progress bar */}
-          <div className="progress-container">
-            <div 
-              className="progress-bar"
-              style={{ width: `${((currentFrame + 1) / TOTAL_FRAMES) * 100}%` }}
-            />
-          </div>
+      {/* Hero content overlay - shows when animation completes */}
+      <AnimatePresence>
+        {animationComplete && (
+          <motion.div
+            className="hero-content-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <div className="hero-content">
+              <motion.div
+                className="hero-badge"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <span className="badge-icon">🏥</span>
+                <span>AI-Powered Healthcare Platform</span>
+              </motion.div>
 
-          {/* Control buttons */}
-          <div className="control-buttons">
-            <button 
-              className="control-btn pause-btn"
-              onClick={handlePausePlay}
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-            >
-              {isPlaying ? (
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <rect x="6" y="4" width="4" height="16" />
-                  <rect x="14" y="4" width="4" height="16" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="5,3 19,12 5,21" />
-                </svg>
-              )}
-            </button>
+              <motion.h1
+                className="hero-title"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7 }}
+              >
+                Your Personal
+                <span className="gradient-text"> AI Health</span>
+                <br />
+                Dashboard
+              </motion.h1>
 
-            <button 
-              className="control-btn skip-btn"
-              onClick={handleSkip}
-            >
-              Skip Intro
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="6,4 18,12 6,20" />
-                <rect x="17" y="4" width="3" height="16" />
+              <motion.p
+                className="hero-description"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.9 }}
+              >
+                Experience the future of healthcare with 3D interactive tools,
+                AI-powered diagnosis, and personalized health management.
+              </motion.p>
+
+              <motion.div
+                className="hero-buttons"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1.1 }}
+              >
+                <Link to="/login" className="btn-primary">
+                  Get Started
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <button 
+                  className="btn-secondary"
+                  onClick={() => {
+                    document.getElementById('dr-ai')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Explore Features
+                </button>
+              </motion.div>
+
+              <motion.div
+                className="hero-stats"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1.3 }}
+              >
+                <div className="stat-item">
+                  <span className="stat-value">24/7</span>
+                  <span className="stat-label">AI Support</span>
+                </div>
+                <div className="stat-divider" />
+                <div className="stat-item">
+                  <span className="stat-value">5</span>
+                  <span className="stat-label">3D Tools</span>
+                </div>
+                <div className="stat-divider" />
+                <div className="stat-item">
+                  <span className="stat-value">100%</span>
+                  <span className="stat-label">Secure</span>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Replay button */}
+            <button className="replay-btn" onClick={handleReplay} title="Replay Animation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 4v6h6M23 20v-6h-6" />
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
               </svg>
             </button>
-          </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* Frame counter */}
-          <div className="frame-counter">
-            {currentFrame + 1} / {TOTAL_FRAMES}
-          </div>
-        </motion.div>
+      {/* Progress indicator during animation */}
+      {isFullyLoaded && !animationComplete && (
+        <div className="progress-indicator">
+          <div 
+            className="progress-fill"
+            style={{ width: `${((currentFrame + 1) / TOTAL_FRAMES) * 100}%` }}
+          />
+        </div>
       )}
 
-      {/* Gradient overlay at bottom */}
-      <div className="gradient-overlay" />
-    </div>
+      {/* Scroll indicator */}
+      <AnimatePresence>
+        {animationComplete && (
+          <motion.div
+            className="scroll-indicator"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.5 }}
+          >
+            <span>Scroll to explore</span>
+            <div className="scroll-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12l7 7 7-7" />
+              </svg>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
   );
 };
 
