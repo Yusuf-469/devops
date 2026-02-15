@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useMemo, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, Float } from '@react-three/drei';
 import { motion } from 'framer-motion';
@@ -21,32 +21,32 @@ const MODEL_SCALES = {
   dashboard: 2.5
 };
 
-// Static 3D model component (no animation)
-const StaticModel = ({ modelType }) => {
+// Individual model component that handles its own loading
+const ModelComponent = ({ modelType }) => {
   const path = MODEL_PATHS[modelType];
   const scale = MODEL_SCALES[modelType] || 1;
-
-  // Fallback geometry if model fails to load
-  const FallbackGeometry = () => (
-    <mesh>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#20B2AA" />
-    </mesh>
-  );
-
-  if (!path) {
-    return <FallbackGeometry />;
-  }
-
-  try {
-    const { scene } = useGLTF(path);
-    const clonedScene = useMemo(() => scene.clone(true), [scene]);
-    return <primitive object={clonedScene} scale={scale} />;
-  } catch (error) {
-    console.error(`Failed to load model: ${modelType}`, error);
-    return <FallbackGeometry />;
-  }
+  
+  const { scene } = useGLTF(path);
+  const clonedScene = useMemo(() => scene.clone(true), [scene]);
+  
+  return <primitive object={clonedScene} scale={scale} />;
 };
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <mesh>
+    <boxGeometry args={[0.5, 0.5, 0.5]} />
+    <meshStandardMaterial color="#20B2AA" wireframe />
+  </mesh>
+);
+
+// Error fallback component  
+const ErrorFallback = () => (
+  <mesh>
+    <boxGeometry args={[1, 1, 1]} />
+    <meshStandardMaterial color="#20B2AA" />
+  </mesh>
+);
 
 // Error boundary for 3D models
 class ModelErrorBoundary extends React.Component {
@@ -56,38 +56,46 @@ class ModelErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
+    console.error('Model Error:', error);
     return { hasError: true };
   }
 
   render() {
     if (this.state.hasError) {
-      return (
-        <mesh>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="#20B2AA" />
-        </mesh>
-      );
+      return <ErrorFallback />;
     }
     return this.props.children;
   }
 }
 
-// 3D Preview Canvas
+// 3D Preview Canvas with better loading handling
 const ModelPreview = ({ modelType }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    // Preload the specific model when component mounts
+    const path = MODEL_PATHS[modelType];
+    if (path) {
+      useGLTF.preload(path);
+    }
+  }, [modelType]);
+
   return (
     <div className="model-preview-container">
       <Canvas
         camera={{ position: [0, 0, 3], fov: 50 }}
         className="model-canvas"
         frameloop="always"
+        onCreated={() => setIsLoading(false)}
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
         <Environment preset="city" />
-        <Suspense fallback={null}>
+        <Suspense fallback={<LoadingFallback />}>
           <ModelErrorBoundary>
             <Float speed={0} rotationIntensity={0.2} floatIntensity={0}>
-              <StaticModel modelType={modelType} />
+              <ModelComponent modelType={modelType} />
             </Float>
           </ModelErrorBoundary>
         </Suspense>
