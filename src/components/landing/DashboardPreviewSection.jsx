@@ -78,12 +78,6 @@ const Dashboard3DPreview = () => {
 };
 
 const DashboardPreviewSection = () => {
-  const [healthScore] = useState(85);
-  const [recentActions] = useState([
-    { icon: '🩺', text: 'Symptom check completed', time: '2h ago' },
-    { icon: '📄', text: 'Report analyzed', time: '5h ago' },
-    { icon: '💊', text: 'Medication logged', time: '1d ago' },
-  ]);
   const [quickTools] = useState([
     { name: 'Dr. AI', icon: '👨‍⚕️' },
     { name: 'Reports', icon: '📊' },
@@ -125,73 +119,12 @@ const DashboardPreviewSection = () => {
 
         {/* Corner Features */}
         <div className="corner-features">
-          {/* Top Left - Health Score */}
+          {/* Top Left - Quick Tools */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
             className="corner-feature top-left"
-          >
-            <div className="flex items-center gap-4">
-              <div className="health-score-ring">
-                <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.1)"
-                    strokeWidth="8"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    stroke={healthScore >= 75 ? '#10b981' : healthScore >= 50 ? '#f59e0b' : '#ef4444'}
-                    strokeWidth="8"
-                    strokeDasharray={`${healthScore * 2.83} 283`}
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <div className="health-score-text">
-                  <span className="score-value">{healthScore}</span>
-                </div>
-              </div>
-              <div>
-                <h3 className="corner-title mb-1">Health Score</h3>
-                <p className="feature-label">Excellent condition</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Top Right - Recent Activity */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="corner-feature top-right"
-          >
-            <h3 className="corner-title">Recent Activity</h3>
-            <div className="activity-list">
-              {recentActions.map((action, index) => (
-                <div key={index} className="activity-item">
-                  <span className="activity-icon">{action.icon}</span>
-                  <div className="activity-info">
-                    <p className="activity-text">{action.text}</p>
-                  </div>
-                  <span className="activity-time">{action.time}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Bottom Left - Quick Tools */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="corner-feature bottom-left"
           >
             <h3 className="corner-title">Quick Tools</h3>
             <div className="quick-tools-grid">
@@ -204,12 +137,12 @@ const DashboardPreviewSection = () => {
             </div>
           </motion.div>
 
-          {/* Bottom Right - Emergency */}
+          {/* Top Right - Emergency */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="corner-feature bottom-right"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="corner-feature top-right"
           >
             <h3 className="corner-title">Emergency?</h3>
             <p className="text-gray-400 text-sm mb-4">
