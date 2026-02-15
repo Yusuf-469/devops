@@ -549,6 +549,7 @@
 /* Dashboard Preview Section */
 .dashboard-section {
   @apply flex-col;
+  background: linear-gradient(180deg, #0a0a1a 0%, #0f172a 50%, #0a0a1a 100%);
 }
 
 .center-model-container {
@@ -573,7 +574,8 @@
 }
 
 .corner-features {
-  @apply absolute inset-0 pointer-events-none;
+  @apply fixed inset-0 pointer-events-none p-8;
+  z-index: 10;
 }
 
 .corner-feature {
@@ -582,19 +584,19 @@
 }
 
 .top-left {
-  @apply top-16 left-16;
+  @apply top-24 left-8;
 }
 
 .top-right {
-  @apply top-16 right-16;
+  @apply top-24 right-8;
 }
 
 .bottom-left {
-  @apply bottom-16 left-16;
+  @apply bottom-8 left-8;
 }
 
 .bottom-right {
-  @apply bottom-16 right-16;
+  @apply bottom-8 right-8;
 }
 
 .corner-title {
@@ -948,8 +950,9 @@
 
 .dashboard-preview-container {
   position: relative;
-  width: 32rem;
-  height: 32rem;
+  width: 100%;
+  height: 400px;
+  max-width: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
