@@ -132,7 +132,7 @@ const LoginPage = () => {
               onClick={handleDemoLogin}
               className="demo-btn"
             >
-              🚀 Try Demo Account
+              Try Demo Account
             </button>
           </form>
 
