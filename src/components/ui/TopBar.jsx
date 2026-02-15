@@ -18,7 +18,7 @@ export const TopBar = () => {
     >
       {/* Logo Section - Enlarged HEALIX Logo */}
       <motion.div 
-        className="flex items-center gap-3"
+        className="flex items-start gap-3"
         whileHover={{ scale: 1.02 }}
       >
         <img 
@@ -26,7 +26,7 @@ export const TopBar = () => {
           alt="HEALIX" 
           className="h-14 w-auto object-contain" 
         />
-        <FuturisticHealixCompact className="hidden md:block" />
+        <FuturisticHealixCompact className="hidden md:flex" />
       </motion.div>
       
       {/* Right Section */}
