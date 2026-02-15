@@ -924,8 +924,8 @@
 
 .model-preview-container {
   position: relative;
-  width: 16rem;
-  height: 16rem;
+  width: 28rem;
+  height: 28rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -947,8 +947,8 @@
 
 .dashboard-preview-container {
   position: relative;
-  width: 20rem;
-  height: 20rem;
+  width: 32rem;
+  height: 32rem;
   display: flex;
   align-items: center;
   justify-content: center;
