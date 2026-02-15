@@ -46,11 +46,17 @@ const LoginPage = () => {
           transition={{ delay: 0.2 }}
           className="text-center mb-8"
         >
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <img src="/logo.png" alt="HEALIX" className="h-16 w-auto object-contain" />
-            <FuturisticHealixText size="large" />
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <motion.img 
+              src="/logo.png" 
+              alt="HEALIX" 
+              className="h-20 w-auto object-contain"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+            />
+            <FuturisticHealixText size="large" showTagline={true} />
           </div>
-          <p className="text-gray-400 mt-2">AI-Powered Healthcare Dashboard</p>
         </motion.div>
 
         {/* Auth Form */}
