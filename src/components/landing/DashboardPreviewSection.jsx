@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useMemo } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF } from '@react-three/drei';
 import { motion } from 'framer-motion';
@@ -78,13 +78,6 @@ const Dashboard3DPreview = () => {
 };
 
 const DashboardPreviewSection = () => {
-  const [quickTools] = useState([
-    { name: 'Dr. AI', icon: '👨‍⚕️' },
-    { name: 'Reports', icon: '📊' },
-    { name: 'Vaccines', icon: '💉' },
-    { name: 'Meds', icon: '💊' },
-  ]);
-
   return (
     <section className="section dashboard-section">
       <motion.div
@@ -119,30 +112,12 @@ const DashboardPreviewSection = () => {
 
         {/* Corner Features */}
         <div className="corner-features">
-          {/* Top Left - Quick Tools */}
+          {/* Bottom Right - Emergency */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="corner-feature top-left"
-          >
-            <h3 className="corner-title">Quick Tools</h3>
-            <div className="quick-tools-grid">
-              {quickTools.map((tool, index) => (
-                <div key={index} className="quick-tool-btn">
-                  <span className="tool-icon">{tool.icon}</span>
-                  <span className="tool-name">{tool.name}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Top Right - Emergency */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="corner-feature top-right"
+            className="corner-feature bottom-right"
           >
             <h3 className="corner-title">Emergency?</h3>
             <p className="text-gray-400 text-sm mb-4">
