@@ -90,7 +90,11 @@ const AuthSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             className="auth-title"
           >
-            {activeTab === 'login' ? 'Welcome Back' : 'Join HEALIX'}
+            {activeTab === 'login' ? 'Welcome Back' : (
+              <span className="flex items-center justify-center gap-2">
+                Join <img src="/healix-logo.png" alt="HEALIX" className="h-8 w-auto inline-block" />
+              </span>
+            )}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
