@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // Futuristic animated Healix text component
-export const FuturisticHealixText = ({ size = 'default', className = '' }) => {
+export const FuturisticHealixText = ({ size = 'default', showTagline = true, className = '' }) => {
   const sizes = {
     small: 'text-lg',
     default: 'text-xl',
@@ -42,7 +42,7 @@ export const FuturisticHealixText = ({ size = 'default', className = '' }) => {
 
   return (
     <motion.div 
-      className={`relative ${className}`}
+      className={`relative flex flex-col items-center ${className}`}
       initial="hidden"
       animate="visible"
     >
@@ -72,6 +72,18 @@ export const FuturisticHealixText = ({ size = 'default', className = '' }) => {
           </motion.span>
         ))}
       </motion.span>
+
+      {/* Tagline */}
+      {showTagline && (
+        <motion.span
+          className="text-xs md:text-sm text-cyan-400/80 tracking-[0.3em] uppercase mt-1"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+        >
+          AI Driven Healthcare
+        </motion.span>
+      )}
 
       {/* Glowing underline */}
       <motion.div
@@ -106,10 +118,10 @@ export const FuturisticHealixText = ({ size = 'default', className = '' }) => {
 };
 
 // Compact version for navigation bars
-export const FuturisticHealixCompact = ({ className = '' }) => {
+export const FuturisticHealixCompact = ({ showTagline = true, className = '' }) => {
   return (
     <motion.div 
-      className={`relative flex items-center ${className}`}
+      className={`relative flex flex-col items-start ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -138,6 +150,18 @@ export const FuturisticHealixCompact = ({ className = '' }) => {
         Healix
       </motion.span>
 
+      {/* Tagline */}
+      {showTagline && (
+        <motion.span
+          className="text-[10px] text-cyan-400/70 tracking-[0.2em] uppercase"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          AI Driven Healthcare
+        </motion.span>
+      )}
+
       {/* Subtle glow */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -159,9 +183,9 @@ export const FuturisticHealixCompact = ({ className = '' }) => {
 };
 
 // Glowing text with scanline effect
-export const FuturisticHealixScanline = ({ className = '' }) => {
+export const FuturisticHealixScanline = ({ showTagline = false, className = '' }) => {
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative flex flex-col items-center ${className}`}>
       <motion.span 
         className="text-xl font-black tracking-wider relative inline-block"
         style={{
@@ -175,6 +199,13 @@ export const FuturisticHealixScanline = ({ className = '' }) => {
       >
         Healix
       </motion.span>
+
+      {/* Tagline */}
+      {showTagline && (
+        <span className="text-[10px] text-cyan-400/70 tracking-[0.2em] uppercase mt-0.5">
+          AI Driven Healthcare
+        </span>
+      )}
 
       {/* Scanline effect */}
       <motion.div
