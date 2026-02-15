@@ -21,10 +21,11 @@ export const TopBar = () => {
         whileHover={{ scale: 1.02 }}
       >
         <img 
-          src="/healix-logo.png" 
+          src="/logo.png" 
           alt="HEALIX" 
           className="h-12 w-auto object-contain" 
         />
+        <span className="text-white font-semibold text-lg hidden md:block">AI Healthcare</span>
       </motion.div>
       
       {/* Right Section */}
