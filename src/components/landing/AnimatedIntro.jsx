@@ -31,7 +31,7 @@ const AnimatedIntro = () => {
         transition={{ type: "spring", stiffness: 50, damping: 30 }}
       >
         <motion.img
-          src="/sui.png"
+          src="/hero-bg.png"
           alt="HEALIX AI Healthcare"
           className="hero-main-image"
           initial={{ scale: 0.8, opacity: 0 }}
