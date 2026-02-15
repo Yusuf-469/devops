@@ -12,13 +12,13 @@ const MODEL_PATHS = {
   dashboard: '/models/dashboard.glb'
 };
 
-// Scale mapping for each model type
+// Scale mapping for each model type - adjusted for better fit
 const MODEL_SCALES = {
-  doctor: 5.5,
-  stethoscope: 6.5,
-  syringe: 6,
-  pills: 5,
-  dashboard: 5.5
+  doctor: 2.5,
+  stethoscope: 3,
+  syringe: 2.8,
+  pills: 2.5,
+  dashboard: 2.5
 };
 
 // Static 3D model component (no animation)
