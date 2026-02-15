@@ -100,25 +100,28 @@ const DashboardPreviewSection = () => {
         viewport={{ once: true }}
         className="w-full h-full flex flex-col items-center justify-center relative"
       >
-        {/* Center 3D Dashboard Model */}
-        <div className="center-model-container">
-          <div className="holographic-glow" />
-          {/* Title and Description */}
-          <div className="text-center mb-6 absolute top-[-80px]">
-            <h2 className="text-4xl font-bold text-white mb-2">
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                Health Dashboard
-              </span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-md mx-auto">
-              Your personalized command center for complete health management
-            </p>
-          </div>
-          <Dashboard3DPreview />
-          <p className="dashboard-description text-gray-400 text-lg absolute bottom-[-60px]">
-            Click any tool to open its full 3D experience
+        {/* Title and Description - At the top */}
+        <div className="text-center mb-8 pt-16">
+          <h2 className="text-4xl font-bold text-white mb-3">
+            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              Health Dashboard
+            </span>
+          </h2>
+          <p className="text-gray-400 text-lg max-w-md mx-auto">
+            Your personalized command center for complete health management
           </p>
         </div>
+
+        {/* Center 3D Dashboard Model */}
+        <div className="center-model-container" style={{ height: 'auto', minHeight: '400px' }}>
+          <div className="holographic-glow" />
+          <Dashboard3DPreview />
+        </div>
+
+        {/* Subtitle below model */}
+        <p className="text-gray-400 text-lg mt-6 text-center">
+          Click any tool to open its full 3D experience
+        </p>
 
         {/* Corner Features */}
         <div className="corner-features">
