@@ -1086,97 +1086,129 @@
     scroll-snap-type: y proximity;
   }
   
+  /* Make sections fit within viewport */
   .section {
     scroll-snap-stop: normal;
-    min-height: auto;
-    height: auto;
-    padding: 3rem 1rem;
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    padding: 0.5rem;
     flex-direction: column !important;
+    overflow: hidden;
   }
   
   .section.feature-section {
     flex-direction: column !important;
+    justify-content: flex-start;
+    padding-top: 3rem;
   }
   
-  /* Stack split layouts vertically */
+  /* Stack split layouts vertically - compact */
   .split {
     width: 100% !important;
     height: auto !important;
-    padding: 1rem !important;
+    padding: 0.25rem 0.5rem !important;
     min-height: auto !important;
+    flex-shrink: 1;
   }
   
   .split-left,
   .split-right {
-    padding: 1rem !important;
+    padding: 0.25rem 0.5rem !important;
   }
   
-  /* Feature section mobile layout */
+  /* Feature section mobile layout - model on top, content below */
   .feature-section .split:first-child {
-    order: 2;
+    order: 1;
+    flex: 0 0 45%;
+    max-height: 45vh;
   }
   
   .feature-section .split:last-child {
-    order: 1;
+    order: 2;
+    flex: 0 0 50%;
+    max-height: 50vh;
+    overflow-y: auto;
   }
   
   .feature-section.flex-row-reverse .split:first-child {
     order: 1;
+    flex: 0 0 45%;
+    max-height: 45vh;
   }
   
   .feature-section.flex-row-reverse .split:last-child {
     order: 2;
+    flex: 0 0 50%;
+    max-height: 50vh;
+    overflow-y: auto;
   }
   
   .feature-content {
     max-width: 100%;
     text-align: center;
+    padding: 0 0.5rem;
   }
   
   .section-title {
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
   }
   
   .section-description {
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
   }
   
   .feature-list {
     text-align: left;
+    margin: 0 auto;
+    max-width: 280px;
   }
   
   .feature-item {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
   }
   
-  /* Model preview mobile */
+  .feature-item svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 0.5rem;
+  }
+  
+  /* Model preview mobile - smaller to fit */
   .model-preview-container {
-    width: 18rem;
-    height: 18rem;
+    width: 14rem;
+    height: 14rem;
+    max-width: 40vh;
+    max-height: 40vh;
   }
   
   /* Dashboard section mobile */
   .dashboard-section {
-    padding: 2rem 1rem;
+    padding: 0.5rem;
+    height: auto;
+    min-height: 100vh;
   }
   
   .center-model-container {
-    min-height: 250px;
+    min-height: 200px;
+    max-height: 35vh;
   }
   
   .dashboard-preview-container {
-    height: 250px;
-    max-width: 300px;
+    height: 200px;
+    max-width: 250px;
   }
   
   .corner-features {
     position: relative;
-    padding: 1rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
   }
   
   .corner-feature {
@@ -1186,110 +1218,12 @@
     left: auto !important;
     right: auto !important;
     bottom: auto !important;
+    padding: 0.75rem;
   }
   
   /* Tech stack mobile */
   .tech-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-  
-  .tech-card {
-    padding: 1rem;
-  }
-  
-  .tech-icon {
-    width: 3rem;
-    height: 3rem;
-  }
-  
-  .tech-name {
-    font-size: 0.875rem;
-  }
-  
-  /* About section mobile */
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  
-  .about-heading {
-    font-size: 1.25rem;
-  }
-  
-  .about-text {
-    font-size: 0.9rem;
-  }
-  
-  /* Auth section mobile */
-  .auth-container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  
-  .auth-title {
-    font-size: 2rem;
-    text-align: center;
-  }
-  
-  .auth-subtitle {
-    font-size: 1rem;
-    text-align: center;
-  }
-  
-  .auth-forms-container {
-    max-width: 100%;
-  }
-  
-  .auth-tabs {
-    margin-bottom: 1.5rem;
-  }
-  
-  .auth-tab {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  /* Landing page header mobile */
-  .landing-container header {
-    padding: 0.75rem 1rem;
-  }
-  
-  .landing-container header img {
-    height: 2rem;
-  }
-  
-  .landing-container header a {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-}
-
-/* Small mobile devices */
-@media (max-width: 480px) {
-  .section {
-    padding: 2rem 0.75rem;
-  }
-  
-  .section-title {
-    font-size: 1.5rem;
-  }
-  
-  .section-description {
-    font-size: 0.85rem;
-  }
-  
-  .model-preview-container {
-    width: 15rem;
-    height: 15rem;
-  }
-  
-  .tech-grid {
-    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
   }
   
@@ -1300,41 +1234,152 @@
   .tech-icon {
     width: 2.5rem;
     height: 2.5rem;
-    margin-bottom: 0.5rem;
   }
   
   .tech-name {
     font-size: 0.75rem;
   }
   
+  /* About section mobile */
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .about-heading {
+    font-size: 1rem;
+  }
+  
+  .about-text {
+    font-size: 0.8rem;
+  }
+  
+  /* Auth section mobile */
+  .auth-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
   .auth-title {
     font-size: 1.5rem;
+    text-align: center;
   }
   
   .auth-subtitle {
     font-size: 0.9rem;
+    text-align: center;
+  }
+  
+  .auth-forms-container {
+    max-width: 100%;
+  }
+  
+  .auth-tabs {
+    margin-bottom: 1rem;
+  }
+  
+  .auth-tab {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Landing page header mobile */
+  .landing-container header {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .landing-container header img {
+    height: 1.75rem;
+  }
+  
+  .landing-container header a {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .section {
+    padding: 0.25rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.35rem;
+  }
+  
+  .section-description {
+    font-size: 0.7rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .model-preview-container {
+    width: 11rem;
+    height: 11rem;
+    max-width: 35vh;
+    max-height: 35vh;
+  }
+  
+  .feature-list {
+    max-width: 240px;
+  }
+  
+  .feature-item {
+    font-size: 0.7rem;
+  }
+  
+  .tech-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+  }
+  
+  .tech-card {
+    padding: 0.5rem;
+  }
+  
+  .tech-icon {
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .tech-name {
+    font-size: 0.65rem;
+  }
+  
+  .auth-title {
+    font-size: 1.25rem;
+  }
+  
+  .auth-subtitle {
+    font-size: 0.8rem;
   }
   
   .submit-btn,
   .demo-btn {
-    padding: 0.875rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.75rem 0.875rem;
+    font-size: 0.8rem;
   }
   
   .value-tag {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
   }
   
   .contact-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
   
   .contact-icon {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 }
 
