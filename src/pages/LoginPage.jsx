@@ -45,7 +45,10 @@ const LoginPage = () => {
           transition={{ delay: 0.2 }}
           className="text-center mb-8"
         >
-          <img src="/healix-logo.png" alt="HEALIX" className="h-16 w-auto mx-auto object-contain mb-2" />
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <img src="/logo.png" alt="HEALIX" className="h-16 w-auto object-contain" />
+            <span className="text-white font-bold text-2xl">Healix</span>
+          </div>
           <p className="text-gray-400 mt-2">AI-Powered Healthcare Dashboard</p>
         </motion.div>
 

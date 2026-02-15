@@ -23,9 +23,9 @@ export const TopBar = () => {
         <img 
           src="/logo.png" 
           alt="HEALIX" 
-          className="h-12 w-auto object-contain" 
+          className="h-14 w-auto object-contain" 
         />
-        <span className="text-white font-semibold text-lg hidden md:block">AI Healthcare</span>
+        <span className="text-white font-bold text-xl hidden md:block">Healix</span>
       </motion.div>
       
       {/* Right Section */}

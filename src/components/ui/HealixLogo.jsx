@@ -20,8 +20,8 @@ const HealixLogo = ({ size = 'default', showText = true, className = '' }) => {
     >
       {/* Logo Image */}
       <motion.img 
-        src="/healix-logo.png" 
-        alt="HEALIX - AI Healthcare" 
+        src="/logo.png" 
+        alt="Healix" 
         className={`${currentSize.container} object-contain drop-shadow-lg`}
         whileHover={{ scale: 1.05 }}
         transition={{ type: 'spring', stiffness: 300 }}
@@ -32,12 +32,9 @@ const HealixLogo = ({ size = 'default', showText = true, className = '' }) => {
         <div className="mt-4 text-center">
           <h1 className={`${currentSize.text} font-bold tracking-wider`}>
             <span className="bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">
-              HEALIX
+              Healix
             </span>
           </h1>
-          <p className="text-xs text-gray-400 uppercase tracking-widest mt-1">
-            AI Healthcare
-          </p>
         </div>
       )}
     </motion.div>
@@ -50,8 +47,8 @@ export const HealixLogoCompact = ({ className = '' }) => {
     <div className={`flex items-center gap-3 ${className}`}>
       {/* Logo Image */}
       <img 
-        src="/healix-logo.png" 
-        alt="HEALIX - AI Healthcare" 
+        src="/logo.png" 
+        alt="Healix" 
         className="w-10 h-10 object-contain drop-shadow-md"
       />
       
@@ -59,10 +56,9 @@ export const HealixLogoCompact = ({ className = '' }) => {
       <div className="flex flex-col">
         <h1 className="text-xl font-bold tracking-wider">
           <span className="bg-gradient-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">
-            HEALIX
+            Healix
           </span>
         </h1>
-        <p className="text-[10px] text-gray-400 uppercase tracking-widest">AI Healthcare</p>
       </div>
     </div>
   );
