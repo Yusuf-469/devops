@@ -1,15 +1,12 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Bell, User, Menu, X } from 'lucide-react'
-import { HealixLogoCompact } from './HealixLogo'
+import { Bell, User, Menu, X } from 'lucide-react'
 
 // Email constant
 const CONTACT_EMAIL = 'yusufhealth@io'
 
 export const TopBar = () => {
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   
   return (
     <motion.header
@@ -18,37 +15,17 @@ export const TopBar = () => {
       transition={{ type: 'spring', stiffness: 100, damping: 20 }}
       className="fixed top-0 left-0 right-0 h-16 glass-morphism-dark border-b border-white/5 z-40 flex items-center justify-between px-4 md:px-8 pl-24"
     >
-      {/* Logo Section - HEALIX with Medical Theme */}
+      {/* Logo Section - Enlarged HEALIX Logo */}
       <motion.div 
         className="flex items-center gap-3"
         whileHover={{ scale: 1.02 }}
       >
-        <HealixLogoCompact />
+        <img 
+          src="/healix-logo.png" 
+          alt="HEALIX" 
+          className="h-12 w-auto object-contain" 
+        />
       </motion.div>
-      
-      {/* Search Bar - Hidden on mobile */}
-      <div className="hidden md:flex items-center flex-1 max-w-xl mx-8">
-        <motion.div 
-          className={`flex items-center glass-morphism rounded-xl overflow-hidden transition-all duration-300 ${
-            isSearchOpen ? 'w-full' : 'w-64'
-          }`}
-          whileFocus={{ scale: 1.02 }}
-        >
-          <button 
-            className="p-3 text-gray-400 hover:text-cyan-400 transition-colors"
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-          >
-            <Search size={20} />
-          </button>
-          <input
-            type="text"
-            placeholder="Search symptoms, medications, doctors..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none py-3 pr-4"
-          />
-        </motion.div>
-      </div>
       
       {/* Right Section */}
       <div className="flex items-center gap-3">
@@ -109,16 +86,6 @@ export const TopBar = () => {
             className="absolute top-16 left-0 right-0 glass-morphism-dark border-b border-white/10 p-4 md:hidden"
           >
             <div className="flex flex-col gap-4">
-              <div className="flex items-center glass-morphism rounded-xl overflow-hidden">
-                <Search size={20} className="ml-3 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none py-3 pr-4"
-                />
-              </div>
               <a 
                 href={`mailto:${CONTACT_EMAIL}`}
                 className="flex items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition-colors"

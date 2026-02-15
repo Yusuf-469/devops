@@ -25,8 +25,8 @@ const Sidebar = ({ activeSection, onNavigate }) => {
     <aside className="fixed left-0 top-0 bottom-0 w-20 z-30 glass-morphism-dark border-r border-white/5 flex flex-col">
       {/* HEALIX Logo - At Top */}
       <div className="p-4 border-b border-white/5 group relative cursor-pointer" onClick={() => scrollToSection(0)}>
-        <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-teal-500/30 relative overflow-hidden">
-          <img src="/healix-logo.png" alt="HEALIX" className="w-10 h-10 object-contain" />
+        <div className="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-teal-500/30 relative overflow-hidden">
+          <img src="/healix-logo.png" alt="HEALIX" className="w-12 h-12 object-contain" />
         </div>
         {/* HEALIX Tooltip */}
         <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 px-3 py-1 bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-sm font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
