@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, User, Menu, X } from 'lucide-react'
+import { FuturisticHealixCompact } from './FuturisticHealixText'
 
 // Email constant
 const CONTACT_EMAIL = 'yusufhealth@io'
@@ -25,7 +26,7 @@ export const TopBar = () => {
           alt="HEALIX" 
           className="h-14 w-auto object-contain" 
         />
-        <span className="text-white font-bold text-xl hidden md:block">Healix</span>
+        <FuturisticHealixCompact className="hidden md:block" />
       </motion.div>
       
       {/* Right Section */}

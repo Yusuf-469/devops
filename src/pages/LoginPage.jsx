@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { FuturisticHealixText } from '../components/ui/FuturisticHealixText';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -47,7 +48,7 @@ const LoginPage = () => {
         >
           <div className="flex items-center justify-center gap-3 mb-2">
             <img src="/logo.png" alt="HEALIX" className="h-16 w-auto object-contain" />
-            <span className="text-white font-bold text-2xl">Healix</span>
+            <FuturisticHealixText size="large" />
           </div>
           <p className="text-gray-400 mt-2">AI-Powered Healthcare Dashboard</p>
         </motion.div>

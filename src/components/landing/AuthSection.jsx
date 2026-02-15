@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { FuturisticHealixCompact } from '../ui/FuturisticHealixText';
 
 const AuthSection = () => {
   const [activeTab, setActiveTab] = useState('login');
@@ -92,7 +93,7 @@ const AuthSection = () => {
           >
             {activeTab === 'login' ? 'Welcome Back' : (
               <span className="flex items-center justify-center gap-2">
-                Join <img src="/logo.png" alt="Healix" className="h-10 w-auto inline-block" /> <span className="text-white font-bold">Healix</span>
+                Join <img src="/logo.png" alt="Healix" className="h-10 w-auto inline-block" /> <FuturisticHealixCompact />
               </span>
             )}
           </motion.h1>

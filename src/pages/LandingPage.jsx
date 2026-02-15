@@ -6,6 +6,7 @@ import TechStack from '../components/landing/TechStack.jsx';
 import AboutSection from '../components/landing/AboutSection.jsx';
 import AuthSection from '../components/landing/AuthSection.jsx';
 import AnimatedIntro from '../components/landing/AnimatedIntro.jsx';
+import { FuturisticHealixCompact } from '../components/ui/FuturisticHealixText.jsx';
 
 // Feature data
 const doctorFeatures = [
@@ -45,9 +46,9 @@ const LandingPage = () => {
     <div className="landing-container">
       {/* Top Header with Login */}
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-gradient-to-b from-[#0a0a1a] to-transparent">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <img src="/logo.png" alt="HEALIX" className="h-12 w-auto object-contain" />
-          <span className="text-white font-bold text-xl">Healix</span>
+          <FuturisticHealixCompact />
         </div>
         <div className="flex items-center gap-4">
           <Link
