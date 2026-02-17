@@ -648,6 +648,7 @@ const MainDashboard = () => {
   
   const totalSections = 5
   const containerRef = useRef(null)
+  const lastTouchY = useRef(0)
   
   // Handle scroll to update active section
   useEffect(() => {
@@ -814,9 +815,21 @@ const MainDashboard = () => {
             containerRef.current.scrollBy({ top: e.deltaY, behavior: 'auto' })
           }
         }}
+        onTouchMove={(e) => {
+          // Enable touch scrolling on mobile
+          if (containerRef.current && window.innerWidth <= 768) {
+            const touch = e.touches[0];
+            const deltaY = touch.clientY - (lastTouchY.current || touch.clientY);
+            lastTouchY.current = touch.clientY;
+            containerRef.current.scrollBy({ top: -deltaY * 2, behavior: 'auto' });
+          }
+        }}
+        onTouchStart={(e) => {
+          lastTouchY.current = e.touches[0].clientY;
+        }}
       >
         <Canvas 
-          camera={{ position: [0, 0, 16], fov: 45 }} 
+          camera={{ position: [0, 0, window.innerWidth <= 768 ? 22 : 16], fov: 45 }} 
           dpr={[1, 2]} 
           gl={{ antialias: true, alpha: true }}
         >
@@ -831,12 +844,12 @@ const MainDashboard = () => {
       {/* Scroll Container - BEHIND Canvas, pointer-events none, just for scroll tracking */}
       <div 
         ref={containerRef}
-        className="relative w-full h-full overflow-y-scroll snap-y snap-mandatory z-0"
+        className="relative w-full h-full overflow-y-scroll snap-y snap-mandatory z-0 md:snap-y md:snap-mandatory"
         style={{ 
           scrollBehavior: 'smooth', 
           WebkitOverflowScrolling: 'touch',
           pointerEvents: 'none',
-          scrollSnapType: 'y mandatory',
+          scrollSnapType: window.innerWidth <= 768 ? 'none' : 'y mandatory',
           overscrollBehavior: 'contain'
         }}
       >
@@ -844,74 +857,111 @@ const MainDashboard = () => {
           <section 
             key={index}
             className="relative w-full h-screen snap-start snap-always flex items-center pointer-events-none"
-            style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
+            style={{ scrollSnapAlign: window.innerWidth <= 768 ? 'none' : 'start', scrollSnapStop: window.innerWidth <= 768 ? 'none' : 'always' }}
           >
             {/* Empty section for scroll snap */}
           </section>
         ))}
       </div>
       
-      {/* Fixed Info Cards - ABOVE Canvas, positioned based on active section */}
-      {sections.map((section, index) => (
-        <motion.div 
-          key={index}
-          initial={{ opacity: 0, x: section.align === 'left' ? -100 : 100, scale: 0.9 }}
-          animate={{ 
-            opacity: activeSection === index ? 1 : 0, 
-            x: 0,
-            scale: activeSection === index ? 1 : 0.9,
-            pointerEvents: activeSection === index ? 'auto' : 'none'
-          }}
-          transition={{ 
-            duration: 0.6,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            opacity: { duration: 0.4 }
-          }}
-          className={`fixed ${section.align === 'left' ? 'left-28 md:left-40 lg:left-48' : 'right-28 md:right-40 lg:right-48'} top-1/2 transform -translate-y-1/2 z-30 w-72 md:w-80`}
-          style={{ pointerEvents: activeSection === index ? 'auto' : 'none' }}
-        >
-          <div className="bg-gray-900/80 backdrop-blur-2xl rounded-3xl p-6 md:p-8 border border-gray-700/50 shadow-2xl relative overflow-hidden">
-            {/* Gradient glow effect */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${section.gradient} opacity-5`} />
-            
-            {/* Content */}
-            <div className="relative">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 md:w-12 md:h-12">
-                  {icons[section.icon]}
+      {/* Fixed Info Cards - ABOVE Canvas, positioned based on active section - HIDDEN ON MOBILE */}
+      <div className="hidden md:block">
+        {sections.map((section, index) => (
+          <motion.div 
+            key={index}
+            initial={{ opacity: 0, x: section.align === 'left' ? -100 : 100, scale: 0.9 }}
+            animate={{ 
+              opacity: activeSection === index ? 1 : 0, 
+              x: 0,
+              scale: activeSection === index ? 1 : 0.9,
+              pointerEvents: activeSection === index ? 'auto' : 'none'
+            }}
+            transition={{ 
+              duration: 0.6,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              opacity: { duration: 0.4 }
+            }}
+            className={`fixed ${section.align === 'left' ? 'left-28 md:left-40 lg:left-48' : 'right-28 md:right-40 lg:right-48'} top-1/2 transform -translate-y-1/2 z-30 w-72 md:w-80`}
+            style={{ pointerEvents: activeSection === index ? 'auto' : 'none' }}
+          >
+            <div className="bg-gray-900/80 backdrop-blur-2xl rounded-3xl p-6 md:p-8 border border-gray-700/50 shadow-2xl relative overflow-hidden">
+              {/* Gradient glow effect */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${section.gradient} opacity-5`} />
+              
+              {/* Content */}
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12">
+                    {icons[section.icon]}
+                  </div>
+                  <div className={`text-2xl md:text-3xl font-black bg-gradient-to-r ${section.gradient} bg-clip-text text-transparent`}>
+                    {section.title}
+                  </div>
                 </div>
-                <div className={`text-2xl md:text-3xl font-black bg-gradient-to-r ${section.gradient} bg-clip-text text-transparent`}>
-                  {section.title}
+                <div className="text-gray-400 text-base md:text-lg mb-3">{section.subtitle}</div>
+                <p className="text-gray-300 text-sm md:text-base mb-4 leading-relaxed">{section.description}</p>
+                <div className="flex flex-wrap gap-2 mb-5">
+                  {section.tags.map((tag, i) => (
+                    <span 
+                      key={i}
+                      className={`px-3 py-1.5 bg-gradient-to-r ${section.gradient} bg-opacity-20 rounded-full text-xs md:text-sm text-white border border-white/10`}
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
+                <button
+                  onClick={() => handleModelClick(section.modal)}
+                  className={`w-full py-3 md:py-4 bg-gradient-to-r ${section.gradient} rounded-xl text-white font-bold text-base md:text-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]`}
+                >
+                  Open {section.title}
+                </button>
               </div>
-              <div className="text-gray-400 text-base md:text-lg mb-3">{section.subtitle}</div>
-              <p className="text-gray-300 text-sm md:text-base mb-4 leading-relaxed">{section.description}</p>
-              <div className="flex flex-wrap gap-2 mb-5">
-                {section.tags.map((tag, i) => (
-                  <span 
-                    key={i}
-                    className={`px-3 py-1.5 bg-gradient-to-r ${section.gradient} bg-opacity-20 rounded-full text-xs md:text-sm text-white border border-white/10`}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <button
-                onClick={() => handleModelClick(section.modal)}
-                className={`w-full py-3 md:py-4 bg-gradient-to-r ${section.gradient} rounded-xl text-white font-bold text-base md:text-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]`}
-              >
-                Open {section.title}
-              </button>
             </div>
-          </div>
-        </motion.div>
-      ))}
+          </motion.div>
+        ))}
+      </div>
       
       <ScrollIndicator 
         activeSection={activeSection} 
         totalSections={totalSections}
         onNavigate={navigateToSection}
       />
+      
+      {/* Mobile Section Indicator - Shows current tool name on mobile */}
+      <div className="md:hidden fixed bottom-24 left-1/2 transform -translate-x-1/2 z-40">
+        <motion.div 
+          key={activeSection}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-gray-900/90 backdrop-blur-xl rounded-2xl px-6 py-3 border border-cyan-500/30 shadow-lg"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8">
+              {icons[sections[activeSection]?.icon]}
+            </div>
+            <div>
+              <div className={`text-lg font-bold bg-gradient-to-r ${sections[activeSection]?.gradient} bg-clip-text text-transparent`}>
+                {sections[activeSection]?.title}
+              </div>
+              <div className="text-gray-400 text-xs">{sections[activeSection]?.subtitle}</div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+      
+      {/* Mobile Tap to Open Button */}
+      <div className="md:hidden fixed bottom-36 left-1/2 transform -translate-x-1/2 z-40">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleModelClick(sections[activeSection]?.modal)}
+          className={`bg-gradient-to-r ${sections[activeSection]?.gradient} rounded-full px-8 py-3 text-white font-bold text-sm shadow-lg`}
+        >
+          Tap to Open
+        </motion.button>
+      </div>
       
       {/* Left Sidebar Navigation */}
       <motion.div 
@@ -974,6 +1024,23 @@ const MainDashboard = () => {
           </motion.div>
         </div>
       </motion.button>
+      
+      {/* Mobile Navigation Dots - Bottom of screen */}
+      <div className="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40">
+        <div className="flex gap-3 bg-gray-900/80 backdrop-blur-xl rounded-full px-4 py-2 border border-gray-700/50">
+          {[0, 1, 2, 3, 4].map((index) => (
+            <button
+              key={index}
+              onClick={() => navigateToSection(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                activeSection === index 
+                  ? 'bg-cyan-400 scale-125 shadow-[0_0_10px_rgba(34,211,238,0.5)]' 
+                  : 'bg-gray-600 hover:bg-gray-500'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
       
       {/* Modals */}
       <AnimatePresence>
