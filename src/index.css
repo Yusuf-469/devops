@@ -1197,6 +1197,201 @@
     min-height: 200px;
     max-height: 35vh;
   }
+}
+
+/* ========================
+   MAIN DASHBOARD MOBILE STYLES
+   ======================== */
+
+@media (max-width: 768px) {
+  /* Dashboard container - enable smooth scrolling */
+  .dashboard-container {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: none !important;
+  }
+  
+  /* Dashboard sections - auto height for content */
+  .dashboard-scroll-section {
+    scroll-snap-align: none !important;
+    scroll-snap-stop: none !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding: 1rem !important;
+    padding-top: 5rem !important;
+    padding-bottom: 2rem !important;
+  }
+  
+  /* Reduce 3D canvas sizes on mobile */
+  .dashboard-scroll-section canvas {
+    max-height: 35vh !important;
+  }
+  
+  /* Sidebar mobile - smaller width */
+  .dashboard-sidebar {
+    width: 60px !important;
+    min-width: 60px !important;
+  }
+  
+  .dashboard-sidebar .user-info,
+  .dashboard-sidebar .nav-label,
+  .dashboard-sidebar .help-text {
+    display: none !important;
+  }
+  
+  /* TopBar mobile adjustments */
+  .dashboard-topbar {
+    padding-left: 70px !important;
+    padding-right: 1rem !important;
+  }
+  
+  .dashboard-topbar .logo-text {
+    font-size: 1rem !important;
+  }
+  
+  .dashboard-topbar .tagline {
+    font-size: 0.6rem !important;
+  }
+  
+  /* Modal mobile - full screen */
+  .modal-content {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Chat modal mobile */
+  .chat-container {
+    padding: 0.75rem !important;
+  }
+  
+  .chat-message {
+    max-width: 90% !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .chat-input-container {
+    padding: 0.5rem !important;
+  }
+  
+  /* Tool section content mobile */
+  .tool-content {
+    padding: 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .tool-title {
+    font-size: 1.25rem !important;
+  }
+  
+  .tool-description {
+    font-size: 0.8rem !important;
+  }
+  
+  /* Buttons mobile - larger touch targets */
+  .tool-button {
+    min-height: 44px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Form inputs mobile */
+  .tool-input {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    padding: 0.75rem !important;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  /* Further reduce sidebar */
+  .dashboard-sidebar {
+    width: 50px !important;
+    min-width: 50px !important;
+  }
+  
+  .dashboard-sidebar .logo-container {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .dashboard-sidebar .nav-icon {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  /* TopBar extra small */
+  .dashboard-topbar {
+    padding-left: 60px !important;
+    height: 50px !important;
+  }
+  
+  .dashboard-topbar .logo {
+    height: 32px !important;
+  }
+  
+  /* Dashboard sections extra padding */
+  .dashboard-scroll-section {
+    padding-top: 4rem !important;
+  }
+  
+  /* Reduce canvas further */
+  .dashboard-scroll-section canvas {
+    max-height: 30vh !important;
+  }
+}
+
+/* Login Page Mobile */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 1rem !important;
+  }
+  
+  .login-form-container {
+    max-width: 100% !important;
+    padding: 1.5rem !important;
+  }
+  
+  .login-logo {
+    height: 48px !important;
+  }
+  
+  .login-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .login-subtitle {
+    font-size: 0.875rem !important;
+  }
+  
+  .login-tabs {
+    flex-direction: row !important;
+  }
+  
+  .login-tab {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .login-input {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    padding: 0.75rem !important;
+  }
+  
+  .login-button {
+    padding: 0.875rem !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Hide 3D canvas on mobile login for performance */
+  .login-canvas {
+    display: none !important;
+  }
+}
   
   .dashboard-preview-container {
     height: 200px;
