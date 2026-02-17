@@ -1304,6 +1304,31 @@
     font-size: 16px !important; /* Prevents iOS zoom */
     padding: 0.75rem !important;
   }
+  
+  /* Hide info cards on mobile - only show 3D models */
+  .info-card-container {
+    display: none !important;
+  }
+  
+  /* Mobile section indicator */
+  .mobile-section-indicator {
+    display: flex !important;
+  }
+  
+  /* Mobile tool name overlay */
+  .mobile-tool-name {
+    display: block !important;
+  }
+}
+
+/* Mobile section indicator - hidden on desktop */
+.mobile-section-indicator {
+  display: none;
+}
+
+/* Mobile tool name - hidden on desktop */
+.mobile-tool-name {
+  display: none;
 }
 
 /* Extra small devices */
