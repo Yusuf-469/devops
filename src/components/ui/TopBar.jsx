@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import { FuturisticHealixCompact } from './FuturisticHealixText'
 
 // Email constant
-const CONTACT_EMAIL = 'yusufhealth@io'
+const CONTACT_EMAIL = 'healix@ai'
 
 export const TopBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
