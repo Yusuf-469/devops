@@ -412,7 +412,7 @@ const createStreamingResponse = (fullResponse, onStream, speed = 20) => {
   streamChunk()
 }
 
-// Main symptom analysis function (fallback for DeepSeek)
+// Main symptom analysis function (fallback for Qwen AI)
 export const analyzeSymptoms = async (userMessage, conversationHistory = [], onStream) => {
   return new Promise((resolve) => {
     setTimeout(() => {
