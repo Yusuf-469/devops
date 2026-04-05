@@ -1,14 +1,14 @@
 /**
- * HEALIX DeepSeek AI Service
- * OpenRouter API with deepseek/deepseek-r1-0528:free model
+ * HEALIX Qwen AI Service
+ * OpenRouter API with qwen/qwen3.6-plus:free model
  */
 
 // API Configuration - Use provided OpenRouter key
-const OPENROUTER_API_KEY = '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'
+const OPENROUTER_API_KEY = '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'
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
-// Primary Model: DeepSeek R1 via OpenRouter
-const PRIMARY_MODEL = 'deepseek/deepseek-r1-0528:free'
+// Primary Model: Qwen 3.6 Plus via OpenRouter
+const PRIMARY_MODEL = 'qwen/qwen3.6-plus:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {

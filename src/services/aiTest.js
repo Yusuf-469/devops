@@ -1,10 +1,10 @@
 /**
  * HEALIX AI Model Test Suite
- * Tests the deepseek/deepseek-r1-0528:free model via OpenRouter
+ * Tests the qwen/qwen3.6-plus:free model via OpenRouter
  */
 
 import { getActiveAIConfig } from '../store/index.js'
-import { chatWithAI } from './deepseek.js'
+import { chatWithAI } from './qwen.js'
 import { analyzeSymptoms, quickSymptomCheck, checkDrugInteractions } from './fallbackAI.js'
 
 // Test configuration
@@ -72,7 +72,7 @@ const TEST_SCENARIOS = [
   {
     name: 'OpenRouter API Connection Test',
     test: async () => {
-      console.log('🧪 Testing: OpenRouter API - deepseek/deepseek-r1-0528:free')
+      console.log('🧪 Testing: OpenRouter API - qwen/qwen3.6-plus:free')
       try {
         const result = await chatWithAI(
           [{ role: 'user', content: 'Hello' }],
