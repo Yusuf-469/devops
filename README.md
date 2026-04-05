@@ -13,7 +13,7 @@ Healix is a web-based medical dashboard application that leverages AI and 3D vis
 - **Animation**: Framer Motion and @react-spring/web
 - **State Management**: Zustand
 - **Routing**: React Router DOM 7
-- **AI Integration**: @openrouter/sdk (for API routing), custom services for Nvidia Nemotron AI
+- **AI Integration**: Secure Vercel serverless functions, Nvidia Nemotron AI via OpenRouter
 - **Utilities**: html2canvas (for screenshots), jspdf (for PDF generation), react-hot-toast (notifications), lucide-react (icons)
 - **Deployment**: Vercel (based on vercel.json)
 
@@ -37,20 +37,44 @@ Healix is a web-based medical dashboard application that leverages AI and 3D vis
 
 ## Environment Setup
 
-### OpenRouter API Key
-Healix uses Qwen AI via OpenRouter for intelligent medical consultations. To set up the AI functionality:
+### Local Development
+Create a `.env` file in the project root:
+```bash
+# Frontend environment variables only
+# API keys are stored server-side for security
 
-1. Create a `.env` file in the project root:
-   ```bash
-   # OpenRouter API Key for HEALIX AI
-   VITE_OPENROUTER_API_KEY=your_openrouter_api_key_here
-   ```
+# Emergency Numbers (safe to expose to frontend)
+VITE_EMERGENCY_NUMBER=102
+VITE_HELP_NUMBER=7903810922
+```
 
-2. Get your API key from [OpenRouter](https://openrouter.ai/)
+For AI functionality in local development, set:
+```bash
+# Server-side API key for local development
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
 
-3. Restart your development server after adding the environment variable
+### Production Deployment (Vercel)
+Set these environment variables in your Vercel dashboard:
 
-**Security Note**: Never commit API keys to version control. The `.env` file is already included in `.gitignore`.
+- `OPENROUTER_API_KEY`: Your OpenRouter API key from [OpenRouter Dashboard](https://openrouter.ai/keys)
+
+**Security Note**: API keys are stored server-side only. The `.env` file contains only safe frontend variables.
+
+### Development Commands
+
+```bash
+# Frontend only (no AI functionality)
+npm run dev
+
+# Full development with AI API server
+npm run dev:full
+
+# API server only
+npm run dev:api
+```
+
+**Note**: Use `npm run dev:full` for complete AI functionality during development.
 
 ## Implementing Cloud and DevOps Tools
 

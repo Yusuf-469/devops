@@ -1,23 +1,18 @@
 /**
  * HEALIX AI Service
- * OpenRouter API with nvidia/nemotron-3-super-120b-a12b:free model
+ * Secure backend API calls to Vercel serverless function
  */
 
-// API Configuration - Use environment variable for security
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
-const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
+// Backend API endpoint
+const API_BASE_URL = import.meta.env.DEV
+  ? 'http://localhost:3000'
+  : 'https://healix.vercel.app'
 
 // Primary Model: Nvidia Nemotron 3 Super 120B via OpenRouter
 const PRIMARY_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
-  // Check if API key is configured
-  if (!OPENROUTER_API_KEY) {
-    console.error('OpenRouter API key not configured.')
-    throw new Error('API key not configured')
-  }
-
   try {
     // Prepare messages with system prompt
     const allMessages = [
@@ -25,30 +20,32 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       ...messages
     ]
 
-    // Use raw fetch API (more reliable than SDK)
-    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+    console.log(`🚀 Calling backend AI API: ${model}, messages: ${allMessages.length}`)
+
+    // Call our secure backend endpoint
+    const response = await fetch(`${API_BASE_URL}/api/chat`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:3000',
-        'X-Title': 'HEALIX Medical Dashboard'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: model,
         messages: allMessages,
-        stream: true,
-        temperature: 0.7
+        model: model,
+        stream: !!onStream // Convert to boolean
       })
     })
 
+    // Handle error responses
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`OpenRouter API Error: ${response.status} - ${error}`)
+      const errorData = await response.json()
+      console.error('❌ Backend API error:', errorData.error)
+      throw new Error(errorData.error || 'AI service error')
     }
 
     // Handle streaming response
     if (onStream && response.body) {
+      console.log('🌊 Processing streaming response from backend')
+
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let result = ""
@@ -83,18 +80,20 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       return { success: true, content: result, isFallback: false, model: model }
     }
 
-    // Non-streaming fallback
+    // Handle non-streaming response
     const data = await response.json()
+    console.log('✅ Backend API response successful')
+
     return {
       success: true,
-      content: data.choices?.[0]?.message?.content || '',
-      isFallback: false,
-      model: model
+      content: data.content || '',
+      model: data.model || model,
+      usage: data.usage
     }
 
   } catch (error) {
-    console.error('OpenRouter API Error:', error.message)
-    throw error // Don't fallback - let caller handle the error
+    console.error('💥 Frontend AI service error:', error.message)
+    throw error // Let the UI handle the error
   }
 }
 
