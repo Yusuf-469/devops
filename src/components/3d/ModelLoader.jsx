@@ -41,7 +41,11 @@ const Fallback3D = ({ icon, label, color = '#00d4ff' }) => (
     </mesh>
     <Html position={[0, -2, 0]} center>
       <div className="text-center">
-        <div className="text-6xl mb-2">{icon}</div>
+        <div className="w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+          <svg className="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
         <div className="text-white text-sm font-semibold bg-black/50 px-3 py-1 rounded-lg">
           {label}
         </div>
@@ -81,7 +85,7 @@ const ModelWrapper = ({ modelPath, fallback, onError, children }) => {
   }, [modelPath, fileUrl, onError])
   
   if (error || !fileUrl) {
-    return fallback || <Fallback3D icon="📦" label="Model" />
+    return fallback || <Fallback3D icon="box" label="Model" />
   }
   
   return (
@@ -91,7 +95,7 @@ const ModelWrapper = ({ modelPath, fallback, onError, children }) => {
       </Html>
     }>
       <ErrorBoundary fallback={
-        fallback || <Fallback3D icon="⚠️" label="Load Error" />
+        fallback || <Fallback3D icon="warning" label="Load Error" />
       }>
         {children}
       </ErrorBoundary>
@@ -123,7 +127,7 @@ export const ModelLoader = ({
   }, [fileUrl, modelPath, setModelError])
   
   if (error || !fileUrl || !fileUrl.includes('file:///')) {
-    return fallback || <Fallback3D icon="🏥" label="Healthcare" />
+    return fallback || <Fallback3D icon="hospital" label="Healthcare" />
   }
   
   return (

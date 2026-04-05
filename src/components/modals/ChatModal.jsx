@@ -163,14 +163,52 @@ const ChatModal = ({ onClose }) => {
   }
   
   const quickSymptoms = [
-    { label: 'Fever', icon: '🌡️', query: 'I have fever' },
-    { label: 'Cough', icon: '🫁', query: 'I have cough' },
-    { label: 'Cold', icon: '🤧', query: 'I have cold symptoms' },
-    { label: 'Headache', icon: '🤕', query: 'I have headache' },
-    { label: 'Stomach Pain', icon: '🤰', query: 'I have stomach pain' },
-    { label: 'Body Pain', icon: '💪', query: 'I have body aches and pain' },
-    { label: 'Fatigue', icon: '😴', query: 'I feel tired and fatigued' },
+    { label: 'Fever', icon: 'thermometer', query: 'I have fever' },
+    { label: 'Cough', icon: 'lung', query: 'I have cough' },
+    { label: 'Cold', icon: 'snowflake', query: 'I have cold symptoms' },
+    { label: 'Headache', icon: 'brain', query: 'I have headache' },
+    { label: 'Stomach', icon: 'stomach', query: 'I have stomach pain' },
+    { label: 'Body Pain', icon: 'body', query: 'I have body aches and pain' },
+    { label: 'Fatigue', icon: 'fatigue', query: 'I feel tired and fatigued' },
   ]
+  
+  const symptomIcons = {
+    thermometer: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
+    lung: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      </svg>
+    ),
+    snowflake: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v18m0-18l-4 4m4-4l4 4m-4 14l-4-4m4 4l4-4M3 12h18M3 12l4-4m-4 4l4 4m14-4l-4-4m4 4l-4 4" />
+      </svg>
+    ),
+    brain: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      </svg>
+    ),
+    stomach: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    ),
+    body: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    ),
+    fatigue: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    )
+  }
   
   const handleQuickSymptom = (query) => {
     setInput(query)
@@ -195,7 +233,9 @@ const ChatModal = ({ onClose }) => {
         <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-healix-blue to-healix-purple flex items-center justify-center">
-              <span className="text-xl">👨‍⚕️</span>
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Dr. AI Consultation</h2>
@@ -248,7 +288,9 @@ const ChatModal = ({ onClose }) => {
               >
                 {message.role === 'assistant' && (
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm">👨‍⚕️</span>
+                    <svg className="w-4 h-4 text-healix-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                     <span className="text-xs font-semibold text-healix-cyan">Dr. AI</span>
                     {message.isOffline && (
                       <span className="text-xs text-yellow-400">(Fallback)</span>
@@ -302,7 +344,7 @@ const ChatModal = ({ onClose }) => {
                     disabled={isTyping}
                     className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
                   >
-                    <span>{symptom.icon}</span>
+                    {symptomIcons[symptom.icon]}
                     <span>{symptom.label}</span>
                   </motion.button>
                 ))}
