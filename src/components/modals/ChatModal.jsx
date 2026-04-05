@@ -94,7 +94,6 @@ const ChatModal = ({ onClose }) => {
       setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
       addMessage(aiMessage)
       addNotification({ type: 'error', message: 'Qwen AI service unavailable' })
-    }
     } finally {
       setIsTyping(false)
       setStreamingContent('')
