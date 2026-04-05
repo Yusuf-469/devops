@@ -4,8 +4,6 @@
  * Works without any API calls - completely self-contained
  */
 
-import { useAppStore } from '../store/index.js'
-
 // ============================================
 // MEDICAL KNOWLEDGE BASE
 // ============================================
