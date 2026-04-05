@@ -17,6 +17,7 @@
     "@react-spring/web": "^10.0.3",
     "@react-three/drei": "^9.88.0",
     "@react-three/fiber": "^8.15.0",
+    "firebase": "^12.11.0",
     "framer-motion": "^10.16.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",

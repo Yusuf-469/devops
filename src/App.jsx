@@ -1,10 +1,18 @@
 import React, { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 
 // Lazy load the heavy 3D dashboard to avoid loading Three.js on landing page
 const MainDashboard = lazy(() => import('./pages/MainDashboard.jsx'))
+
+// Protected Route component
+function ProtectedRoute({ children }) {
+  const { currentUser } = useAuth();
+
+  return currentUser ? children : <Navigate to="/login" />;
+}
 
 // Simple loading fallback
 const LoadingFallback = () => (
@@ -20,9 +28,9 @@ const LoadingFallback = () => (
     fontFamily: 'system-ui, sans-serif'
   }}>
     <div style={{ textAlign: 'center' }}>
-      <div style={{ 
-        width: '40px', 
-        height: '40px', 
+      <div style={{
+        width: '40px',
+        height: '40px',
         border: '3px solid rgba(20, 184, 166, 0.3)',
         borderTopColor: '#14b8a6',
         borderRadius: '50%',
@@ -37,20 +45,24 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route 
-          path="/dashboard" 
-          element={
-            <Suspense fallback={<LoadingFallback />}>
-              <MainDashboard />
-            </Suspense>
-          } 
-        />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingFallback />}>
+                  <MainDashboard />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

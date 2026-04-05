@@ -1,27 +1,61 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 import { FuturisticHealixText } from '../components/ui/FuturisticHealixText';
+import toast from 'react-hot-toast';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, signup } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
-  };
+    setLoading(true);
 
-  const handleDemoLogin = () => {
-    localStorage.setItem('healix_token', 'demo_token');
-    localStorage.setItem('healix_user', JSON.stringify({
-      email: 'demo@healix.ai',
-      name: 'Demo User'
-    }));
-    navigate('/dashboard');
+    try {
+      if (isLogin) {
+        await login(email, password);
+        toast.success('Successfully logged in!');
+        navigate('/dashboard');
+      } else {
+        await signup(email, password, name);
+        toast.success('Account created successfully!');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Auth error:', error);
+      let errorMessage = 'An error occurred. Please try again.';
+
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'No account found with this email.';
+          break;
+        case 'auth/wrong-password':
+          errorMessage = 'Incorrect password.';
+          break;
+        case 'auth/email-already-in-use':
+          errorMessage = 'An account with this email already exists.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Password should be at least 6 characters.';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address.';
+          break;
+        default:
+          break;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -130,16 +164,8 @@ const LoginPage = () => {
               </div>
             )}
 
-            <button type="submit" className="submit-btn">
-              {isLogin ? 'Sign In' : 'Create Account'}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="demo-btn"
-            >
-              Try Demo Account
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
             </button>
           </form>
 

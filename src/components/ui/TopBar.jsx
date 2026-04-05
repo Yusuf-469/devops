@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, User, Menu, X } from 'lucide-react'
+import { Bell, User, Menu, X, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+import toast from 'react-hot-toast'
 import { FuturisticHealixCompact } from './FuturisticHealixText'
 
 // Email constant
@@ -8,6 +11,33 @@ const CONTACT_EMAIL = 'yusufhealth@io'
 
 export const TopBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const { currentUser, logout } = useAuth()
+  const userMenuRef = useRef(null)
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      toast.success('Logged out successfully!')
+      navigate('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error('Failed to log out')
+    }
+  }
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
   
   return (
     <motion.header
@@ -59,15 +89,51 @@ export const TopBar = () => {
           </motion.span>
         </motion.button>
         
-        {/* User Avatar */}
-        <motion.button
-          className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-400/30 flex items-center justify-center overflow-hidden"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <User size={20} className="text-cyan-400" />
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/20 to-purple-400/0 animate-[shimmer_2s_infinite]" />
-        </motion.button>
+        {/* User Avatar with Dropdown */}
+        <div className="relative" ref={userMenuRef}>
+          <motion.button
+            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+            className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-400/30 flex items-center justify-center overflow-hidden"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <User size={20} className="text-cyan-400" />
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/20 to-purple-400/0 animate-[shimmer_2s_infinite]" />
+          </motion.button>
+
+          {/* User Dropdown Menu */}
+          <AnimatePresence>
+            {isUserMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 top-12 w-48 glass-morphism-dark border border-white/10 rounded-xl p-2 z-50"
+              >
+                <div className="px-3 py-2 border-b border-white/10 mb-2">
+                  <p className="text-sm text-gray-300 truncate">
+                    {currentUser?.email}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {currentUser?.displayName || 'User'}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setIsUserMenuOpen(false)
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
+                >
+                  <LogOut size={16} className="text-red-400" />
+                  <span className="text-sm text-gray-300">Logout</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         
         {/* Mobile Menu Toggle */}
         <button
