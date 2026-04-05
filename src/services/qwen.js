@@ -3,8 +3,8 @@
  * OpenRouter API with qwen/qwen3.6-plus:free model
  */
 
-// API Configuration - Use provided OpenRouter key
-const OPENROUTER_API_KEY = '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'
+// API Configuration - Use environment variable for security
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
 // Primary Model: Qwen 3.6 Plus via OpenRouter
