@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Upload, FileText, Download, AlertTriangle, CheckCircle, Loader, Eye } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { analyzeReport } from '../../services/deepseek.js'
+import { analyzeReport } from '../../services/qwen.js'
 import { quickSymptomCheck } from '../../services/fallbackAI.js'
 
 const AnalyzerModal = ({ onClose }) => {

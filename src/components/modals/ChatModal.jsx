@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, FileText, Loader, AlertCircle } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { analyzeSymptoms as primaryAnalyze } from '../../services/deepseek.js'
+import { analyzeSymptoms as primaryAnalyze } from '../../services/qwen.js'
 import { analyzeSymptoms as fallbackAnalyze, quickSymptomCheck } from '../../services/fallbackAI.js'
 
 const ChatModal = ({ onClose }) => {

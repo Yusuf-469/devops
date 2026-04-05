@@ -13,7 +13,7 @@ Healix is a web-based medical dashboard application that leverages AI and 3D vis
 - **Animation**: Framer Motion and @react-spring/web
 - **State Management**: Zustand
 - **Routing**: React Router DOM 7
-- **AI Integration**: @openrouter/sdk (for API routing), custom services for DeepSeek AI
+- **AI Integration**: @openrouter/sdk (for API routing), custom services for Qwen AI
 - **Utilities**: html2canvas (for screenshots), jspdf (for PDF generation), react-hot-toast (notifications), lucide-react (icons)
 - **Deployment**: Vercel (based on vercel.json)
 
@@ -31,7 +31,7 @@ Healix is a web-based medical dashboard application that leverages AI and 3D vis
     - `modals/`: Interactive modals for features (ChatModal, AnalyzerModal, MedicationModal, TrackerModal, EmergencyModal)
     - `ui/`: Shared UI elements (Sidebar, TopBar, HealixLogo, etc.)
   - `store/`: Zustand state management
-  - `services/`: AI integration services (deepseek.js, fallbackAI.js, aiTest.js)
+  - `services/`: AI integration services (qwen.js, fallbackAI.js, aiTest.js)
 - **3D Assets**: Preloaded GLB models stored in `public/models/` (medical doctor, stethoscope, syringe, pill bottle, dashboard)
 - **Build Output**: Compiled to `dist/` directory with sourcemaps disabled and ESBuild minification
 
