@@ -1,16 +1,16 @@
 /**
- * OpenRouter API Key Verification
- * Run this in browser console to debug API key issues
+ * OpenRouter SDK Verification
+ * Run this in browser console to debug Qwen AI issues
  */
 
-const verifyAPIKey = async () => {
-  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
-  const baseUrl = 'https://openrouter.ai/api/v1'
+import { OpenRouter } from "@openrouter/sdk";
 
-  console.log('🔍 API Key Verification:')
+const testQwenSDK = async () => {
+  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
+
+  console.log('🔍 Qwen SDK Verification:')
   console.log('API Key exists:', !!apiKey)
   console.log('API Key starts with:', apiKey?.substring(0, 12) + '...')
-  console.log('API Key length:', apiKey?.length)
 
   if (!apiKey) {
     console.error('❌ No API key found!')
@@ -18,54 +18,90 @@ const verifyAPIKey = async () => {
   }
 
   try {
-    // Test 1: Auth endpoint
-    console.log('\n📡 Testing auth endpoint...')
-    const authResponse = await fetch(`${baseUrl}/auth/key`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`
+    const openrouter = new OpenRouter({
+      apiKey: apiKey
+    })
+
+    console.log('\n📡 Testing Qwen SDK chat...')
+
+    // Test the exact code you provided
+    const stream = await openrouter.chat.send({
+      model: "qwen/qwen3.6-plus:free",
+      messages: [
+        {
+          role: "user",
+          content: "How many r's are in the word 'strawberry'?"
+        }
+      ],
+      stream: true
+    })
+
+    let response = ""
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        response += content
+        process.stdout.write(content)
       }
-    })
 
-    console.log('Auth response status:', authResponse.status)
-
-    if (authResponse.ok) {
-      const authData = await authResponse.json()
-      console.log('✅ Auth successful:', authData)
-    } else {
-      const authError = await authResponse.text()
-      console.error('❌ Auth failed:', authResponse.status, authError)
+      if (chunk.usage) {
+        console.log("\nReasoning tokens:", chunk.usage.reasoningTokens)
+      }
     }
 
-    // Test 2: Simple completion
-    console.log('\n🤖 Testing chat completion...')
-    const chatResponse = await fetch(`${baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: "qwen/qwen3.6-plus:free",
-        messages: [{ role: "user", content: "Hello" }],
-        max_tokens: 10
-      })
-    })
-
-    console.log('Chat response status:', chatResponse.status)
-
-    if (chatResponse.ok) {
-      const chatData = await chatResponse.json()
-      console.log('✅ Chat successful:', chatData.choices[0]?.message?.content)
-    } else {
-      const chatError = await chatResponse.text()
-      console.error('❌ Chat failed:', chatResponse.status, chatError)
-    }
+    console.log('\n✅ Qwen SDK test successful!')
+    console.log('Full response:', response)
+    return response
 
   } catch (error) {
-    console.error('❌ Network error:', error)
+    console.error('❌ Qwen SDK test failed:', error.message)
+    console.error('Error details:', error)
+    return null
   }
 }
 
-window.verifyAPIKey = verifyAPIKey
-console.log('🔧 API verification function loaded. Run verifyAPIKey() to test your API key.')
+const testSimpleQwen = async () => {
+  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
+
+  console.log('🤖 Testing simple Qwen response...')
+
+  try {
+    const openrouter = new OpenRouter({
+      apiKey: apiKey
+    })
+
+    const stream = await openrouter.chat.send({
+      model: "qwen/qwen3.6-plus:free",
+      messages: [
+        {
+          role: "user",
+          content: "Hello, are you working?"
+        }
+      ],
+      stream: true
+    })
+
+    let response = ""
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        response += content
+        process.stdout.write(content)
+      }
+    }
+
+    console.log('\n✅ Simple test successful!')
+    return response
+
+  } catch (error) {
+    console.error('❌ Simple test failed:', error.message)
+    return null
+  }
+}
+
+window.testQwenSDK = testQwenSDK
+window.testSimpleQwen = testSimpleQwen
+
+console.log('🔧 Qwen SDK test functions loaded:')
+console.log('- testQwenSDK() - Test the exact code you provided')
+console.log('- testSimpleQwen() - Simple hello test')
