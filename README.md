@@ -35,6 +35,23 @@ Healix is a web-based medical dashboard application that leverages AI and 3D vis
 - **3D Assets**: Preloaded GLB models stored in `public/models/` (medical doctor, stethoscope, syringe, pill bottle, dashboard)
 - **Build Output**: Compiled to `dist/` directory with sourcemaps disabled and ESBuild minification
 
+## Environment Setup
+
+### OpenRouter API Key
+Healix uses Qwen AI via OpenRouter for intelligent medical consultations. To set up the AI functionality:
+
+1. Create a `.env` file in the project root:
+   ```bash
+   # OpenRouter API Key for HEALIX AI
+   VITE_OPENROUTER_API_KEY=your_openrouter_api_key_here
+   ```
+
+2. Get your API key from [OpenRouter](https://openrouter.ai/)
+
+3. Restart your development server after adding the environment variable
+
+**Security Note**: Never commit API keys to version control. The `.env` file is already included in `.gitignore`.
+
 ## Implementing Cloud and DevOps Tools
 
 ### Authentication with Firebase
