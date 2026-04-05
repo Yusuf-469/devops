@@ -66,7 +66,7 @@ const MedicationModal = ({ onClose }) => {
     try {
       const currentMeds = medications.map(m => m.name)
       
-      // Try DeepSeek first, fallback to local
+      // Try Qwen AI first, fallback to local
       const result = await checkDrugInteractions(currentMeds, newMedName)
       
       if (result.success && !result.isFallback) {

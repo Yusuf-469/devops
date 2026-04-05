@@ -69,7 +69,7 @@ const AnalyzerModal = ({ onClose }) => {
     
     setIsAnalyzing(true)
     
-    // Try DeepSeek first, fallback to local analysis
+    // Try Qwen AI first, fallback to local analysis
     try {
       const result = await analyzeReport(extractedText, (content) => {
         setAnalysis(prev => ({ ...prev, streaming: content }))

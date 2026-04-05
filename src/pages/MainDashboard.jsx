@@ -754,7 +754,7 @@ const MainDashboard = () => {
     {
       title: 'Dr. AI',
       subtitle: 'Your AI-Powered Medical Assistant',
-      description: 'Describe your symptoms and get instant AI-powered guidance. Available 24/7 with smart analysis powered by DeepSeek AI.',
+      description: 'Describe your symptoms and get instant AI-powered guidance. Available 24/7 with smart analysis powered by Qwen AI.',
       tags: ['24/7 Available', 'Smart Analysis', 'Symptom Checker'],
       gradient: 'from-cyan-400 via-blue-500 to-purple-600',
       align: 'left',
