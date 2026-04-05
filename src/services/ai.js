@@ -1,20 +1,14 @@
 /**
  * HEALIX AI Service
- * OpenRouter SDK with nvidia/nemotron-3-super-120b-a12b:free model
+ * OpenRouter API with nvidia/nemotron-3-super-120b-a12b:free model
  */
-
-import { OpenRouter } from "@openrouter/sdk";
 
 // API Configuration - Use environment variable for security
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
+const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
 // Primary Model: Nvidia Nemotron 3 Super 120B via OpenRouter
 const PRIMARY_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
-
-// Initialize OpenRouter client
-const openrouter = new OpenRouter({
-  apiKey: OPENROUTER_API_KEY
-})
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
@@ -31,38 +25,75 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       ...messages
     ]
 
-    // Use the correct OpenRouter SDK method (OpenAI-compatible)
-    const stream = await openrouter.chat.completions.create({
-      model: model,
-      messages: allMessages,
-      stream: true
+    // Use raw fetch API (more reliable than SDK)
+    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'HEALIX Medical Dashboard'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: allMessages,
+        stream: true,
+        temperature: 0.7
+      })
     })
 
-    let response = ""
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content
-      if (content) {
-        response += content
-        if (onStream) {
-          onStream(response)
-        }
-      }
-
-      // Usage information comes in the final chunk
-      if (chunk.usage) {
-        console.log("Reasoning tokens:", chunk.usage.reasoningTokens)
-      }
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`OpenRouter API Error: ${response.status} - ${error}`)
     }
 
+    // Handle streaming response
+    if (onStream && response.body) {
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let result = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6)
+            if (data === '[DONE]') continue
+
+            try {
+              const parsed = JSON.parse(data)
+              // Only show final response content - filter out reasoning
+              const content = parsed.choices?.[0]?.delta?.content || ''
+
+              if (content) {
+                result += content
+                onStream(result)
+              }
+            } catch (e) {
+              // Ignore parse errors for incomplete chunks
+            }
+          }
+        }
+      }
+      return { success: true, content: result, isFallback: false, model: model }
+    }
+
+    // Non-streaming fallback
+    const data = await response.json()
     return {
       success: true,
-      content: response,
+      content: data.choices?.[0]?.message?.content || '',
       isFallback: false,
       model: model
     }
 
   } catch (error) {
-    console.error('OpenRouter SDK Error:', error.message)
+    console.error('OpenRouter API Error:', error.message)
     throw error // Don't fallback - let caller handle the error
   }
 }
