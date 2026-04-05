@@ -1,12 +1,13 @@
 /**
  * HEALIX Qwen AI Service
- * OpenRouter SDK with qwen/qwen3.6-plus:free model
+ * OpenRouter API with qwen/qwen3.6-plus:free model
  */
 
 import { OpenRouter } from "@openrouter/sdk";
 
 // API Configuration - Use environment variable for security
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
+const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
 // Primary Model: Qwen 3.6 Plus via OpenRouter
 const PRIMARY_MODEL = 'qwen/qwen3.6-plus:free'
@@ -31,10 +32,8 @@ const getOpenRouterClient = () => {
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
-  const client = getOpenRouterClient()
-
   // Check if API key is configured
-  if (!client) {
+  if (!OPENROUTER_API_KEY) {
     console.warn('OpenRouter API key not configured. Using fallback responses.')
     return { success: false, error: 'API key not configured', isFallback: true }
   }
@@ -46,42 +45,75 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       ...messages
     ]
 
-    // Stream the response to get reasoning tokens in usage
-    const stream = await client.chat.completions.create({
-      model: model,
-      messages: allMessages,
-      stream: true
+    // Use raw fetch API instead of SDK for better compatibility
+    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'HEALIX Medical Dashboard'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: allMessages,
+        stream: true,
+        temperature: 0.7
+      })
     })
 
-    let response = ""
-    let usage = null
-
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content
-      if (content) {
-        response += content
-        if (onStream) {
-          onStream(response)
-        }
-      }
-
-      // Usage information comes in the final chunk
-      if (chunk.usage) {
-        usage = chunk.usage
-        console.log("Reasoning tokens:", chunk.usage.reasoningTokens)
-      }
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`OpenRouter API Error: ${response.status} - ${error}`)
     }
 
+    // Handle streaming response
+    if (onStream && response.body) {
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let result = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6)
+            if (data === '[DONE]') continue
+
+            try {
+              const parsed = JSON.parse(data)
+              // Only show final response content - filter out reasoning
+              const content = parsed.choices?.[0]?.delta?.content || ''
+
+              if (content) {
+                result += content
+                onStream(result)
+              }
+            } catch (e) {
+              // Ignore parse errors for incomplete chunks
+            }
+          }
+        }
+      }
+      return { success: true, content: result, isFallback: false, model: model }
+    }
+
+    // Non-streaming fallback
+    const data = await response.json()
     return {
       success: true,
-      content: response,
+      content: data.choices?.[0]?.message?.content || '',
       isFallback: false,
-      model: model,
-      usage: usage
+      model: model
     }
 
   } catch (error) {
-    console.error('OpenRouter SDK Error:', error.message)
+    console.error('OpenRouter API Error:', error.message)
     return { success: false, error: error.message, isFallback: true }
   }
 }
