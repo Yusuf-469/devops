@@ -31,8 +31,8 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       ...messages
     ]
 
-    // Stream the response to get reasoning tokens in usage
-    const stream = await openrouter.chat.send({
+    // Use the correct OpenRouter SDK method (OpenAI-compatible)
+    const stream = await openrouter.chat.completions.create({
       model: model,
       messages: allMessages,
       stream: true

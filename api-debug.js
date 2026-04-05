@@ -24,8 +24,8 @@ const testNemotronSDK = async () => {
 
     console.log('\n📡 Testing Nvidia Nemotron SDK chat...')
 
-    // Test the exact code you provided
-    const stream = await openrouter.chat.send({
+    // Test the correct OpenRouter SDK method
+    const stream = await openrouter.chat.completions.create({
       model: "nvidia/nemotron-3-super-120b-a12b:free",
       messages: [
         {
@@ -70,7 +70,7 @@ const testSimpleNemotron = async () => {
       apiKey: apiKey
     })
 
-    const stream = await openrouter.chat.send({
+    const stream = await openrouter.chat.completions.create({
       model: "nvidia/nemotron-3-super-120b-a12b:free",
       messages: [
         {
@@ -103,5 +103,5 @@ window.testNemotronSDK = testNemotronSDK
 window.testSimpleNemotron = testSimpleNemotron
 
 console.log('🔧 Nvidia Nemotron SDK test functions loaded:')
-console.log('- testNemotronSDK() - Test the exact code you provided')
+console.log('- testNemotronSDK() - Test chat.completions.create method')
 console.log('- testSimpleNemotron() - Simple hello test')
