@@ -78,7 +78,7 @@ const ChatModal = ({ onClose }) => {
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'info', message: 'Dr. AI diagnosis complete' })
+        addNotification({ type: 'success', message: 'AI diagnosis complete' })
       } else {
         throw new Error('Primary failed')
       }
@@ -103,20 +103,20 @@ const ChatModal = ({ onClose }) => {
           }
           setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
           addMessage(aiMessage)
-          addNotification({ type: 'info', message: 'Fallback AI diagnosis complete' })
+          addNotification({ type: 'warning', message: 'Using offline AI analysis (limited functionality)' })
         }
       } catch (fallbackError) {
         setIsOnline(false)
         const aiMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: generateHardcodedResponse(input.trim()),
+          content: `🚫 **API Error**: Unable to connect to AI service. Please check your internet connection and API key configuration.\n\n**Error Details**: ${error.message}\n\n💡 **Try again** or contact support if the issue persists.`,
           timestamp: Date.now(),
-          isOffline: true
+          isError: true
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'info', message: 'Offline diagnosis complete' })
+        addNotification({ type: 'error', message: 'AI service unavailable' })
       }
     } finally {
       setIsTyping(false)
