@@ -14,11 +14,11 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// Primary AI Configuration (OpenRouter - qwen/qwen3.6-plus:free)
+// Primary AI Configuration (OpenRouter - nvidia/nemotron-3-super-120b-a12b:free)
 export const PRIMARY_AI_CONFIG = {
   baseUrl: 'https://openrouter.ai/api/v1',
   apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
-  model: 'qwen/qwen3.6-plus:free'
+  model: 'nvidia/nemotron-3-super-120b-a12b:free'
 }
 
 // Fallback AI Configuration (Offline rule-based system)

@@ -1,14 +1,14 @@
 /**
  * OpenRouter SDK Verification
- * Run this in browser console to debug Qwen AI issues
+ * Run this in browser console to debug Nvidia Nemotron AI issues
  */
 
 import { OpenRouter } from "@openrouter/sdk";
 
-const testQwenSDK = async () => {
+const testNemotronSDK = async () => {
   const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
 
-  console.log('🔍 Qwen SDK Verification:')
+  console.log('🔍 Nvidia Nemotron SDK Verification:')
   console.log('API Key exists:', !!apiKey)
   console.log('API Key starts with:', apiKey?.substring(0, 12) + '...')
 
@@ -22,11 +22,11 @@ const testQwenSDK = async () => {
       apiKey: apiKey
     })
 
-    console.log('\n📡 Testing Qwen SDK chat...')
+    console.log('\n📡 Testing Nvidia Nemotron SDK chat...')
 
     // Test the exact code you provided
     const stream = await openrouter.chat.send({
-      model: "qwen/qwen3.6-plus:free",
+      model: "nvidia/nemotron-3-super-120b-a12b:free",
       messages: [
         {
           role: "user",
@@ -49,21 +49,21 @@ const testQwenSDK = async () => {
       }
     }
 
-    console.log('\n✅ Qwen SDK test successful!')
+    console.log('\n✅ Nvidia Nemotron SDK test successful!')
     console.log('Full response:', response)
     return response
 
   } catch (error) {
-    console.error('❌ Qwen SDK test failed:', error.message)
+    console.error('❌ Nvidia Nemotron SDK test failed:', error.message)
     console.error('Error details:', error)
     return null
   }
 }
 
-const testSimpleQwen = async () => {
+const testSimpleNemotron = async () => {
   const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
 
-  console.log('🤖 Testing simple Qwen response...')
+  console.log('🤖 Testing simple Nvidia Nemotron response...')
 
   try {
     const openrouter = new OpenRouter({
@@ -71,7 +71,7 @@ const testSimpleQwen = async () => {
     })
 
     const stream = await openrouter.chat.send({
-      model: "qwen/qwen3.6-plus:free",
+      model: "nvidia/nemotron-3-super-120b-a12b:free",
       messages: [
         {
           role: "user",
@@ -99,9 +99,9 @@ const testSimpleQwen = async () => {
   }
 }
 
-window.testQwenSDK = testQwenSDK
-window.testSimpleQwen = testSimpleQwen
+window.testNemotronSDK = testNemotronSDK
+window.testSimpleNemotron = testSimpleNemotron
 
-console.log('🔧 Qwen SDK test functions loaded:')
-console.log('- testQwenSDK() - Test the exact code you provided')
-console.log('- testSimpleQwen() - Simple hello test')
+console.log('🔧 Nvidia Nemotron SDK test functions loaded:')
+console.log('- testNemotronSDK() - Test the exact code you provided')
+console.log('- testSimpleNemotron() - Simple hello test')

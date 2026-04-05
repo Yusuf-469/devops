@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Plus, Bell, Clock, AlertTriangle, Check, Search, Camera, Pill } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { checkDrugInteractions } from '../../services/qwen.js'
+import { checkDrugInteractions } from '../../services/ai.js'
 import { checkDrugInteractions as fallbackCheckInteractions } from '../../services/fallbackAI.js'
 
 const MedicationModal = ({ onClose }) => {
