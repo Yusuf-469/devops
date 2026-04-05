@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, FileText, Loader, AlertCircle } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { analyzeSymptoms as primaryAnalyze } from '../../services/qwen.js'
-import { analyzeSymptoms as fallbackAnalyze, quickSymptomCheck } from '../../services/fallbackAI.js'
+import { analyzeSymptoms as qwenAnalyze } from '../../services/qwen.js'
+import { quickSymptomCheck } from '../../services/fallbackAI.js'
 
 const ChatModal = ({ onClose }) => {
   const { conversationHistory, addMessage, addNotification, checkEmergency, setEmergencyDetected } = useAppStore()
@@ -60,7 +60,7 @@ const ChatModal = ({ onClose }) => {
     setIsOnline(true)
     
     try {
-      const response = await primaryAnalyze(
+      const response = await qwenAnalyze(
         input.trim(),
         conversationHistory,
         (content) => {
@@ -68,7 +68,7 @@ const ChatModal = ({ onClose }) => {
         }
       )
       
-      if (response.success && !response.fallback) {
+      if (response.success) {
         setIsOnline(true)
         const aiMessage = {
           id: (Date.now() + 1).toString(),
@@ -78,46 +78,23 @@ const ChatModal = ({ onClose }) => {
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'success', message: 'AI diagnosis complete' })
+        addNotification({ type: 'success', message: 'Qwen AI diagnosis complete' })
       } else {
         throw new Error('Primary failed')
       }
     } catch (error) {
-      try {
-        const response = await fallbackAnalyze(
-          input.trim(),
-          conversationHistory,
-          (content) => {
-            setStreamingContent(content)
-          }
-        )
-        
-        if (response.success) {
-          setIsOnline(true)
-          const aiMessage = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: response.content,
-            timestamp: Date.now(),
-            isFallback: true
-          }
-          setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
-          addMessage(aiMessage)
-          addNotification({ type: 'warning', message: 'Using offline AI analysis (limited functionality)' })
-        }
-      } catch (fallbackError) {
-        setIsOnline(false)
-        const aiMessage = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: `🚫 **API Error**: Unable to connect to AI service. Please check your internet connection and API key configuration.\n\n**Error Details**: ${error.message}\n\n💡 **Try again** or contact support if the issue persists.`,
-          timestamp: Date.now(),
-          isError: true
-        }
-        setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
-        addMessage(aiMessage)
-        addNotification({ type: 'error', message: 'AI service unavailable' })
+      setIsOnline(false)
+      const aiMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `🚫 **API Error**: Unable to connect to Qwen AI service.\n\n**Error Details**: ${error.message}\n\n**Possible Solutions**:\n• Check your internet connection\n• Verify API key is valid\n• Ensure OpenRouter account has credits\n\n💡 **Please try again** or contact support.`,
+        timestamp: Date.now(),
+        isError: true
       }
+      setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
+      addMessage(aiMessage)
+      addNotification({ type: 'error', message: 'Qwen AI service unavailable' })
+    }
     } finally {
       setIsTyping(false)
       setStreamingContent('')
