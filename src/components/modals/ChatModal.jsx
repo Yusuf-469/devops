@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, FileText, Loader, AlertCircle } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { analyzeSymptoms as qwenAnalyze } from '../../services/qwen.js'
+import { analyzeSymptoms as aiAnalyze } from '../../services/ai.js'
 import { quickSymptomCheck } from '../../services/fallbackAI.js'
 
 const ChatModal = ({ onClose }) => {
@@ -60,7 +60,7 @@ const ChatModal = ({ onClose }) => {
     setIsOnline(true)
     
     try {
-      const response = await qwenAnalyze(
+      const response = await aiAnalyze(
         input.trim(),
         conversationHistory,
         (content) => {
@@ -78,7 +78,7 @@ const ChatModal = ({ onClose }) => {
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'success', message: 'Qwen AI diagnosis complete' })
+        addNotification({ type: 'success', message: 'Nvidia AI diagnosis complete' })
       } else {
         throw new Error('Primary failed')
       }
@@ -87,13 +87,13 @@ const ChatModal = ({ onClose }) => {
       const aiMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `🚫 **API Error**: Unable to connect to Qwen AI service.\n\n**Error Details**: ${error.message}\n\n**Possible Solutions**:\n• Check your internet connection\n• Verify API key is valid\n• Ensure OpenRouter account has credits\n\n💡 **Please try again** or contact support.`,
+        content: `🚫 **API Error**: Unable to connect to Nvidia Nemotron AI service.\n\n**Error Details**: ${error.message}\n\n**Possible Solutions**:\n• Check your internet connection\n• Verify API key is valid\n• Ensure OpenRouter account has credits\n\n💡 **Please try again** or contact support.`,
         timestamp: Date.now(),
         isError: true
       }
       setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
       addMessage(aiMessage)
-      addNotification({ type: 'error', message: 'Qwen AI service unavailable' })
+      addNotification({ type: 'error', message: 'Nvidia AI service unavailable' })
     } finally {
       setIsTyping(false)
       setStreamingContent('')

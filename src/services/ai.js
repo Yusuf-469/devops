@@ -1,6 +1,6 @@
 /**
- * HEALIX Qwen AI Service
- * OpenRouter SDK with qwen/qwen3.6-plus:free model
+ * HEALIX AI Service
+ * OpenRouter SDK with nvidia/nemotron-3-super-120b-a12b:free model
  */
 
 import { OpenRouter } from "@openrouter/sdk";
@@ -8,8 +8,8 @@ import { OpenRouter } from "@openrouter/sdk";
 // API Configuration - Use environment variable for security
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
 
-// Primary Model: Qwen 3.6 Plus via OpenRouter
-const PRIMARY_MODEL = 'qwen/qwen3.6-plus:free'
+// Primary Model: Nvidia Nemotron 3 Super 120B via OpenRouter
+const PRIMARY_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
 
 // Initialize OpenRouter client
 const openrouter = new OpenRouter({

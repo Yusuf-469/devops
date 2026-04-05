@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Heart, TrendingUp, Activity, Clock, ChevronRight } from 'lucide-react'
 import { useAppStore } from '../../store/index.js'
-import { getHealthInsights } from '../../services/qwen.js'
+import { getHealthInsights } from '../../services/ai.js'
 
 const DashboardOverviewModal = ({ onClose, onNavigate }) => {
   const { user, addNotification } = useAppStore()

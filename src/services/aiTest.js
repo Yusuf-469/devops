@@ -1,10 +1,10 @@
 /**
  * HEALIX AI Model Test Suite
- * Tests the qwen/qwen3.6-plus:free model via OpenRouter
+ * Tests the nvidia/nemotron-3-super-120b-a12b:free model via OpenRouter
  */
 
 import { getActiveAIConfig } from '../store/index.js'
-import { chatWithAI } from './qwen.js'
+import { chatWithAI } from './ai.js'
 import { analyzeSymptoms, quickSymptomCheck, checkDrugInteractions } from './fallbackAI.js'
 
 // Test configuration
@@ -72,7 +72,7 @@ const TEST_SCENARIOS = [
   {
     name: 'OpenRouter API Connection Test',
     test: async () => {
-      console.log('🧪 Testing: OpenRouter API - qwen/qwen3.6-plus:free')
+      console.log('🧪 Testing: OpenRouter API - nvidia/nemotron-3-super-120b-a12b:free')
       try {
         const result = await chatWithAI(
           [{ role: 'user', content: 'Hello' }],
