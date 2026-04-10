@@ -5,23 +5,28 @@ import { useAppStore } from '../../store/index.js'
 import { getHealthInsights } from '../../services/ai.js'
 
 const DashboardOverviewModal = ({ onClose, onNavigate }) => {
-  const { user, addNotification } = useAppStore()
+  const { user, addNotification, conversationHistory, medications } = useAppStore()
   const [insights, setInsights] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   
-  // Mock health data
-  const healthScore = 75
-  const recentActivity = [
-    { id: 1, action: 'Consultation with Dr. AI', time: '2 hours ago', icon: 'doctor' },
-    { id: 2, action: 'Blood test analyzed', time: '5 hours ago', icon: 'blood' },
-    { id: 3, action: 'Medication taken', time: '8 hours ago', icon: 'pill' }
-  ]
+  // Get dynamic health score from user data
+  const healthScore = user?.healthScore || 0
   
-  const upcomingReminders = [
-    { id: 1, title: 'Metformin', time: 'In 2 hours', type: 'medication' },
-    { id: 2, title: 'Dr. Appointment', time: 'Tomorrow, 10:00 AM', type: 'appointment' },
-    { id: 3, title: 'Flu Shot', time: 'In 5 days', type: 'vaccination' }
-  ]
+  // Get recent activity from real conversation history
+  const recentActivity = conversationHistory.slice(-3).map((msg, idx) => ({
+    id: idx + 1,
+    action: msg.role === 'user' ? `Consultation: ${msg.content.substring(0, 30)}...` : 'AI Consultation',
+    time: 'Recent',
+    icon: 'doctor'
+  })).reverse()
+  
+  // Get upcoming reminders from medications
+  const upcomingReminders = medications?.slice(0, 3).map((med, idx) => ({
+    id: idx + 1,
+    title: med.name || 'Medication',
+    time: med.schedule || 'As needed',
+    type: 'medication'
+  })) || []
   
   useEffect(() => {
     const loadInsights = async () => {

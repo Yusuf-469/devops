@@ -124,7 +124,7 @@ RECOMMENDATIONS:
 3. Regular health check-ups
 4. Monitor any symptoms you're experiencing
 
-⚠️ DISCLAIMER: This is an automated analysis and should not replace professional medical advice. Please consult your doctor for proper interpretation of your results.`
+Note: This is an automated analysis and should not replace professional medical advice. Please consult your doctor for proper interpretation of your results.`
   }
   
   const extractFindingsFromText = (text) => {

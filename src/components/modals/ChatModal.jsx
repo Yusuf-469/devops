@@ -11,7 +11,7 @@ const ChatModal = ({ onClose }) => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hello! I'm Dr. AI, your medical assistant. I'm here to help you understand your symptoms and guide you toward appropriate care.\n\nPlease describe what symptoms you're experiencing, including:\n• When they started\n• Severity (mild/moderate/severe)\n• Any factors that worsen or improve them\n\nI'll provide an assessment with possible causes and recommended next steps.\n\n⚠️ Remember: This is not a substitute for professional medical advice.",
+      content: "Hi, I'm Dr. AI. Tell me what's bothering you - what's going on and how long has it been happening? I'll help you figure out what might be going on and what to do about it.\n\nJust describe what you're experiencing, and we'll take it from there.",
       timestamp: Date.now()
     }
   ])
@@ -44,7 +44,7 @@ const ChatModal = ({ onClose }) => {
       setMessages(prev => [...prev, userMessage, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `🚨 ${emergency.message}`,
+        content: `${emergency.message}`,
         isEmergency: true,
         timestamp: Date.now()
       }])
@@ -87,48 +87,18 @@ const ChatModal = ({ onClose }) => {
       const aiMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I apologize, but I'm currently unable to process your request. This may be due to a temporary connection issue.
-
-Please try:
-• Checking your internet connection
-• Attempting your question again in a few moments
-
-If this persists, please contact support or seek immediate care for urgent medical concerns.
-
-I appreciate your understanding.`,
+        content: `I'm sorry, but I'm having trouble connecting right now. Could you check your internet connection and try again in a moment? If the problem continues, please seek medical help for urgent concerns.`,
         timestamp: Date.now(),
         isError: true
       }
       setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
       addMessage(aiMessage)
-      addNotification({ type: 'error', message: 'Nvidia AI service unavailable' })
     } finally {
       setIsTyping(false)
       setStreamingContent('')
     }
   }
-  
-  const generateHardcodedResponse = (symptoms) => {
-    const lowerSym = symptoms.toLowerCase()
-    let assessment = ''
-    
-    if (lowerSym.includes('fever')) {
-      assessment = `**Assessment:**\nYou have reported fever symptoms.\n\n**Possible Causes:**\n• Common Cold/Flu (High confidence)\n• Viral Infection (Medium confidence)\n• Bacterial Infection (Low confidence)\n\n**Recommended Actions:**\n1. Monitor temperature\n2. Stay hydrated\n3. Rest adequately\n4. Take paracetamol if needed\n\n**Seek immediate care if:**\n• Fever exceeds 103°F\n• Chest pain or difficulty breathing\n• Confusion or severe headache`
-    } else if (lowerSym.includes('cough')) {
-      assessment = `**Assessment:**\nYou have reported cough symptoms.\n\n**Possible Causes:**\n• Common Cold (High confidence)\n• Bronchitis (Medium confidence)\n• Allergies (Medium confidence)\n\n**Recommended Actions:**\n1. Stay hydrated\n2. Use honey for soothing\n3. Avoid smoke/irritants\n4. Rest adequately`
-    } else if (lowerSym.includes('headache')) {
-      assessment = `**Assessment:**\nYou have reported headache symptoms.\n\n**Possible Causes:**\n• Tension Headache (High confidence)\n• Dehydration (Medium confidence)\n• Migraine (Medium confidence)\n\n**Recommended Actions:**\n1. Rest in quiet, dark room\n2. Stay hydrated\n3. Take OTC pain relievers\n4. Apply cold/heat compress`
-    } else if (lowerSym.includes('stomach') || lowerSym.includes('abdominal')) {
-      assessment = `**Assessment:**\nYou have reported stomach/abdominal pain.\n\n**Possible Causes:**\n• Indigestion (Medium confidence)\n• Gastritis (Medium confidence)\n• Food Poisoning (Low confidence)\n\n**Recommended Actions:**\n1. Eat bland foods\n2. Stay hydrated\n3. Avoid spicy/fatty foods\n4. Rest`
-    } else if (lowerSym.includes('cold') || lowerSym.includes('runny') || lowerSym.includes('congestion')) {
-      assessment = `**Assessment:**\nYou have reported cold-like symptoms.\n\n**Possible Causes:**\n• Common Cold (High confidence)\n• Allergic Rhinitis (Medium confidence)\n\n**Recommended Actions:**\n1. Rest and stay hydrated\n2. Use saline nasal drops\n3. Warm fluids help\n4. Humidifier may help`
-    } else {
-      assessment = `**Assessment:**\nThank you for describing your symptoms.\n\n**Recommended Actions:**\n1. Monitor your symptoms\n2. Note when they started\n3. Note severity (mild/moderate/severe)\n4. Note any triggering factors\n\n**General Advice:**\n• Stay hydrated\n• Get adequate rest\n• Maintain healthy diet\n• Consult doctor if symptoms worsen`
-    }
-    
-    return `${assessment}\n\n⚠️ **Disclaimer:** This is automated medical information, not a diagnosis. Please consult a healthcare professional for proper evaluation.`
-  }
-  
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -363,7 +333,7 @@ I appreciate your understanding.`,
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            ⚠️ This is an AI assistant. For emergencies, call 102 immediately.
+            This is an AI assistant. For emergencies, call 102 immediately.
           </p>
         </div>
       </motion.div>
