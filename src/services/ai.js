@@ -8,8 +8,8 @@ const API_BASE_URL = import.meta.env.DEV
   ? 'http://localhost:3000'
   : 'https://healix.vercel.app'
 
-// Primary Model: Nvidia Nemotron 3 Super 120B via OpenRouter
-const PRIMARY_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
+// Primary Model: OpenRouter Free Model
+const PRIMARY_MODEL = 'openrouter/free'
 
 // Generic AI Chat completion with streaming support
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {

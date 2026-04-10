@@ -57,7 +57,7 @@ export default async function handler(request) {
 
     // Parse request body
     const body = await request.json()
-    const { messages, model = 'nvidia/nemotron-3-super-120b-a12b:free', stream = false } = body
+    const { messages, model = 'openrouter/free', stream = false } = body
 
     // Validate required fields
     if (!messages || !Array.isArray(messages)) {

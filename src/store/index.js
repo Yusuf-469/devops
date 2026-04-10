@@ -14,11 +14,11 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// Primary AI Configuration (OpenRouter - nvidia/nemotron-3-super-120b-a12b:free)
+// Primary AI Configuration (OpenRouter - openrouter/free)
 export const PRIMARY_AI_CONFIG = {
   baseUrl: 'https://openrouter.ai/api/v1',
   apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
-  model: 'nvidia/nemotron-3-super-120b-a12b:free'
+  model: 'openrouter/free'
 }
 
 // Fallback AI Configuration (Offline rule-based system)
