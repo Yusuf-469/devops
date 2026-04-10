@@ -4,21 +4,27 @@
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Allow-Credentials': 'true'
-}
+// CORS headers - will be made dynamic based on request origin
 
 // Single handler for both OPTIONS and POST requests
 export default async function handler(request) {
-  // Handle CORS preflight requests
+  // Get the origin from the request headers
+  const origin = request.headers.get('origin') || '*'
+  
+  // Enhanced CORS headers that include dynamic origin
+  const dynamicCorsHeaders = {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400'
+  }
+
+  // Handle CORS preflight requests - respond immediately with proper headers
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
-      headers: corsHeaders
+      headers: dynamicCorsHeaders
     })
   }
 
@@ -30,7 +36,7 @@ export default async function handler(request) {
         status: 405,
         headers: {
           'Content-Type': 'application/json',
-          ...corsHeaders
+          ...dynamicCorsHeaders
         }
       }
     )
@@ -49,7 +55,7 @@ export default async function handler(request) {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
-            ...corsHeaders
+            ...dynamicCorsHeaders
           }
         }
       )
@@ -67,7 +73,7 @@ export default async function handler(request) {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...corsHeaders
+            ...dynamicCorsHeaders
           }
         }
       )
@@ -121,7 +127,7 @@ export default async function handler(request) {
           status: statusCode,
           headers: {
             'Content-Type': 'application/json',
-            ...corsHeaders
+            ...dynamicCorsHeaders
           }
         }
       )
@@ -138,7 +144,7 @@ export default async function handler(request) {
           'Content-Type': 'text/plain; charset=utf-8',
           'Cache-Control': 'no-cache',
           'Connection': 'keep-alive',
-          ...corsHeaders
+          ...dynamicCorsHeaders
         }
       })
     }
@@ -173,7 +179,7 @@ export default async function handler(request) {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          ...corsHeaders
+          ...dynamicCorsHeaders
         }
       }
     )
