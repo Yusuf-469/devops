@@ -96,7 +96,7 @@ const MedicationModal = ({ onClose }) => {
         })
       } else {
         setInteractionResult({
-          content: `✅ No known interactions found between your current medications and ${newMedName}.\n\n⚠️ Disclaimer: This is automated checking. Always consult your pharmacist or doctor before starting new medications.`,
+          content: `No known interactions found between your current medications and ${newMedName}. However, always consult your pharmacist or doctor before starting new medications.`,
           checked: true,
           isFallback: true,
           hasCritical: false
