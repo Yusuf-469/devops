@@ -78,7 +78,7 @@ const ChatModal = ({ onClose }) => {
         }
         setMessages(prev => [...prev.filter(m => m.id !== 'streaming'), aiMessage])
         addMessage(aiMessage)
-        addNotification({ type: 'success', message: 'Nvidia AI diagnosis complete' })
+        addNotification({ type: 'success', message: 'Consultation complete' })
       } else {
         throw new Error('Primary failed')
       }
@@ -87,7 +87,15 @@ const ChatModal = ({ onClose }) => {
       const aiMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `🚫 **API Error**: Unable to connect to Nvidia Nemotron AI service.\n\n**Error Details**: ${error.message}\n\n**Possible Solutions**:\n• Check your internet connection\n• Verify API key is valid\n• Ensure OpenRouter account has credits\n\n💡 **Please try again** or contact support.`,
+        content: `I apologize, but I'm currently unable to process your request. This may be due to a temporary connection issue.
+
+Please try:
+• Checking your internet connection
+• Attempting your question again in a few moments
+
+If this persists, please contact support or seek immediate care for urgent medical concerns.
+
+I appreciate your understanding.`,
         timestamp: Date.now(),
         isError: true
       }
