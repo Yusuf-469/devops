@@ -1,103 +1,68 @@
 /**
  * HEALIX AI Service
- * Secure backend API calls to Vercel serverless function
+ * Direct OpenRouter API calls - simple and reliable
  */
 
-// Backend API endpoint
-const API_BASE_URL = import.meta.env.DEV
-  ? 'http://localhost:3000'
-  : 'https://healix.vercel.app'
+// OpenRouter API configuration from environment
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
+const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
-// Primary Model: OpenRouter Free Model
+// Primary Model
 const PRIMARY_MODEL = 'openrouter/free'
 
-// Generic AI Chat completion with streaming support
+// Direct AI Chat call to OpenRouter
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
+  if (!OPENROUTER_API_KEY) {
+    console.error('❌ OpenRouter API key not configured')
+    throw new Error('API key not configured. Please set VITE_OPENROUTER_API_KEY in environment.')
+  }
+
   try {
-    // Prepare messages with system prompt
     const allMessages = [
       { role: "system", content: systemPrompt },
       ...messages
     ]
 
-    console.log(`🚀 Calling backend AI API: ${model}, messages: ${allMessages.length}`)
+    console.log(`🚀 Calling OpenRouter: ${model}`)
 
-    // Call our secure backend endpoint
-    const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': window.location.origin || 'https://healix.vercel.app',
+        'X-Title': 'HEALIX Medical Dashboard'
       },
       body: JSON.stringify({
-        messages: allMessages,
         model: model,
-        stream: !!onStream // Convert to boolean
+        messages: allMessages,
+        stream: false,
+        temperature: 0.7
       })
     })
 
-    // Handle error responses
     if (!response.ok) {
-      const errorData = await response.json()
-      console.error('❌ Backend API error:', errorData.error)
-      throw new Error(errorData.error || 'AI service error')
+      const errorText = await response.text()
+      console.error('❌ OpenRouter error:', response.status, errorText)
+      throw new Error(`OpenRouter API Error: ${response.status}`)
     }
 
-    // Handle streaming response
-    if (onStream && response.body) {
-      console.log('🌊 Processing streaming response from backend')
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let result = ""
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6)
-            if (data === '[DONE]') continue
-
-            try {
-              const parsed = JSON.parse(data)
-              // Only show final response content - filter out reasoning
-              const content = parsed.choices?.[0]?.delta?.content || ''
-
-              if (content) {
-                result += content
-                onStream(result)
-              }
-            } catch (e) {
-              // Ignore parse errors for incomplete chunks
-            }
-          }
-        }
-      }
-      return { success: true, content: result, isFallback: false, model: model }
-    }
-
-    // Handle non-streaming response
     const data = await response.json()
-    console.log('✅ Backend API response successful')
+    console.log('✅ OpenRouter response received')
 
     return {
       success: true,
-      content: data.content || '',
-      model: data.model || model,
-      usage: data.usage
+      content: data.choices?.[0]?.message?.content || 'No response received',
+      model: data.model || model
     }
 
   } catch (error) {
-    console.error('💥 Frontend AI service error:', error.message)
-    throw error // Let the UI handle the error
+    console.error('💥 AI service error:', error.message)
+    throw error
   }
 }
 
-// Dr. AI Chat function - Professional medical assistant
+// Dr. AI Chat function
 const CHAT_SYSTEM_PROMPT = `You are Dr. AI, a caring medical assistant. Be brief and precise.
 
 IMPORTANT: Never show your thinking process, reasoning, or internal analysis. Only output the final response directly.
@@ -117,20 +82,11 @@ Format:
 _Disclaimer: Consult a doctor._`
 
 export const getChatResponse = async (userMessage, conversationHistory = [], onStream) => {
-  const messages = conversationHistory.map(msg => ({
-    role: msg.role,
-    content: msg.content
-  }))
-
-  return chatWithAI(
-    messages,
-    CHAT_SYSTEM_PROMPT,
-    onStream,
-    PRIMARY_MODEL
-  )
+  const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
+  return chatWithAI(messages, CHAT_SYSTEM_PROMPT, onStream, PRIMARY_MODEL)
 }
 
-// Symptom analysis - Professional medical AI
+// Symptom analysis
 const MEDICAL_SYSTEM_PROMPT = `You are Dr. AI, a caring medical assistant. Be brief, precise, and use bullet points.
 
 RULES:
@@ -148,17 +104,8 @@ Format:
 _Disclaimer: Consult a doctor._`
 
 export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStream) => {
-  const messages = conversationHistory.map(msg => ({
-    role: msg.role,
-    content: msg.content
-  }))
-
-  return chatWithAI(
-    messages,
-    MEDICAL_SYSTEM_PROMPT,
-    onStream,
-    PRIMARY_MODEL
-  )
+  const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
+  return chatWithAI(messages, MEDICAL_SYSTEM_PROMPT, onStream, PRIMARY_MODEL)
 }
 
 // Report analysis
@@ -167,21 +114,13 @@ export const analyzeReport = async (reportText, onStream) => {
 
 Format:
 📋 SUMMARY: [1 line]
-
 🔍 FINDINGS:
 • [Finding 1]
 • [Finding 2]
-
 💡 RECOMMENDATION: [1 line]
-
 _Disclaimer: Consult a doctor._`
 
-  return chatWithAI(
-    [{ role: "user", content: `Analyze this: ${reportText}` }],
-    systemPrompt,
-    onStream,
-    PRIMARY_MODEL
-  )
+  return chatWithAI([{ role: "user", content: `Analyze this: ${reportText}` }], systemPrompt, onStream, PRIMARY_MODEL)
 }
 
 // Drug interaction check
@@ -190,21 +129,13 @@ export const checkDrugInteractions = async (currentMeds, newMed, onStream) => {
 
 Format:
 ⚠️ STATUS: [Safe/Caution/Warning]
-
 🔍 DETAILS:
 • [Interaction detail 1]
 • [Interaction detail 2]
-
 ✅ RECOMMENDATION: [1 line]
-
 _Disclaimer: Consult a doctor._`
 
-  return chatWithAI(
-    [{ role: "user", content: `Check: ${currentMeds.join(', ')} + ${newMed}` }],
-    systemPrompt,
-    onStream,
-    PRIMARY_MODEL
-  )
+  return chatWithAI([{ role: "user", content: `Check: ${currentMeds.join(', ')} + ${newMed}` }], systemPrompt, onStream, PRIMARY_MODEL)
 }
 
 // Health insights
@@ -213,66 +144,32 @@ export const getHealthInsights = async (userData, onStream) => {
 
 Format:
 💪 STRENGTH: [1 line]
-
 ⚡ TIP: [1 line]
-
 🎯 FOCUS: [1 line]
-
 _Disclaimer: Consult a doctor._`
 
-  return chatWithAI(
-    [{ role: "user", content: `Data: Age ${userData.age}, History ${userData.conditions}, Recent ${userData.recentReports}` }],
-    systemPrompt,
-    onStream,
-    PRIMARY_MODEL
-  )
+  return chatWithAI([{ role: "user", content: `Data: Age ${userData.age}, History ${userData.conditions}, Recent ${userData.recentReports}` }], systemPrompt, onStream, PRIMARY_MODEL)
 }
 
 // Emergency detection
 export const checkForEmergency = (text) => {
-  const emergencyKeywords = [
-    'chest pain', 'heart attack', 'stroke', "can't breathe", 'unconscious',
-    'bleeding heavily', 'suicide', 'overdose', 'anaphylaxis', 'not breathing',
-    'severe allergic reaction', 'seizure', 'poisoning', 'electric shock'
-  ]
-
+  const emergencyKeywords = ['chest pain', 'heart attack', 'stroke', "can't breathe", 'unconscious', 'bleeding heavily', 'suicide', 'overdose', 'anaphylaxis', 'not breathing', 'severe allergic reaction', 'seizure', 'poisoning', 'electric shock']
   const lower = text.toLowerCase()
   const isEmergency = emergencyKeywords.some(keyword => lower.includes(keyword))
 
   if (isEmergency) {
-    return {
-      level: 'critical',
-      message: 'Emergency detected. Please seek immediate care.',
-      action: 'CALL_102',
-      countdown: 10
-    }
+    return { level: 'critical', message: 'Emergency detected. Please seek immediate care.', action: 'CALL_102', countdown: 10 }
   }
   return null
 }
 
-// Helper to extract AI response tone for avatar reactions
+// Helper for response tone
 export const analyzeResponseTone = (response) => {
   const lower = response.toLowerCase()
-  
-  if (lower.includes('serious') || lower.includes('critical') || lower.includes('immediate') || lower.includes('emergency')) {
-    return 'concerned'
-  }
-  if (lower.includes('likely') || lower.includes('probably') || lower.includes('common')) {
-    return 'reassuring'
-  }
-  if (lower.includes('think') || lower.includes('consider') || lower.includes('might')) {
-    return 'analyzing'
-  }
+  if (lower.includes('serious') || lower.includes('critical') || lower.includes('immediate') || lower.includes('emergency')) return 'concerned'
+  if (lower.includes('likely') || lower.includes('probably') || lower.includes('common')) return 'reassuring'
+  if (lower.includes('think') || lower.includes('consider') || lower.includes('might')) return 'analyzing'
   return 'neutral'
 }
 
-export default {
-  chatWithAI,
-  getChatResponse,
-  analyzeSymptoms,
-  analyzeReport,
-  checkDrugInteractions,
-  getHealthInsights,
-  checkForEmergency,
-  analyzeResponseTone
-}
+export default { chatWithAI, getChatResponse, analyzeSymptoms, analyzeReport, checkDrugInteractions, getHealthInsights, checkForEmergency, analyzeResponseTone }
