@@ -13,7 +13,7 @@ Healix is a web-based medical dashboard application that leverages AI and 3D vis
 - **Animation**: Framer Motion and @react-spring/web
 - **State Management**: Zustand
 - **Routing**: React Router DOM 7
-- **AI Integration**: Secure Vercel serverless functions, Nvidia Nemotron AI via OpenRouter
+- **AI Integration**: Secure Vercel serverless functions, OpenRouter Free AI
 - **Utilities**: html2canvas (for screenshots), jspdf (for PDF generation), react-hot-toast (notifications), lucide-react (icons)
 - **Deployment**: Vercel (based on vercel.json)
 

@@ -59,7 +59,7 @@ const techStack = [
   { name: 'Tailwind CSS', icon: TailwindIcon, color: 'from-cyan-400 to-cyan-600' },
   { name: 'Zustand', icon: ZustandIcon, color: 'from-yellow-500 to-orange-500' },
   { name: 'Vite', icon: ViteIcon, color: 'from-purple-500 to-purple-700' },
-  { name: 'Qwen AI', icon: DeepSeekIcon, color: 'from-indigo-500 to-indigo-700' },
+  { name: 'OpenRouter AI', icon: DeepSeekIcon, color: 'from-indigo-500 to-indigo-700' },
   { name: 'OpenRouter', icon: OpenRouterIcon, color: 'from-green-500 to-emerald-600' },
 ];
 
