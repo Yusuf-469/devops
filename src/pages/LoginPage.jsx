@@ -40,7 +40,7 @@ const LoginPage = () => {
           errorMessage = 'Incorrect password.';
           break;
         case 'auth/email-already-in-use':
-          errorMessage = 'An account with this email already exists.';
+          errorMessage = 'An account with this email already exists. Try logging in instead.';
           break;
         case 'auth/weak-password':
           errorMessage = 'Password should be at least 6 characters.';
@@ -48,7 +48,17 @@ const LoginPage = () => {
         case 'auth/invalid-email':
           errorMessage = 'Invalid email address.';
           break;
+        case 'auth/too-many-requests':
+          errorMessage = 'Too many attempts. Please wait a moment and try again.';
+          break;
+        case 'auth/invalid-credential':
+          errorMessage = 'Invalid email or password. Please check your credentials.';
+          break;
         default:
+          // Clean up the error message
+          errorMessage = error.message?.includes('Firebase')
+            ? 'Authentication service error. Please try again.'
+            : 'An error occurred. Please try again.';
           break;
       }
 
