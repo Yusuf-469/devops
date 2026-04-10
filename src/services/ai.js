@@ -3,8 +3,9 @@
  * Direct OpenRouter API calls - simple and reliable
  */
 
-// OpenRouter API configuration from environment
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
+// OpenRouter API configuration
+// Priority: environment variable OR fallback to direct key (for quick fix)
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
 // Primary Model
