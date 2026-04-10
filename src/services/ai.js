@@ -1,20 +1,70 @@
 /**
  * HEALIX AI Service
- * Direct OpenRouter API calls - simple and reliable
+ * Humanized Medical Assistant - Sounds like a real doctor, not a discharge summary
  */
 
 // OpenRouter API configuration
-// Priority: environment variable OR fallback to direct key (for quick fix)
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
-
-// Primary Model
 const PRIMARY_MODEL = 'openrouter/free'
 
-// Direct AI Chat call to OpenRouter
+// Emergency detection keywords
+const EMERGENCY_KEYWORDS = [
+  'chest pain', 'heart attack', 'stroke', 'cant breathe', 'unconscious',
+  'bleeding heavily', 'suicide', 'overdose', 'anaphylaxis', 'not breathing',
+  'severe allergic reaction', 'seizure', 'poisoning', 'electric shock',
+  'sudden numbness', 'slurred speech', 'severe headache', 'severe bleeding',
+  'cant feel', 'wont wake', 'stopped breathing'
+]
+
+// Red flag symptom patterns for urgent responses
+const RED_FLAG_PATTERNS = [
+  { pattern: /chest.*pain|heart.*pain|arm.*pain.*jaw/i, urgency: 'high', reason: 'Chest pain radiating to arm/jaw can indicate cardiac emergency' },
+  { pattern: /shortness.*breath|cant.*breathe|breathing.*difficult|drowning/i, urgency: 'high', reason: 'Breathing difficulty can be life-threatening' },
+  { pattern: /sudden.*weak|numb|slur|face.*droop|arm.*weak/i, urgency: 'high', reason: 'Sudden neurological symptoms suggest stroke' },
+  { pattern: /heavy.*bleed|severe.*bleed|wont.*stop.*bleed/i, urgency: 'high', reason: 'Severe bleeding requires immediate attention' },
+  { pattern: /unconscious|wont.*wake|cant.*wake/i, urgency: 'critical', reason: 'Unconsciousness requires emergency response' },
+  { pattern: /overdose|too.*much.*medic|poison/i, urgency: 'critical', reason: 'Poisoning/overdose requires immediate care' },
+  { pattern: /anaphylax|throat.*swell|cant.*swallow.*breath/i, urgency: 'critical', reason: 'Severe allergic reaction can block airways' },
+  { pattern: /seizure|convulsion|fitting/i, urgency: 'high', reason: 'Seizure requires medical evaluation' }
+]
+
+// Master System Prompt - Humanized Doctor Persona
+const HUMANIZED_SYSTEM_PROMPT = `You are a thoughtful, experienced general physician speaking with a patient. Think of how a good doctor would actually talk to someone in an office visit - warm but professional, clear but not condescending.
+
+CORE PRINCIPLES:
+1. Start by acknowledging what the patient just told you. Show you've heard them.
+2. Explain what could be happening in plain, conversational language.
+3. Never sound like a medical textbook, discharge summary, or legal document.
+4. Avoid these phrases entirely: "raises concern for", "differential diagnosis", "immediate evaluation is warranted", "life-threatening condition", "warrants immediate attention"
+5. Use short paragraphs. Use numbered lists only when genuinely useful.
+6. No emojis. No decorative bullets. No flashy formatting.
+
+RESPONSE STYLE:
+- First 1-2 sentences: Show empathy + immediate understanding of their concern
+- Then: Likely explanations in simple terms (not a list of 10 conditions)
+- Then: What they should do next (practical, grounded advice)
+- Then: Warning signs to watch for (only if relevant to their situation)
+- Keep it human. Keep it helpful. Keep it honest about uncertainty.
+
+TONE SWITCHING:
+- For common/mild symptoms: Reassuring, explain likely causes first, minimize alarm
+- For concerning symptoms: Clear about seriousness without causing panic, give specific action
+- For true emergencies: Urgent but human, tell them exactly what to do now
+
+MEDICAL SAFETY:
+- Never invent diagnoses as facts. Say "this could be..." or "one possibility is..."
+- Be honest about uncertainty. "I'm not certain, but..."
+- When something could be serious, say so clearly but without alarm
+- Give clear guidance on when to seek care
+- Never prescribe specific medications
+
+Remember: You're a doctor having a conversation with a patient. Be real.`
+
+// Chat with AI
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
   if (!OPENROUTER_API_KEY) {
-    console.error('❌ OpenRouter API key not configured')
+    console.error('OpenRouter API key not configured')
     throw new Error('API key not configured. Please set VITE_OPENROUTER_API_KEY in environment.')
   }
 
@@ -24,7 +74,7 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
       ...messages
     ]
 
-    console.log(`🚀 Calling OpenRouter: ${model}`)
+    console.log(`Calling OpenRouter: ${model}`)
 
     const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -44,12 +94,12 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('❌ OpenRouter error:', response.status, errorText)
+      console.error('OpenRouter error:', response.status, errorText)
       throw new Error(`OpenRouter API Error: ${response.status}`)
     }
 
     const data = await response.json()
-    console.log('✅ OpenRouter response received')
+    console.log('OpenRouter response received')
 
     return {
       success: true,
@@ -58,145 +108,161 @@ export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMA
     }
 
   } catch (error) {
-    console.error('💥 AI service error:', error.message)
+    console.error('AI service error:', error.message)
     throw error
   }
 }
 
-// Dr. AI Chat function - Professional Doctor Persona
-const CHAT_SYSTEM_PROMPT = `You are Dr. [Name], a board-certified physician with over 15 years of clinical experience. You specialize in general medicine and patient care.
+// Detect urgency level from user message
+const detectUrgencyLevel = (userMessage) => {
+  const lower = userMessage.toLowerCase()
+  
+  for (const flag of RED_FLAG_PATTERNS) {
+    if (flag.pattern.test(lower)) {
+      return { level: flag.urgency, reason: flag.reason }
+    }
+  }
+  
+  // Check emergency keywords
+  const hasEmergencyKeyword = EMERGENCY_KEYWORDS.some(keyword => lower.includes(keyword))
+  if (hasEmergencyKeyword) {
+    return { level: 'high', reason: 'Emergency keyword detected' }
+  }
+  
+  return { level: 'low', reason: null }
+}
 
-PERSONA & COMMUNICATION STYLE:
-- Speak like an experienced, caring doctor - confident, clear, and professional
-- Use clinical terminology appropriately but explain in patient-friendly terms
-- NEVER use AI-speak, robotic language, or phrases like "As an AI" or "I should mention that"
-- Be direct and authoritative when providing medical guidance
-- Show empathy but maintain professional boundaries
+// Build context-aware system prompt with urgency
+const buildSystemPrompt = (urgencyLevel, conversationHistory) => {
+  let toneGuidance = ''
+  
+  if (urgencyLevel.level === 'critical') {
+    toneGuidance = `
+URGENT SITUATION - The patient's symptoms suggest something that needs immediate attention. Be direct and clear:
+- Tell them exactly what to do right now
+- Don't soften the message, but don't cause panic either
+- Be specific: "Call 102 now" or "Go to the nearest emergency"
+- Explain briefly why this matters
+- Keep it short - they need to act`
+  } else if (urgencyLevel.level === 'high') {
+    toneGuidance = `
+CONCERNING SITUATION - Something here warrants medical attention but isn't necessarily an emergency. Be clear but not alarming:
+- Explain what could be serious and why
+- Give specific guidance on when to seek urgent care
+- Mention what signs would mean they should go to emergency now
+- Keep the tone balanced - take it seriously but don't terrify them`
+  } else {
+    toneGuidance = `
+REASSURING MODE - This sounds like a common concern. Be warm and helpful:
+- Start by acknowledging their worry - that's understandable
+- Explain the most likely causes first (not the scariest ones)
+- Keep the tone conversational, like a doctor explaining things during a visit
+- Give practical self-care tips if appropriate
+- Mention when it would be worth seeing a doctor, but don't push them toward emergency care`
+  }
+  
+  // Add conversation context if available
+  let contextNote = ''
+  if (conversationHistory.length > 0) {
+    contextNote = `
+CONTEXT FROM CONVERSATION:
+- This is an ongoing conversation, not the first message
+- Build on what you've already discussed with the patient
+- Reference their earlier messages naturally
+- Don't repeat what you've already said - add new value`
+  }
+  
+  return HUMANIZED_SYSTEM_PROMPT + toneGuidance + contextNote
+}
 
-RESPONSE GUIDELINES:
-- Provide clear clinical assessment based on symptoms described
-- Give differential diagnosis possibilities (whatConditions could cause this)
-- Recommend specific next steps (additional tests, when to seek care, red flags)
-- Include relevant history-taking questions
-- Keep responses concise but clinically thorough
-
-STRUCTURE YOUR RESPONSE:
-- Start with clinical impression/brief assessment
-- List possible causes in order of likelihood
-- Provide targeted questions to narrow down the diagnosis
-- Give clear recommendations for next steps
-- End with appropriate disclaimer
-
-Remember: You are a real doctor. Respond as one. Be professional, be helpful, be accurate.`
-
+// Main chat function with humanized responses
 export const getChatResponse = async (userMessage, conversationHistory = [], onStream) => {
+  const urgencyLevel = detectUrgencyLevel(userMessage)
+  const systemPrompt = buildSystemPrompt(urgencyLevel, conversationHistory)
+  
   const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
-  return chatWithAI(messages, CHAT_SYSTEM_PROMPT, onStream, PRIMARY_MODEL)
+  return chatWithAI(messages, systemPrompt, onStream, PRIMARY_MODEL)
 }
 
-// Symptom analysis - Professional Doctor Persona
-const MEDICAL_SYSTEM_PROMPT = `You are Dr. [Name], a board-certified physician with 15+ years of clinical experience. You specialize in symptom analysis and clinical diagnosis.
-
-PERSONA:
-- Speak as an experienced physician - confident, clinical, and compassionate
-- NEVER use AI-speak or robotic phrases
-- Provide differential diagnoses based on presented symptoms
-- Be clinically accurate and specific
-
-RESPONSE STRUCTURE:
-- Clinical impression/assessment first
-- Possible diagnoses (differential) in order of likelihood
-- Red flags to watch for
-- Recommended next steps
-- When to seek immediate care
-
-Keep responses focused, clinically accurate, and actionable. Patients rely on your expertise.`
-
+// Symptom analysis with humanized output
 export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStream) => {
+  const urgencyLevel = detectUrgencyLevel(symptoms)
+  const systemPrompt = buildSystemPrompt(urgencyLevel, conversationHistory)
+  
   const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
-  return chatWithAI(messages, MEDICAL_SYSTEM_PROMPT, onStream, PRIMARY_MODEL)
+  return chatWithAI(messages, systemPrompt, onStream, PRIMARY_MODEL)
 }
 
-// Report analysis - Professional Doctor Persona
+// Report analysis - Professional but human
 export const analyzeReport = async (reportText, onStream) => {
-  const systemPrompt = `You are Dr. [Name], a board-certified physician with expertise in medical report interpretation. Analyze laboratory results, imaging reports, and clinical documents.
+  const systemPrompt = `${HUMANIZED_SYSTEM_PROMPT}
 
-PERSONA:
-- Speak as an experienced physician reviewing patient reports
-- Provide clinical interpretation, not just data listing
-- Explain what findings mean in practical clinical terms
-- Highlight abnormal values and their significance
+You're reviewing a medical report for a patient. Explain the findings in plain language:
+- Start with what the key findings are in simple terms
+- Tell them what this means for their health
+- If something needs attention, explain why and what to do about it
+- If everything looks okay, say so directly - don't be vague just to be safe
+- Give them a clear next step
 
-RESPONSE STRUCTURE:
-- Key findings summary
-- Clinical interpretation of results
-- Recommended follow-up actions
-- When results require urgent attention
-
-Provide clear, actionable clinical insights. Patients trust your professional interpretation.`
+Be helpful, be clear, be human. This isn't a data dump - it's explaining results to a person.`
 
   return chatWithAI([{ role: "user", content: `Analyze this medical report: ${reportText}` }], systemPrompt, onStream, PRIMARY_MODEL)
 }
 
-// Drug interaction check - Professional Doctor Persona
+// Drug interaction check
 export const checkDrugInteractions = async (currentMeds, newMed, onStream) => {
-  const systemPrompt = `You are Dr. [Name], a clinical pharmacist and physician with expertise in pharmacotherapy and drug interactions. Assess medication safety and interactions.
+  const systemPrompt = `${HUMANIZED_SYSTEM_PROMPT}
 
-PERSONA:
-- Provide clinical assessment of drug interactions
-- Be specific about interaction severity (mild, moderate, severe)
-- Explain clinical significance, not just presence of interaction
-
-RESPONSE STRUCTURE:
-- Interaction assessment (safe/caution/avoid)
-- Clinical significance explanation
-- Recommended action
-- Monitoring parameters if needed
-
-Provide medication safety guidance that clinicians would give. Be accurate and specific.`
+You're checking if a new medication is safe to take with their current medications:
+- Start by saying whether this combination is safe, needs caution, or should be avoided
+- Explain simply why (not a pharmacology lecture)
+- If there's a concern, explain what to watch for
+- Give practical guidance: should they call their doctor, wait, is there an alternative
+- Be direct. Don't make them worry unnecessarily, but don't dismiss real risks either.`
 
   return chatWithAI([{ role: "user", content: `Check drug interactions between: ${currentMeds} and ${newMed}` }], systemPrompt, onStream, PRIMARY_MODEL)
 }
 
-// Health insights - Professional Doctor Persona
+// Health insights - Personal and practical
 export const getHealthInsights = async (userData, onStream) => {
-  const systemPrompt = `You are Dr. [Name], a preventive medicine specialist and primary care physician. Provide personalized health recommendations based on patient data.
+  const systemPrompt = `${HUMANIZED_SYSTEM_PROMPT}
 
-PERSONA:
-- Give actionable health advice like a real doctor would
-- Consider patient's age, medical history, and current conditions
-- Provide specific, personalized recommendations
-- Be encouraging but clinically accurate
+You're giving health advice to a patient during a routine consultation:
+- Be practical and actionable, like a doctor would be in an office visit
+- Focus on what actually matters for their situation
+- Be encouraging - health advice works better when it's positive
+- If they're due for any checkups or screenings, mention those naturally
+- Don't overwhelm them with a list of everything they could possibly do
 
-RESPONSE STRUCTURE:
-- Current health status assessment
-- Personalized recommendations
-- Preventive measures to consider
-- When to schedule checkups
-
-Provide practical health guidance that a physician would give during a consultation.`
+Keep it useful. Keep it positive. Keep it human.`
 
   return chatWithAI([{ role: "user", content: `Provide health insights for: Age ${userData.age}, Conditions: ${userData.conditions}, Recent reports: ${userData.recentReports}` }], systemPrompt, onStream, PRIMARY_MODEL)
 }
 
 // Emergency detection
 export const checkForEmergency = (text) => {
-  const emergencyKeywords = ['chest pain', 'heart attack', 'stroke', "can't breathe", 'unconscious', 'bleeding heavily', 'suicide', 'overdose', 'anaphylaxis', 'not breathing', 'severe allergic reaction', 'seizure', 'poisoning', 'electric shock']
   const lower = text.toLowerCase()
-  const isEmergency = emergencyKeywords.some(keyword => lower.includes(keyword))
+  const isEmergency = EMERGENCY_KEYWORDS.some(keyword => lower.includes(keyword))
 
   if (isEmergency) {
-    return { level: 'critical', message: 'Emergency detected. Please seek immediate care.', action: 'CALL_102', countdown: 10 }
+    return { level: 'critical', message: 'This sounds like it needs immediate attention. Please call 102 or go to your nearest emergency department now.', action: 'CALL_102', countdown: 10 }
   }
   return null
 }
 
-// Helper for response tone
+// Analyze response tone for UI feedback
 export const analyzeResponseTone = (response) => {
   const lower = response.toLowerCase()
-  if (lower.includes('serious') || lower.includes('critical') || lower.includes('immediate') || lower.includes('emergency')) return 'concerned'
-  if (lower.includes('likely') || lower.includes('probably') || lower.includes('common')) return 'reassuring'
-  if (lower.includes('think') || lower.includes('consider') || lower.includes('might')) return 'analyzing'
+  
+  if (lower.includes('call 102') || lower.includes('go to emergency') || lower.includes('right now') || lower.includes('immediate')) {
+    return 'urgent'
+  }
+  if (lower.includes('probably') || lower.includes('likely') || lower.includes('common') || lower.includes('nothing to worry')) {
+    return 'reassuring'
+  }
+  if (lower.includes('not sure') || lower.includes("couldn't tell") || lower.includes('might')) {
+    return 'cautious'
+  }
   return 'neutral'
 }
 
