@@ -4,7 +4,9 @@
  */
 
 // OpenRouter API configuration
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+// IMPORTANT: API key must be set via environment variable VITE_OPENROUTER_API_KEY
+// Do not hardcode API keys in source code
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 const PRIMARY_MODEL = 'openrouter/free'
 
