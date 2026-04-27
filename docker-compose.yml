@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Development service with hot reload
+  healix-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_OPENROUTER_API_KEY=${VITE_OPENROUTER_API_KEY}
+      - VITE_EMERGENCY_NUMBER=${VITE_EMERGENCY_NUMBER:-102}
+      - VITE_HELP_NUMBER=${VITE_HELP_NUMBER:-7903810922}
+    command: npm run dev -- --host 0.0.0.0
+    profiles:
+      - dev
+
+  # Production service
+  healix-prod:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_EMERGENCY_NUMBER=${VITE_EMERGENCY_NUMBER:-102}
+      - VITE_HELP_NUMBER=${VITE_HELP_NUMBER:-7903810922}
+    restart: unless-stopped
+    profiles:
+      - prod

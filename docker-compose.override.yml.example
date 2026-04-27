@@ -1,0 +1,12 @@
+# Docker Compose override for local development
+# This file contains local environment variables
+# Copy this to docker-compose.override.yml and fill in your values
+
+version: '3.8'
+
+services:
+  healix-dev:
+    environment:
+      - VITE_OPENROUTER_API_KEY=your-openrouter-api-key-here
+      - VITE_EMERGENCY_NUMBER=102
+      - VITE_HELP_NUMBER=7903810922

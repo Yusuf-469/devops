@@ -125,3 +125,131 @@ The project is currently configured for Vercel deployment. To enhance DevOps:
 - **Vercel**: Hosting, serverless functions, edge functions for AI API calls
 - **Cloudinary/AWS S3**: For storing medical images and reports
 - **Stripe**: Payment processing for premium features
+
+## Docker Deployment
+
+HEALIX supports containerized deployment with Docker for both development and production environments.
+
+### Prerequisites
+
+- Docker Desktop installed
+- Docker Compose installed
+
+### Quick Start
+
+#### Local Development with Hot Reload
+
+```bash
+# Copy environment template
+cp docker-compose.override.yml.example docker-compose.override.yml
+
+# Edit docker-compose.override.yml with your API keys
+# Set VITE_OPENROUTER_API_KEY in the override file
+
+# Run development server with hot reload
+docker-compose --profile dev up
+
+# Access at: http://localhost:3000
+```
+
+#### Production Build Locally
+
+```bash
+# Build and run production container
+docker-compose --profile prod up
+
+# Access at: http://localhost:8080
+```
+
+### Docker Commands
+
+#### Build Production Image
+
+```bash
+# Build image
+docker build -t healix:latest .
+
+# Run container
+docker run -p 8080:80 \
+  -e VITE_EMERGENCY_NUMBER=102 \
+  -e VITE_HELP_NUMBER=7903810922 \
+  healix:latest
+```
+
+#### Development Commands
+
+```bash
+# Start development environment
+docker-compose --profile dev up
+
+# View logs
+docker-compose --profile dev logs -f
+
+# Stop containers
+docker-compose down
+
+# Rebuild after code changes
+docker-compose --profile dev up --build
+```
+
+#### Production Deployment
+
+```bash
+# Build for production
+docker build -t healix:latest .
+
+# Run production container
+docker run -d \
+  --name healix-prod \
+  -p 80:80 \
+  --restart unless-stopped \
+  healix:latest
+```
+
+### Docker Configuration Files
+
+- **`Dockerfile`**: Multi-stage build (Node.js build → Nginx serve)
+- **`Dockerfile.dev`**: Development container with hot reload
+- **`docker-compose.yml`**: Orchestration for dev/prod environments
+- **`docker/nginx.conf`**: Production Nginx configuration with SPA routing
+- **`.dockerignore`**: Optimized build context
+- **`docker-build.sh`**: Convenience script for common operations
+
+### Environment Variables
+
+For Docker deployment, set these environment variables:
+
+```yaml
+# In docker-compose.override.yml (development)
+environment:
+  - VITE_OPENROUTER_API_KEY=your-api-key-here
+  - VITE_EMERGENCY_NUMBER=102
+  - VITE_HELP_NUMBER=7903810922
+
+# Or pass at runtime
+docker run -e VITE_OPENROUTER_API_KEY=your-key healix:latest
+```
+
+### Health Checks
+
+The production container includes health checks:
+
+```bash
+# Check container health
+docker ps
+
+# View health status
+docker inspect healix-prod | grep -A 5 "Health"
+```
+
+### File Structure
+
+```
+├── Dockerfile              # Production build
+├── Dockerfile.dev          # Development build
+├── docker-compose.yml      # Container orchestration
+├── .dockerignore          # Build optimization
+├── docker-build.sh        # Build script
+└── docker/
+    └── nginx.conf         # Production web server config
+```
