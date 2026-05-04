@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: healix-config
+  namespace: default
+data:
+  VITE_EMERGENCY_NUMBER: "102"
+  VITE_HELP_NUMBER: "7903810922"
