@@ -1,0 +1,170 @@
+{
+  "rules": {
+    // Chat History - Users can only access their own chat data
+    "chatHistory": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['messages', 'timestamp', 'sessionId'])",
+        "messages": {
+          ".validate": "newData.isArray() && newData.size() <= 1000" // Max 1000 messages per session
+        },
+        "sessionId": {
+          ".validate": "newData.isString() && newData.val().length <= 50"
+        },
+        "timestamp": {
+          ".validate": "newData.val() <= now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    // Report Analyzer - Store and retrieve medical reports
+    "reports": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['reportData', 'analysis', 'timestamp'])",
+        "reportData": {
+          ".validate": "newData.hasChildren(['type', 'content', 'metadata'])"
+        },
+        "analysis": {
+          ".validate": "newData.hasChildren(['ai_response', 'confidence', 'recommendations'])"
+        },
+        "timestamp": {
+          ".validate": "newData.val() <= now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    // Dashboard Analytics - User-specific dashboard data
+    "dashboard": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['healthMetrics', 'chatStats', 'lastUpdated'])",
+        "healthMetrics": {
+          ".validate": "newData.hasChildren(['vitals', 'medications', 'appointments'])"
+        },
+        "chatStats": {
+          ".validate": "newData.hasChildren(['totalChats', 'aiInteractions', 'responseTime'])"
+        },
+        "lastUpdated": {
+          ".validate": "newData.val() <= now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    // User Profile - Basic user information
+    "users": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['profile', 'preferences'])",
+        "profile": {
+          ".validate": "newData.hasChildren(['name', 'email', 'createdAt'])"
+        },
+        "preferences": {
+          ".validate": "newData.hasChildren(['theme', 'notifications', 'privacy'])"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    // System-wide analytics (admin only - read-only for users)
+    "analytics": {
+      ".read": "auth != null", // Allow authenticated users to read aggregated data
+      ".write": false, // No direct writes to analytics
+      "userCount": {
+        ".read": "auth != null",
+        ".write": false
+      },
+      "usageStats": {
+        ".read": "auth != null",
+        ".write": false
+      }
+    },
+
+    // Emergency contacts and data (encrypted on client side)
+    "emergency": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['contacts', 'medicalInfo', 'lastUpdated'])",
+        "contacts": {
+          ".validate": "newData.isArray() && newData.size() <= 5" // Max 5 emergency contacts
+        },
+        "medicalInfo": {
+          ".validate": "newData.hasChildren(['bloodType', 'allergies', 'conditions'])"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    // Medication tracking
+    "medications": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['current', 'history', 'reminders'])",
+        "current": {
+          ".validate": "newData.isArray()"
+        },
+        "history": {
+          ".validate": "newData.isArray()"
+        },
+        "reminders": {
+          ".validate": "newData.isArray()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    // Health tracking data
+    "healthTracking": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['vitals', 'symptoms', 'logs'])",
+        "vitals": {
+          ".validate": "newData.isArray()"
+        },
+        "symptoms": {
+          ".validate": "newData.isArray()"
+        },
+        "logs": {
+          ".validate": "newData.isArray() && newData.size() <= 1000" // Max 1000 entries
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    // App settings and preferences
+    "settings": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid",
+        ".validate": "newData.hasChildren(['ui', 'ai', 'privacy'])",
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}
