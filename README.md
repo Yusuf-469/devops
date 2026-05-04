@@ -253,3 +253,207 @@ docker inspect healix-prod | grep -A 5 "Health"
 └── docker/
     └── nginx.conf         # Production web server config
 ```
+
+## DevOps Infrastructure
+
+HEALIX includes a complete DevOps pipeline for CI/CD, container orchestration, monitoring, and automation.
+
+### CI/CD Pipeline
+
+GitHub Actions workflow (`.github/workflows/ci.yml`) provides:
+
+- **Automated Testing**: Runs on every push and PR
+- **Multi-platform Builds**: Linux AMD64 and ARM64 support
+- **Container Registry**: Automatic push to GitHub Container Registry (GHCR)
+- **Staged Deployments**: Staging → Production deployment flow
+- **Security Scanning**: Integrated vulnerability scanning
+
+#### Required Secrets
+
+Set these in your GitHub repository settings:
+
+```bash
+# For Kubernetes deployments
+KUBE_CONFIG_STAGING     # Base64 encoded kubeconfig for staging
+KUBE_CONFIG_PRODUCTION  # Base64 encoded kubeconfig for production
+
+# For container registry access (automatically available)
+GITHUB_TOKEN           # Auto-provided by GitHub Actions
+```
+
+### Kubernetes Orchestration
+
+Complete Kubernetes manifests in the `k8s/` directory:
+
+#### Deployment Features
+
+- **Horizontal Pod Autoscaling**: Automatic scaling based on CPU/memory
+- **Rolling Updates**: Zero-downtime deployments
+- **Health Checks**: Liveness and readiness probes
+- **Security**: Non-root containers, read-only filesystem
+- **Resource Limits**: Memory and CPU constraints
+- **Config Management**: ConfigMaps and Secrets for configuration
+
+#### File Structure
+
+```
+k8s/
+├── healix-deployment.yaml    # Main application deployment
+├── healix-service.yaml       # LoadBalancer service
+├── healix-ingress.yaml       # External access with SSL
+├── healix-configmap.yaml     # Non-sensitive configuration
+├── healix-secret.yaml        # Sensitive environment variables
+└── kustomization.yaml        # Kustomize configuration
+```
+
+#### Deployment Commands
+
+```bash
+# Deploy to staging
+./scripts/deploy.sh staging v1.2.3
+
+# Deploy to production
+./scripts/deploy.sh production v1.2.3
+
+# Check deployment status
+./scripts/monitor.sh status
+```
+
+### Monitoring & Observability
+
+Comprehensive monitoring stack with Prometheus and Grafana:
+
+#### Components
+
+- **Prometheus**: Metrics collection and alerting
+- **Grafana**: Dashboards and visualization
+- **Kubernetes Metrics**: Pod, node, and cluster monitoring
+- **Application Metrics**: HTTP requests, response times, error rates
+
+#### Setup Commands
+
+```bash
+# Deploy monitoring stack
+kubectl apply -f monitoring/
+
+# Access Grafana
+kubectl port-forward svc/grafana-service -n monitoring 3000:3000
+
+# Open browser: http://localhost:3000 (admin/admin)
+```
+
+#### Included Dashboards
+
+- **Application Performance**: Request rates, response times
+- **Resource Usage**: CPU, memory, and network metrics
+- **Kubernetes Health**: Pod status, node health, cluster events
+
+### Automation Scripts
+
+Convenient scripts for common DevOps operations:
+
+#### Deploy Script (`scripts/deploy.sh`)
+
+```bash
+# Deploy to environment with specific version
+./scripts/deploy.sh [environment] [version]
+
+# Examples
+./scripts/deploy.sh staging latest
+./scripts/deploy.sh production v1.2.3
+```
+
+#### Backup Script (`scripts/backup.sh`)
+
+```bash
+# Create different types of backups
+./scripts/backup.sh [type]
+
+# Types: config, logs, monitoring, full
+./scripts/backup.sh full        # Complete backup
+./scripts/backup.sh config      # Configuration only
+./scripts/backup.sh logs        # Application logs
+```
+
+#### Monitor Script (`scripts/monitor.sh`)
+
+```bash
+# Comprehensive system monitoring
+./scripts/monitor.sh [command]
+
+# Commands
+./scripts/monitor.sh status     # Overall system status
+./scripts/monitor.sh health     # Application health check
+./scripts/monitor.sh logs       # Recent application logs
+./scripts/monitor.sh metrics    # System metrics
+./scripts/monitor.sh alerts     # Active alerts and warnings
+```
+
+### Deployment Strategies
+
+#### Blue-Green Deployment
+
+```bash
+# Deploy new version alongside existing
+kubectl apply -f k8s/healix-deployment-green.yaml
+
+# Switch traffic to new version
+kubectl patch service healix-service -p '{"spec":{"selector":{"app":"healix-green"}}}'
+
+# Rollback if needed
+kubectl patch service healix-service -p '{"spec":{"selector":{"app":"healix"}}}'
+```
+
+#### Canary Deployment
+
+```bash
+# Deploy canary version
+kubectl apply -f k8s/healix-deployment-canary.yaml
+
+# Gradually increase traffic (Istio/Service Mesh required)
+kubectl apply -f k8s/canary-virtualservice.yaml
+```
+
+### Security Considerations
+
+- **API Keys**: Stored in Kubernetes Secrets, never in code
+- **Network Policies**: Restrict pod-to-pod communication
+- **RBAC**: Least-privilege access controls
+- **Image Scanning**: Automated vulnerability scanning in CI/CD
+- **SSL/TLS**: Automatic certificate management with cert-manager
+
+### Environment Management
+
+#### Staging Environment
+
+- Latest code from main branch
+- Reduced resource limits
+- Full monitoring enabled
+- Used for integration testing
+
+#### Production Environment
+
+- Tagged releases only
+- Full resource allocation
+- Enhanced security policies
+- Automated backups
+
+### Backup and Recovery
+
+Automated backup strategy:
+
+- **Configuration**: Daily ConfigMap/Secret backups
+- **Logs**: 30-day retention with rotation
+- **Monitoring Data**: Grafana dashboard exports
+- **Disaster Recovery**: Complete environment recreation capability
+
+#### Recovery Commands
+
+```bash
+# Restore from backup
+tar -xzf healix_backup_full_20231201_120000.tar.gz
+kubectl apply -f backups/20231201_120000/k8s/
+
+# Verify restoration
+./scripts/monitor.sh status
+```
