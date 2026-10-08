@@ -8,7 +8,12 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 3000,
-      host: true
+      host: true,
+      // /api/chat is a Vercel function. For local dev, run `vercel dev` (port 3001 below)
+      // alongside `npm run dev`, or override with VITE_API_PROXY.
+      proxy: {
+        '/api': env.VITE_API_PROXY || 'http://localhost:3001'
+      }
     },
     resolve: {
       alias: {
@@ -20,9 +25,8 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       minify: 'esbuild',
       cssCodeSplit: true,
-      // Ensure env variables are inlined
+      // Only public, non-secret values are inlined into the client bundle
       define: {
-        'import.meta.env.VITE_OPENROUTER_API_KEY': JSON.stringify(env.VITE_OPENROUTER_API_KEY || ''),
         'import.meta.env.VITE_EMERGENCY_NUMBER': JSON.stringify(env.VITE_EMERGENCY_NUMBER || '102'),
         'import.meta.env.VITE_HELP_NUMBER': JSON.stringify(env.VITE_HELP_NUMBER || '7903810922')
       }

@@ -9,13 +9,9 @@ const TrackerModal = ({ onClose }) => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [showAddModal, setShowAddModal] = useState(false)
   
-  // Sample treatment data
-  const [treatments, setTreatments] = useState([
-    { id: 1, name: 'COVID-19 Vaccine', type: 'vaccination', date: '2024-01-15', status: 'completed' },
-    { id: 2, name: 'Blood Pressure Check', type: 'appointment', date: '2024-01-20', status: 'upcoming' },
-    { id: 3, name: 'Metformin', type: 'medication', date: '2024-01-10', status: 'taken' },
-    { id: 4, name: 'Flu Shot', type: 'vaccination', date: '2024-01-25', status: 'upcoming' }
-  ])
+  // Treatments live in the persisted Zustand store so they survive a reload
+  const treatments = useAppStore((s) => s.treatments)
+  const setTreatments = useAppStore((s) => s.setTreatments)
   
   const [newTreatment, setNewTreatment] = useState({
     name: '',
