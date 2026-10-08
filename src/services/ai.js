@@ -3,11 +3,10 @@
  * Humanized Medical Assistant - Sounds like a real doctor, not a discharge summary
  */
 
-// OpenRouter API configuration
-// IMPORTANT: API key must be set via environment variable VITE_OPENROUTER_API_KEY
-// Do not hardcode API keys in source code
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
-const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
+// AI requests go to our own Vercel serverless function (/api/chat).
+// That function holds OPENROUTER_API_KEY server-side and forwards the request
+// to OpenRouter, so no secret is ever shipped in the browser bundle.
+const CHAT_ENDPOINT = '/api/chat'
 const PRIMARY_MODEL = 'openrouter/free'
 
 // Emergency detection keywords
@@ -63,49 +62,30 @@ MEDICAL SAFETY:
 
 Remember: You're a doctor having a conversation with a patient. Be real.`
 
-// Chat with AI
+// Chat with AI (via the serverless proxy)
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
-  if (!OPENROUTER_API_KEY) {
-    console.error('OpenRouter API key not configured')
-    throw new Error('API key not configured. Please set VITE_OPENROUTER_API_KEY in environment.')
-  }
-
   try {
     const allMessages = [
       { role: "system", content: systemPrompt },
       ...messages
     ]
 
-    console.log(`Calling OpenRouter: ${model}`)
-
-    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+    const response = await fetch(CHAT_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': window.location.origin || 'https://healix.vercel.app',
-        'X-Title': 'HEALIX Medical Dashboard'
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: allMessages,
-        stream: false,
-        temperature: 0.7
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model, messages: allMessages, stream: false })
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter error:', response.status, errorText)
-      throw new Error(`OpenRouter API Error: ${response.status}`)
-    }
+    const data = await response.json().catch(() => ({}))
 
-    const data = await response.json()
-    console.log('OpenRouter response received')
+    if (!response.ok) {
+      console.error('AI proxy error:', response.status, data.error)
+      throw new Error(data.error || `AI request failed: ${response.status}`)
+    }
 
     return {
       success: true,
-      content: data.choices?.[0]?.message?.content || 'No response received',
+      content: data.content || 'No response received',
       model: data.model || model
     }
 
@@ -177,12 +157,30 @@ CONTEXT FROM CONVERSATION:
   return HUMANIZED_SYSTEM_PROMPT + toneGuidance + contextNote
 }
 
+// The proxy caps requests at 40 messages / 24k chars. Send only the most
+// recent turns that fit, so long (persisted) conversations keep working.
+const MAX_HISTORY_MESSAGES = 20
+const MAX_HISTORY_CHARS = 12000
+
+const recentHistory = (conversationHistory) => {
+  const recent = []
+  let chars = 0
+  for (let i = conversationHistory.length - 1; i >= 0 && recent.length < MAX_HISTORY_MESSAGES; i--) {
+    const { role, content } = conversationHistory[i]
+    if (typeof content !== 'string') continue
+    if (chars + content.length > MAX_HISTORY_CHARS) break
+    chars += content.length
+    recent.unshift({ role, content })
+  }
+  return recent
+}
+
 // Main chat function with humanized responses
 export const getChatResponse = async (userMessage, conversationHistory = [], onStream) => {
   const urgencyLevel = detectUrgencyLevel(userMessage)
   const systemPrompt = buildSystemPrompt(urgencyLevel, conversationHistory)
   
-  const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
+  const messages = recentHistory(conversationHistory)
   return chatWithAI(messages, systemPrompt, onStream, PRIMARY_MODEL)
 }
 
@@ -191,7 +189,7 @@ export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStre
   const urgencyLevel = detectUrgencyLevel(symptoms)
   const systemPrompt = buildSystemPrompt(urgencyLevel, conversationHistory)
   
-  const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
+  const messages = recentHistory(conversationHistory)
   return chatWithAI(messages, systemPrompt, onStream, PRIMARY_MODEL)
 }
 

@@ -54,6 +54,10 @@ For AI functionality in local development, set:
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 
+`/api/chat` is a Vercel serverless function, so plain `npm run dev` can't serve it.
+Run `vercel dev --listen 3001` in a second terminal; the Vite dev server proxies
+`/api` to it (override the target with `VITE_API_PROXY`).
+
 ### Production Deployment (Vercel)
 Set these environment variables in your Vercel dashboard:
 
@@ -143,8 +147,10 @@ HEALIX supports containerized deployment with Docker for both development and pr
 # Copy environment template
 cp docker-compose.override.yml.example docker-compose.override.yml
 
-# Edit docker-compose.override.yml with your API keys
-# Set VITE_OPENROUTER_API_KEY in the override file
+# Edit docker-compose.override.yml with your public settings.
+# The OpenRouter key is NOT used by the container: AI calls go through the
+# Vercel serverless function (api/chat.js), which reads OPENROUTER_API_KEY server-side.
+# AI chat therefore only works on Vercel (or locally via `vercel dev`).
 
 # Run development server with hot reload
 docker-compose --profile dev up
@@ -222,12 +228,10 @@ For Docker deployment, set these environment variables:
 ```yaml
 # In docker-compose.override.yml (development)
 environment:
-  - VITE_OPENROUTER_API_KEY=your-api-key-here
   - VITE_EMERGENCY_NUMBER=102
   - VITE_HELP_NUMBER=7903810922
 
-# Or pass at runtime
-docker run -e VITE_OPENROUTER_API_KEY=your-key healix:latest
+# Note: never pass secrets as VITE_ variables - Vite bundles them into public JS.
 ```
 
 ### Health Checks

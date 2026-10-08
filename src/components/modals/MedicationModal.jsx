@@ -13,12 +13,9 @@ const MedicationModal = ({ onClose }) => {
   const [interactionResult, setInteractionResult] = useState(null)
   const [isChecking, setIsChecking] = useState(false)
   
-  // Sample medications
-  const [medications, setMedications] = useState([
-    { id: 1, name: 'Metformin', dosage: '500mg', frequency: 'Twice daily', nextDose: '2 hours', adherence: 95 },
-    { id: 2, name: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', nextDose: '8 hours', adherence: 88 },
-    { id: 3, name: 'Aspirin', dosage: '81mg', frequency: 'Once daily', nextDose: '1 hour', adherence: 100 }
-  ])
+  // Medications live in the persisted Zustand store so they survive a reload
+  const medications = useAppStore((s) => s.medications)
+  const setMedications = useAppStore((s) => s.setMedications)
   
   const [newMed, setNewMed] = useState({
     name: '',
