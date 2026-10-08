@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 // Model paths configuration - Relative paths for Vite public folder
 export const MODEL_PATHS = {
@@ -15,9 +16,10 @@ export const pathToUrl = (path) => {
 }
 
 // Primary AI Configuration (OpenRouter - openrouter/free)
+// The browser only talks to our own serverless endpoint. The OpenRouter key
+// lives server-side in Vercel env (OPENROUTER_API_KEY) and is never bundled.
 export const PRIMARY_AI_CONFIG = {
-  baseUrl: 'https://openrouter.ai/api/v1',
-  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
+  baseUrl: '/api/chat',
   model: 'openrouter/free'
 }
 
@@ -44,8 +46,8 @@ export const EMERGENCY_KEYWORDS = [
   'severe allergic reaction', 'seizure', 'poisoning', 'electric shock'
 ]
 
-// Main application store
-export const useAppStore = create((set, get) => ({
+// Main application store (persisted to localStorage via Zustand persist)
+export const useAppStore = create(persist((set, get) => ({
   // Individual Modal states - CRITICAL FOR INTERACTIVITY
   isChatOpen: false,
   setIsChatOpen: (open) => set({ isChatOpen: open }),
@@ -83,6 +85,28 @@ export const useAppStore = create((set, get) => ({
     conversationHistory: [...state.conversationHistory, message]
   })),
   
+  // Medication list (persisted)
+  medications: [
+    { id: 1, name: 'Metformin', dosage: '500mg', frequency: 'Twice daily', nextDose: '2 hours', adherence: 95 },
+    { id: 2, name: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', nextDose: '8 hours', adherence: 88 },
+    { id: 3, name: 'Aspirin', dosage: '81mg', frequency: 'Once daily', nextDose: '1 hour', adherence: 100 }
+  ],
+  // Accepts a new array or an updater function, like React's setState
+  setMedications: (update) => set((state) => ({
+    medications: typeof update === 'function' ? update(state.medications) : update
+  })),
+
+  // Treatment tracker entries (persisted)
+  treatments: [
+    { id: 1, name: 'COVID-19 Vaccine', type: 'vaccination', date: '2024-01-15', status: 'completed' },
+    { id: 2, name: 'Blood Pressure Check', type: 'appointment', date: '2024-01-20', status: 'upcoming' },
+    { id: 3, name: 'Metformin', type: 'medication', date: '2024-01-10', status: 'taken' },
+    { id: 4, name: 'Flu Shot', type: 'vaccination', date: '2024-01-25', status: 'upcoming' }
+  ],
+  setTreatments: (update) => set((state) => ({
+    treatments: typeof update === 'function' ? update(state.treatments) : update
+  })),
+
   // Analysis results
   latestAnalysis: null,
   setLatestAnalysis: (analysis) => set({ latestAnalysis: analysis }),
@@ -144,4 +168,16 @@ export const useAppStore = create((set, get) => ({
     }
     return null
   }
+}), {
+  name: 'healix-store',
+  storage: createJSONStorage(() => localStorage),
+  // Persist only user data. UI state (open modals, loading, errors) resets on reload.
+  // Chat history is capped so localStorage doesn't grow without bound.
+  partialize: (state) => ({
+    medications: state.medications,
+    treatments: state.treatments,
+    conversationHistory: state.conversationHistory.slice(-100),
+    latestAnalysis: state.latestAnalysis,
+    user: state.user
+  })
 }))
