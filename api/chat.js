@@ -1,8 +1,17 @@
 // Vercel Serverless Function for HEALIX AI Chat
 // This runs on the server side, keeping the API key secure
 
+// Uses the Web Request/Response API, so it runs on the Edge runtime
+export const config = { runtime: 'edge' }
+
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
+
+// Free models; OpenRouter moves to the next one if a model is busy or rate limited.
+// OPENROUTER_MODEL (optional) is tried first.
+const FREE_MODELS = ['nvidia/nemotron-3.5-lightning:free', 'google/gemma-4-31b-it:free', 'google/gemma-4-26b-a4b-it:free']
+const MAX_MESSAGES = 20
+const MAX_CHARS = 8000
 
 // CORS headers - will be made dynamic based on request origin
 
@@ -43,7 +52,6 @@ export default async function handler(request) {
   }
 
   try {
-  try {
     // Validate API key exists on server
     if (!OPENROUTER_API_KEY) {
       console.error('❌ OPENROUTER_API_KEY not configured on server')
@@ -63,12 +71,15 @@ export default async function handler(request) {
 
     // Parse request body
     const body = await request.json()
-    const { messages, model = 'openrouter/free', stream = false } = body
+    const { messages, stream = false } = body
 
-    // Validate required fields
-    if (!messages || !Array.isArray(messages)) {
+    // Validate required fields; size limits keep the shared key from being abused
+    const valid = Array.isArray(messages) && messages.length > 0 && messages.length <= MAX_MESSAGES &&
+      messages.every(m => m && ['system', 'user', 'assistant'].includes(m.role) &&
+        typeof m.content === 'string' && m.content.length <= MAX_CHARS)
+    if (!valid) {
       return new Response(
-        JSON.stringify({ error: 'Invalid request: messages array required' }),
+        JSON.stringify({ error: `Invalid request: 1-${MAX_MESSAGES} messages of up to ${MAX_CHARS} characters required` }),
         {
           status: 400,
           headers: {
@@ -79,15 +90,18 @@ export default async function handler(request) {
       )
     }
 
-    console.log(`🤖 AI Request: ${model}, messages: ${messages.length}, stream: ${stream}`)
+    const models = [process.env.OPENROUTER_MODEL, ...FREE_MODELS].filter((m, i, a) => m && a.indexOf(m) === i).slice(0, 3)
+    console.log(`🤖 AI Request: ${models[0]}, messages: ${messages.length}, stream: ${stream}`)
 
     // Prepare OpenRouter request
     const openRouterPayload = {
-      model,
+      models,
       messages,
       stream,
       temperature: 0.7,
-      max_tokens: stream ? undefined : 1000
+      max_tokens: 1000,
+      // answer directly; a "thinking" model could otherwise spend the whole budget before replying
+      reasoning: { enabled: false }
     }
 
     // Make request to OpenRouter from server
@@ -151,12 +165,19 @@ export default async function handler(request) {
 
     // Handle non-streaming response
     const data = await response.json()
+    const content = data.choices?.[0]?.message?.content || ''
+    if (!content) {
+      return new Response(
+        JSON.stringify({ error: 'AI service returned an empty reply. Please try again.' }),
+        { status: 503, headers: { 'Content-Type': 'application/json', ...dynamicCorsHeaders } }
+      )
+    }
     console.log('✅ AI Response successful')
 
     return new Response(
       JSON.stringify({
         success: true,
-        content: data.choices?.[0]?.message?.content || '',
+        content,
         model: data.model,
         usage: data.usage
       }),

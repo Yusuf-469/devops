@@ -3,12 +3,10 @@
  * Humanized Medical Assistant - Sounds like a real doctor, not a discharge summary
  */
 
-// OpenRouter API configuration
-// IMPORTANT: API key must be set via environment variable VITE_OPENROUTER_API_KEY
-// Do not hardcode API keys in source code
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
-const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
-const PRIMARY_MODEL = 'openrouter/free'
+// Requests go through the /api/chat serverless function, which holds the OpenRouter key
+// (OPENROUTER_API_KEY in the Vercel project) and picks the model, so no key reaches the browser.
+const CHAT_ENDPOINT = '/api/chat'
+const PRIMARY_MODEL = 'server-default'
 
 // Emergency detection keywords
 const EMERGENCY_KEYWORDS = [
@@ -65,47 +63,27 @@ Remember: You're a doctor having a conversation with a patient. Be real.`
 
 // Chat with AI
 export const chatWithAI = async (messages, systemPrompt, onStream, model = PRIMARY_MODEL) => {
-  if (!OPENROUTER_API_KEY) {
-    console.error('OpenRouter API key not configured')
-    throw new Error('API key not configured. Please set VITE_OPENROUTER_API_KEY in environment.')
-  }
-
   try {
     const allMessages = [
       { role: "system", content: systemPrompt },
       ...messages
     ]
 
-    console.log(`Calling OpenRouter: ${model}`)
-
-    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+    const response = await fetch(CHAT_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': window.location.origin || 'https://healix.vercel.app',
-        'X-Title': 'HEALIX Medical Dashboard'
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: allMessages,
-        stream: false,
-        temperature: 0.7
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: allMessages, stream: false })
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenRouter error:', response.status, errorText)
-      throw new Error(`OpenRouter API Error: ${response.status}`)
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok || !data.content) {
+      console.error('AI service error:', response.status, data.error)
+      throw new Error(data.error || `AI service error: ${response.status}`)
     }
-
-    const data = await response.json()
-    console.log('OpenRouter response received')
 
     return {
       success: true,
-      content: data.choices?.[0]?.message?.content || 'No response received',
+      content: data.content,
       model: data.model || model
     }
 
