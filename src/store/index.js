@@ -14,11 +14,12 @@ export const pathToUrl = (path) => {
   return path.startsWith('/') ? path : `/${path}`
 }
 
-// Primary AI Configuration (OpenRouter - openrouter/free)
+// Primary AI Configuration: the /api/chat serverless function holds the OpenRouter key
+// and picks free models, so no key is ever bundled into the browser code
 export const PRIMARY_AI_CONFIG = {
-  baseUrl: 'https://openrouter.ai/api/v1',
-  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
-  model: 'openrouter/free'
+  baseUrl: '/api/chat',
+  apiKey: '',
+  model: 'server-default'
 }
 
 // Fallback AI Configuration (Offline rule-based system)
