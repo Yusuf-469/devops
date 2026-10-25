@@ -155,13 +155,27 @@ CONTEXT FROM CONVERSATION:
   return HUMANIZED_SYSTEM_PROMPT + toneGuidance + contextNote
 }
 
+// Messages for the model: the conversation so far plus the new message. Callers may pass history
+// captured before the new message was stored, so it is appended when missing. Only the recent
+// turns are kept (the server accepts up to 20 messages, including the system prompt).
+const MAX_TURNS = 18
+const buildMessages = (userMessage, conversationHistory) => {
+  const messages = conversationHistory
+    .filter(msg => (msg.role === 'user' || msg.role === 'assistant') && typeof msg.content === 'string' && !msg.isError)
+    .map(msg => ({ role: msg.role, content: msg.content.slice(0, 8000) }))
+  const last = messages[messages.length - 1]
+  if (!last || last.role !== 'user' || last.content !== userMessage) {
+    messages.push({ role: 'user', content: userMessage.slice(0, 8000) })
+  }
+  return messages.slice(-MAX_TURNS)
+}
+
 // Main chat function with humanized responses
 export const getChatResponse = async (userMessage, conversationHistory = [], onStream) => {
   const urgencyLevel = detectUrgencyLevel(userMessage)
   const systemPrompt = buildSystemPrompt(urgencyLevel, conversationHistory)
   
-  const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
-  return chatWithAI(messages, systemPrompt, onStream, PRIMARY_MODEL)
+  return chatWithAI(buildMessages(userMessage, conversationHistory), systemPrompt, onStream, PRIMARY_MODEL)
 }
 
 // Symptom analysis with humanized output
@@ -169,8 +183,7 @@ export const analyzeSymptoms = async (symptoms, conversationHistory = [], onStre
   const urgencyLevel = detectUrgencyLevel(symptoms)
   const systemPrompt = buildSystemPrompt(urgencyLevel, conversationHistory)
   
-  const messages = conversationHistory.map(msg => ({ role: msg.role, content: msg.content }))
-  return chatWithAI(messages, systemPrompt, onStream, PRIMARY_MODEL)
+  return chatWithAI(buildMessages(symptoms, conversationHistory), systemPrompt, onStream, PRIMARY_MODEL)
 }
 
 // Report analysis - Professional but human
@@ -186,7 +199,7 @@ You're reviewing a medical report for a patient. Explain the findings in plain l
 
 Be helpful, be clear, be human. This isn't a data dump - it's explaining results to a person.`
 
-  return chatWithAI([{ role: "user", content: `Analyze this medical report: ${reportText}` }], systemPrompt, onStream, PRIMARY_MODEL)
+  return chatWithAI([{ role: "user", content: `Analyze this medical report: ${String(reportText).slice(0, 7900)}` }], systemPrompt, onStream, PRIMARY_MODEL)
 }
 
 // Drug interaction check
